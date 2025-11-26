@@ -2,10 +2,10 @@ import React from 'react';
 import { Button, Space, Tag, Dropdown, Avatar, theme } from 'antd';
 import { EditOutlined, DeleteOutlined, EyeOutlined, UserOutlined, MoreOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import AdminLayout from '@/layouts/admin-layout';
+import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
 import type { User, FilterConfig } from '@/types';
-import { show, edit, data, create } from '@/routes/admin/users';
+import { show, edit, data, create } from '@/routes/users';
 
 const { useToken } = theme;
 
@@ -151,7 +151,7 @@ export default function UsersIndex() {
     ];
 
     return (
-        <AdminLayout
+        <AppLayout
             pageTitle="Users"
             actions={
                 <Link href={create.url()}>
@@ -170,7 +170,7 @@ export default function UsersIndex() {
                 emptyMessage="No users have been created yet."
                 emptyFilterMessage="No users match your search criteria."
             />
-        </AdminLayout>
+        </AppLayout>
     );
 }
 

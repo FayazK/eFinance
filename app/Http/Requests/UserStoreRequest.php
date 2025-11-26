@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Requests\Admin;
+declare(strict_types=1);
+
+namespace App\Http\Requests;
 
 use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -28,7 +30,7 @@ class UserStoreRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                'unique:' . User::class,
+                'unique:'.User::class,
             ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'phone' => ['nullable', 'string', 'max:20'],

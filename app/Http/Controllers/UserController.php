@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+declare(strict_types=1);
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\UserDataTableRequest;
-use App\Http\Requests\Admin\UserStoreRequest;
-use App\Http\Requests\Admin\UserUpdateRequest;
-use App\Http\Resources\Admin\UserCollection;
+namespace App\Http\Controllers;
+
+use App\Http\Requests\UserDataTableRequest;
+use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Queries\UserDataTableQueryService;
@@ -23,12 +24,12 @@ class UserController extends Controller
 
     public function index(): Response
     {
-        return Inertia::render('admin/users/index');
+        return Inertia::render('dashboard/users/index');
     }
 
     public function create(): Response
     {
-        return Inertia::render('admin/users/create');
+        return Inertia::render('dashboard/users/create');
     }
 
     public function data(UserDataTableRequest $request): UserCollection
@@ -52,7 +53,7 @@ class UserController extends Controller
 
     public function edit(User $user): Response
     {
-        return Inertia::render('admin/users/edit', [
+        return Inertia::render('dashboard/users/edit', [
             'user' => $user,
         ]);
     }

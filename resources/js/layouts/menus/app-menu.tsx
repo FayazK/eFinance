@@ -2,6 +2,7 @@ import { type NavItem } from '@/types';
 import { dashboard } from '@/routes';
 import {
     DashboardOutlined,
+    UsergroupAddOutlined,
     GithubOutlined,
     BookOutlined,
 } from '@ant-design/icons';
@@ -11,6 +12,11 @@ export const appMainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: DashboardOutlined,
+    },
+    {
+        title: 'User Management',
+        href: '/dashboard/users',
+        icon: UsergroupAddOutlined,
     },
 ];
 

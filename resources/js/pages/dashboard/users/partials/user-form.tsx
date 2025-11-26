@@ -37,14 +37,14 @@ export default function UserForm({ user, isEdit = false }: UserFormProps) {
         };
 
         const method = isEdit ? 'put' : 'post';
-        const url = isEdit ? `/admin/users/${user!.id}` : '/admin/users';
+        const url = isEdit ? `/dashboard/users/${user!.id}` : '/dashboard/users';
 
         try {
             const response = await api[method](url, requestData);
             notification.success({
                 message: response.data.message || `User ${isEdit ? 'updated' : 'created'} successfully`,
             });
-            router.visit('/admin/users');
+            router.visit('/dashboard/users');
                 } catch (error: { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; }) {
             if (error.response && error.response.status === 422) {
                 const validationErrors = error.response.data.errors;
@@ -156,7 +156,7 @@ export default function UserForm({ user, isEdit = false }: UserFormProps) {
             >
                 <Input.TextArea rows={4} />
             </Form.Item>
-            
+
             <Row gutter={16}>
                 <Col span={12}>
                     <Form.Item
