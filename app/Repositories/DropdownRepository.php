@@ -2,9 +2,7 @@
 
 namespace App\Repositories;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\DB;
 
 class DropdownRepository
 {
@@ -39,10 +37,20 @@ class DropdownRepository
         return $this->buildQuery('Nnjeim\World\Models\City', $params, 'name');
     }
 
+    private function getCountriesData(array $params): array
+    {
+        return $this->buildQuery('Nnjeim\World\Models\Country', $params, 'name');
+    }
+
+    private function getCurrenciesData(array $params): array
+    {
+        return $this->buildQuery('Nnjeim\World\Models\Currency', $params, 'name');
+    }
+
     private function buildQuery(string $model, array $params, string $searchField): array
     {
         $search = isset($params['search']) ? trim((string) $params['search']) : '';
-        $id     = $params['id'] ?? null;
+        $id = $params['id'] ?? null;
 
         // If search is empty and ID is provided, return the ID record
         // along with the first 24 results from the base query.
@@ -71,6 +79,7 @@ class DropdownRepository
             }
 
             $results = $combined->values()->toArray();
+
             return $this->appendTimezoneUtcIfNeeded($model, $results);
         }
 
@@ -84,6 +93,7 @@ class DropdownRepository
         }
 
         $results = $query->limit(25)->get()->toArray();
+
         return $this->appendTimezoneUtcIfNeeded($model, $results);
     }
 
@@ -101,6 +111,7 @@ class DropdownRepository
                 $results = array_slice($results, 0, 25);
             }
         }
+
         return $results;
     }
 }

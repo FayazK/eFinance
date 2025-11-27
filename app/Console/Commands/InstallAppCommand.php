@@ -25,7 +25,7 @@ class InstallAppCommand extends Command
      */
     public function handle()
     {
-        $this->call('migrate:reset');
+        $this->call('migrate:fresh');
         $this->call('world:install');
         $this->call('migrate');
         $this->call('db:seed');

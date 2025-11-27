@@ -343,3 +343,5 @@ See `.ai/rules/tailwindcss.md` for Tailwind v4 rules and guidelines.
 
 Every change must be tested. Run minimal tests with `php artisan test --filter=testName`.
 </laravel-boost-guidelines>
+- Use playwright for UI/UX and functional feature and module testing.
+use info@fayazk.com as email and `@Password1` as password

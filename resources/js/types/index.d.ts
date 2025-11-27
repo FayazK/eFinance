@@ -53,6 +53,43 @@ export interface User {
     [key: string]: string | number | boolean | null | undefined; // Required for DataTable generic constraint
 }
 
+export interface Country {
+    id: number;
+    name: string;
+    iso2: string;
+    emoji?: string;
+}
+
+export interface City {
+    id: number;
+    name: string;
+}
+
+export interface Currency {
+    id: number;
+    name: string;
+    code: string;
+    symbol: string;
+}
+
+export interface Client {
+    id: number;
+    name: string;
+    email: string;
+    country?: Country;
+    city?: City;
+    currency?: Currency;
+    address?: string;
+    phone?: string;
+    company?: string;
+    tax_id?: string;
+    website?: string;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | Country | City | Currency | null | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;
