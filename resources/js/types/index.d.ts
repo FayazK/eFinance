@@ -90,6 +90,68 @@ export interface Client {
     [key: string]: string | number | boolean | Country | City | Currency | null | undefined;
 }
 
+export interface Contact {
+    id: number;
+    first_name: string;
+    last_name: string;
+    full_name: string;
+    client?: {
+        id: number;
+        name: string;
+    };
+    address?: string;
+    city?: string;
+    state?: string;
+    country?: Country;
+    primary_phone?: string;
+    primary_email: string;
+    additional_phones: string[];
+    additional_emails: string[];
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | Country | { id: number; name: string } | string[] | null | undefined;
+}
+
+export interface Media {
+    id: number;
+    name: string;
+    file_name?: string;
+    size: number;
+    mime_type: string;
+    url: string;
+    created_at: string;
+}
+
+export interface ProjectLink {
+    id: number;
+    project_id: number;
+    title: string;
+    url: string;
+    description?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Project {
+    id: number;
+    name: string;
+    description?: string;
+    client?: Client;
+    client_id: number;
+    start_date?: string;
+    completion_date?: string;
+    status: 'Planning' | 'Active' | 'Completed' | 'Cancelled';
+    budget?: number;
+    actual_cost?: number;
+    documents_count?: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at?: string;
+    documents?: Media[];
+    links?: ProjectLink[];
+    [key: string]: string | number | boolean | Client | Media[] | ProjectLink[] | null | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;

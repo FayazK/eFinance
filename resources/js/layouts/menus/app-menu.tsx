@@ -4,6 +4,8 @@ import {
     DashboardOutlined,
     UsergroupAddOutlined,
     TeamOutlined,
+    UserOutlined,
+    ProjectOutlined,
     GithubOutlined,
     BookOutlined,
 } from '@ant-design/icons';
@@ -18,6 +20,16 @@ export const appMainNavItems: NavItem[] = [
         title: 'Clients',
         href: '/dashboard/clients',
         icon: TeamOutlined,
+    },
+    {
+        title: 'Contacts',
+        href: '/dashboard/contacts',
+        icon: UserOutlined,
+    },
+    {
+        title: 'Projects',
+        href: '/dashboard/projects',
+        icon: ProjectOutlined,
     },
     {
         title: 'User Management',

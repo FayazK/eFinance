@@ -47,6 +47,21 @@ class DropdownRepository
         return $this->buildQuery('Nnjeim\World\Models\Currency', $params, 'name');
     }
 
+    private function getClientsData(array $params): array
+    {
+        return $this->buildQuery('App\\Models\\Client', $params, 'name');
+    }
+
+    private function getProjectsData(array $params): array
+    {
+        return $this->buildQuery('App\\Models\\Project', $params, 'name');
+    }
+
+    private function getContactsData(array $params): array
+    {
+        return $this->buildQuery('App\\Models\\Contact', $params, 'first_name');
+    }
+
     private function buildQuery(string $model, array $params, string $searchField): array
     {
         $search = isset($params['search']) ? trim((string) $params['search']) : '';
