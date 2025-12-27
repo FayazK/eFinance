@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
+use App\Http\Controllers\TransactionCategoryController;
+use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -73,6 +76,35 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{project}/links', [ProjectLinkController::class, 'store'])->name('links.store');
         Route::put('/{project}/links/{link}', [ProjectLinkController::class, 'update'])->name('links.update');
         Route::delete('/{project}/links/{link}', [ProjectLinkController::class, 'destroy'])->name('links.destroy');
+    });
+
+    // Accounts
+    Route::prefix('dashboard/accounts')->name('accounts.')->group(function () {
+        Route::get('/', [AccountController::class, 'index'])->name('index');
+        Route::get('/create', [AccountController::class, 'create'])->name('create');
+        Route::get('/{account}', [AccountController::class, 'show'])->name('show');
+        Route::get('/{account}/edit', [AccountController::class, 'edit'])->name('edit');
+        Route::get('/{account}/transactions', [AccountController::class, 'transactions'])->name('transactions');
+        Route::post('/', [AccountController::class, 'store'])->name('store');
+        Route::put('/{account}', [AccountController::class, 'update'])->name('update');
+        Route::delete('/{account}', [AccountController::class, 'destroy'])->name('destroy');
+    });
+
+    // Transactions
+    Route::prefix('dashboard/transactions')->name('transactions.')->group(function () {
+        Route::get('/', [TransactionController::class, 'index'])->name('index');
+        Route::get('/data', [TransactionController::class, 'data'])->name('data');
+        Route::get('/create', [TransactionController::class, 'create'])->name('create');
+        Route::post('/', [TransactionController::class, 'store'])->name('store');
+    });
+
+    // Transaction Categories
+    Route::prefix('dashboard/transaction-categories')->name('transaction-categories.')->group(function () {
+        Route::get('/', [TransactionCategoryController::class, 'index'])->name('index');
+        Route::get('/data', [TransactionCategoryController::class, 'data'])->name('data');
+        Route::post('/', [TransactionCategoryController::class, 'store'])->name('store');
+        Route::put('/{category}', [TransactionCategoryController::class, 'update'])->name('update');
+        Route::delete('/{category}', [TransactionCategoryController::class, 'destroy'])->name('destroy');
     });
 });
 

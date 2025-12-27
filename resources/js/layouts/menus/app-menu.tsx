@@ -6,6 +6,7 @@ import {
     TeamOutlined,
     UserOutlined,
     ProjectOutlined,
+    WalletOutlined,
     GithubOutlined,
     BookOutlined,
 } from '@ant-design/icons';
@@ -30,6 +31,11 @@ export const appMainNavItems: NavItem[] = [
         title: 'Projects',
         href: '/dashboard/projects',
         icon: ProjectOutlined,
+    },
+    {
+        title: 'Accounts',
+        href: '/dashboard/accounts',
+        icon: WalletOutlined,
     },
     {
         title: 'User Management',

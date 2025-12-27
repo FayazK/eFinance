@@ -152,6 +152,55 @@ export interface Project {
     [key: string]: string | number | boolean | Client | Media[] | ProjectLink[] | null | undefined;
 }
 
+export interface Account {
+    id: number;
+    name: string;
+    type: 'bank' | 'wallet' | 'cash';
+    currency_code: string;
+    current_balance: number; // In major units for editing
+    formatted_balance: string; // For display
+    account_number?: string;
+    bank_name?: string;
+    is_active: boolean;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | null | undefined;
+}
+
+export interface TransactionCategory {
+    id: number;
+    name: string;
+    type: 'income' | 'expense';
+    color?: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Transaction {
+    id: number;
+    account?: {
+        id: number;
+        name: string;
+        currency_code: string;
+    };
+    category?: TransactionCategory;
+    type: 'credit' | 'debit';
+    amount: number; // In major units for editing
+    formatted_amount: string; // For display
+    description?: string;
+    date: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | { id: number; name: string; currency_code?: string }
+        | TransactionCategory
+        | null
+        | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;
