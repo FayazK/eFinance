@@ -201,6 +201,35 @@ export interface Transaction {
         | undefined;
 }
 
+export interface Transfer {
+    id: number;
+    source_account?: {
+        id: number;
+        name: string;
+        currency_code: string;
+    };
+    destination_account?: {
+        id: number;
+        name: string;
+        currency_code: string;
+    };
+    source_amount: number;
+    destination_amount: number;
+    formatted_source_amount: string;
+    formatted_destination_amount: string;
+    exchange_rate: number;
+    formatted_exchange_rate: string;
+    description?: string;
+    date: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]:
+        | string
+        | number
+        | { id: number; name: string; currency_code: string }
+        | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;

@@ -75,7 +75,7 @@ export default function AccountShow({ account }: AccountShowProps) {
             cancelText: 'Cancel',
             onOk: async () => {
                 try {
-                    await api.delete(destroy.url(account.id));
+                    await api.delete(destroy.url(account));
                     notification.success({
                         message: 'Account deleted successfully',
                     });
@@ -238,7 +238,7 @@ export default function AccountShow({ account }: AccountShowProps) {
                     <Link href={index.url()}>
                         <Button icon={<ArrowLeftOutlined />}>Back to Accounts</Button>
                     </Link>
-                    <Link href={edit.url(account.id)}>
+                    <Link href={edit.url(account)}>
                         <Button type="primary" icon={<EditOutlined />}>
                             Edit Account
                         </Button>

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
 use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -105,6 +106,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [TransactionCategoryController::class, 'store'])->name('store');
         Route::put('/{category}', [TransactionCategoryController::class, 'update'])->name('update');
         Route::delete('/{category}', [TransactionCategoryController::class, 'destroy'])->name('destroy');
+    });
+
+    // Transfers
+    Route::prefix('dashboard/transfers')->name('transfers.')->group(function () {
+        Route::get('/', [TransferController::class, 'index'])->name('index');
+        Route::get('/data', [TransferController::class, 'data'])->name('data');
+        Route::get('/create', [TransferController::class, 'create'])->name('create');
+        Route::get('/{transfer}', [TransferController::class, 'show'])->name('show');
+        Route::post('/', [TransferController::class, 'store'])->name('store');
     });
 });
 
