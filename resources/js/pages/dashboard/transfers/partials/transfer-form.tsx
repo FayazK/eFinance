@@ -41,13 +41,11 @@ export default function TransferForm({ accounts }: TransferFormProps) {
             ? destinationAmount / sourceAmount
             : undefined;
 
-    // Auto-fill destination amount for same-currency transfers
-    useEffect(() => {
-        if (sameCurrency && sourceAmount !== undefined) {
-            setDestinationAmount(sourceAmount);
-            form.setFieldValue('destination_amount', sourceAmount);
-        }
-    }, [sameCurrency, sourceAmount, form]);
+    // Calculate implicit fee for same-currency transfers
+    const calculatedFee =
+        sameCurrency && sourceAmount && destinationAmount && sourceAmount > destinationAmount
+            ? sourceAmount - destinationAmount
+            : 0;
 
     // Set default date to today
     useEffect(() => {
@@ -197,11 +195,30 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                             step={0.01}
                             min={0.01}
                             onChange={(value) => setDestinationAmount(value || undefined)}
-                            disabled={sameCurrency}
                         />
                     </Form.Item>
                 </Col>
             </Row>
+
+            {sameCurrency && calculatedFee > 0 && (
+                <Alert
+                    message={`Transfer Fee Detected: ${sourceAccount?.currency_code} ${calculatedFee.toFixed(2)}`}
+                    description={`Amount sent: ${sourceAmount?.toFixed(2)}, Amount received: ${destinationAmount?.toFixed(2)}`}
+                    type="info"
+                    showIcon
+                    style={{ marginBottom: 16 }}
+                />
+            )}
+
+            {sameCurrency && sourceAmount && calculatedFee > 0 && (
+                <Alert
+                    message={`Total Deduction from Source: ${sourceAccount?.currency_code} ${sourceAmount.toFixed(2)}`}
+                    description={`Transfer: ${destinationAmount?.toFixed(2)}, Fee: ${calculatedFee.toFixed(2)}`}
+                    type="warning"
+                    showIcon
+                    style={{ marginBottom: 16 }}
+                />
+            )}
 
             {exchangeRate && !sameCurrency && (
                 <Alert

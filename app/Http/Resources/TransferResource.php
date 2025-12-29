@@ -32,6 +32,12 @@ class TransferResource extends JsonResource
             'formatted_destination_amount' => $this->depositTransaction->formatted_amount,
             'exchange_rate' => (float) $this->exchange_rate,
             'formatted_exchange_rate' => $this->formatted_exchange_rate,
+            'fee_amount' => $this->fee_amount,
+            'formatted_fee' => $this->whenLoaded('feeTransaction',
+                fn () => $this->feeTransaction->formatted_amount,
+                ''
+            ),
+            'has_fee' => $this->fee_transaction_id !== null,
             'description' => $this->withdrawalTransaction->description,
             'date' => $this->withdrawalTransaction->date?->format('Y-m-d'),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),

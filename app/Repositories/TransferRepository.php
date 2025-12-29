@@ -14,6 +14,7 @@ class TransferRepository
         return Transfer::with([
             'withdrawalTransaction.account',
             'depositTransaction.account',
+            'feeTransaction',
         ])->find($id);
     }
 
@@ -33,6 +34,7 @@ class TransferRepository
             ->with([
                 'withdrawalTransaction.account',
                 'depositTransaction.account',
+                'feeTransaction',
             ]);
 
         // Search in transaction descriptions or account names

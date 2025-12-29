@@ -35,4 +35,25 @@ class TransferStoreRequest extends FormRequest
             'source_account_id.different' => 'Source and destination accounts must be different',
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            // Validate implicit fee for same-currency transfers
+            $sourceAccount = \App\Models\Account::find($this->source_account_id);
+            $destAccount = \App\Models\Account::find($this->destination_account_id);
+
+            if ($sourceAccount && $destAccount) {
+                // For same-currency transfers, source_amount must be >= destination_amount
+                if ($sourceAccount->currency_code === $destAccount->currency_code) {
+                    if ($this->source_amount < $this->destination_amount) {
+                        $validator->errors()->add(
+                            'source_amount',
+                            'For same-currency transfers, amount sent must be greater than or equal to amount received'
+                        );
+                    }
+                }
+            }
+        });
+    }
 }

@@ -1,14 +1,12 @@
-import { useState } from 'react';
 import { Button, Card } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
 import { Transfer } from '@/types';
-import { create } from '@/routes/transfers';
+import { create, data } from '@/routes/transfers';
 import type { DataTableColumn } from '@/types';
 
 export default function TransfersIndex() {
-    const [filters, setFilters] = useState({});
 
     const columns: DataTableColumn<Transfer>[] = [
         {
@@ -25,6 +23,11 @@ export default function TransfersIndex() {
                     <div className="font-medium">{record.source_account?.name}</div>
                     <div className="text-sm text-gray-500">
                         {record.formatted_source_amount}
+                        {record.has_fee && (
+                            <span className="text-xs ml-1 text-orange-600">
+                                (+{record.formatted_fee} fee)
+                            </span>
+                        )}
                     </div>
                 </div>
             ),
@@ -58,6 +61,7 @@ export default function TransfersIndex() {
             dataIndex: 'description',
             key: 'description',
             ellipsis: true,
+            searchable: true,
         },
     ];
 
@@ -77,11 +81,12 @@ export default function TransfersIndex() {
                 }
             >
                 <DataTable<Transfer>
-                    apiUrl="/dashboard/transfers/data"
+                    fetchUrl={data.url()}
                     columns={columns}
-                    rowKey="id"
-                    filters={filters}
-                    onFiltersChange={setFilters}
+                    searchPlaceholder="Search transfers..."
+                    defaultPageSize={15}
+                    emptyMessage="No transfers have been recorded yet."
+                    emptyFilterMessage="No transfers match your search criteria."
                 />
             </Card>
         </AppLayout>

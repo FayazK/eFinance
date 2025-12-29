@@ -15,6 +15,7 @@ class Transfer extends Model
     protected $fillable = [
         'withdrawal_transaction_id',
         'deposit_transaction_id',
+        'fee_transaction_id',
         'exchange_rate',
     ];
 
@@ -42,6 +43,14 @@ class Transfer extends Model
     }
 
     /**
+     * Get the fee transaction (optional transfer fee from source account)
+     */
+    public function feeTransaction(): BelongsTo
+    {
+        return $this->belongsTo(Transaction::class, 'fee_transaction_id');
+    }
+
+    /**
      * Get source account via withdrawal transaction
      */
     public function getSourceAccountAttribute(): ?Account
@@ -63,5 +72,25 @@ class Transfer extends Model
     public function getFormattedExchangeRateAttribute(): string
     {
         return number_format((float) $this->exchange_rate, 4);
+    }
+
+    /**
+     * Get fee amount in major units (or 0 if no fee)
+     */
+    public function getFeeAmountAttribute(): float
+    {
+        return $this->feeTransaction ? $this->feeTransaction->amount / 100 : 0.0;
+    }
+
+    /**
+     * Get formatted fee for display (or empty string if no fee)
+     */
+    public function getFormattedFeeAttribute(): string
+    {
+        if (! $this->feeTransaction) {
+            return '';
+        }
+
+        return $this->feeTransaction->formatted_amount;
     }
 }

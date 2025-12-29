@@ -29,6 +29,7 @@ class TransactionCategorySeeder extends Seeder
             ['name' => 'Software Subscriptions', 'type' => 'expense', 'color' => 'orange'],
             ['name' => 'Marketing', 'type' => 'expense', 'color' => 'orange'],
             ['name' => 'Professional Services', 'type' => 'expense', 'color' => 'orange'],
+            ['name' => 'Bank Charges & Fees', 'type' => 'expense', 'color' => 'gray'],
         ];
 
         foreach ($categories as $category) {

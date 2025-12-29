@@ -30,7 +30,7 @@ import api from '@/lib/axios';
 const { useToken } = theme;
 
 interface AccountShowProps {
-    account: Account;
+    account: Account | { data: Account };
 }
 
 const accountTypeIcons = {
@@ -62,7 +62,10 @@ const filters: FilterConfig[] = [
     },
 ];
 
-export default function AccountShow({ account }: AccountShowProps) {
+export default function AccountShow({ account: accountProp }: AccountShowProps) {
+    // Unwrap the account data if it's wrapped in a data property
+    const account = 'data' in accountProp ? accountProp.data : accountProp;
+
     const [activeTab, setActiveTab] = useState('details');
     const { token } = useToken();
 
@@ -75,7 +78,7 @@ export default function AccountShow({ account }: AccountShowProps) {
             cancelText: 'Cancel',
             onOk: async () => {
                 try {
-                    await api.delete(destroy.url(account));
+                    await api.delete(destroy.url(account.id));
                     notification.success({
                         message: 'Account deleted successfully',
                     });
@@ -238,7 +241,7 @@ export default function AccountShow({ account }: AccountShowProps) {
                     <Link href={index.url()}>
                         <Button icon={<ArrowLeftOutlined />}>Back to Accounts</Button>
                     </Link>
-                    <Link href={edit.url(account)}>
+                    <Link href={edit.url(account.id)}>
                         <Button type="primary" icon={<EditOutlined />}>
                             Edit Account
                         </Button>

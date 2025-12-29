@@ -40,16 +40,32 @@ class TransferService
             $sourceAccount = $this->accountRepository->find($data['source_account_id']);
             $destinationAccount = $this->accountRepository->find($data['destination_account_id']);
 
+            // Check if same currency for implicit fee calculation
+            $sameCurrency = $sourceAccount->currency_code === $destinationAccount->currency_code;
+
             // Calculate exchange rate: destination_amount / source_amount
             $exchangeRate = $data['source_amount'] > 0
                 ? $data['destination_amount'] / $data['source_amount']
                 : 1.0;
 
+            // For same-currency transfers, calculate implicit fee from difference
+            $feeAmount = 0;
+            $withdrawalAmount = $data['source_amount'];
+            $depositAmount = $data['destination_amount'];
+
+            if ($sameCurrency && $data['source_amount'] > $data['destination_amount']) {
+                // Implicit fee: difference between sent and received
+                $feeAmount = $data['source_amount'] - $data['destination_amount'];
+                // Actual transfer amount (excluding fee)
+                $withdrawalAmount = $data['destination_amount'];
+                $depositAmount = $data['destination_amount'];
+            }
+
             // Create withdrawal transaction (debit from source) - TransactionService handles balance update
             $withdrawalTransaction = $this->transactionService->createTransaction([
                 'account_id' => $data['source_account_id'],
                 'type' => 'debit',
-                'amount' => $data['source_amount'],
+                'amount' => $withdrawalAmount,
                 'description' => $data['description'] ?? 'Transfer to '.$destinationAccount->name,
                 'date' => $data['date'],
             ]);
@@ -58,21 +74,37 @@ class TransferService
             $depositTransaction = $this->transactionService->createTransaction([
                 'account_id' => $data['destination_account_id'],
                 'type' => 'credit',
-                'amount' => $data['destination_amount'],
+                'amount' => $depositAmount,
                 'description' => $data['description'] ?? 'Transfer from '.$sourceAccount->name,
                 'date' => $data['date'],
             ]);
 
-            // Create transfer record linking both transactions
+            // Create fee transaction if fee was calculated and is greater than 0
+            $feeTransactionId = null;
+            if ($feeAmount > 0) {
+                $feeTransaction = $this->transactionService->createTransaction([
+                    'account_id' => $data['source_account_id'],
+                    'type' => 'debit',
+                    'amount' => $feeAmount,
+                    'category_id' => $this->getBankChargesCategoryId(),
+                    'description' => 'Bank charges & fees: '.($data['description'] ?? 'to '.$destinationAccount->name),
+                    'date' => $data['date'],
+                ]);
+                $feeTransactionId = $feeTransaction->id;
+            }
+
+            // Create transfer record linking all transactions
             $transfer = $this->transferRepository->create([
                 'withdrawal_transaction_id' => $withdrawalTransaction->id,
                 'deposit_transaction_id' => $depositTransaction->id,
+                'fee_transaction_id' => $feeTransactionId,
                 'exchange_rate' => $exchangeRate,
             ]);
 
             return $transfer->load([
                 'withdrawalTransaction.account',
                 'depositTransaction.account',
+                'feeTransaction',
             ]);
         });
     }
@@ -120,5 +152,26 @@ class TransferService
         if ($data['source_amount'] <= 0 || $data['destination_amount'] <= 0) {
             throw new InvalidArgumentException('Transfer amounts must be positive');
         }
+
+        // Validate amounts for same-currency transfers (implicit fee validation)
+        if ($sourceAccount->currency_code === $destinationAccount->currency_code) {
+            // For same-currency, source_amount must be >= destination_amount (no negative fees)
+            if ($data['source_amount'] < $data['destination_amount']) {
+                throw new InvalidArgumentException('For same-currency transfers, amount sent must be greater than or equal to amount received');
+            }
+        }
+    }
+
+    /**
+     * Get the Bank Charges & Fees category ID
+     */
+    private function getBankChargesCategoryId(): int
+    {
+        $category = \App\Models\TransactionCategory::firstOrCreate(
+            ['name' => 'Bank Charges & Fees'],
+            ['type' => 'expense', 'color' => 'gray']
+        );
+
+        return $category->id;
     }
 }

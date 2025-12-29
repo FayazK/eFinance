@@ -219,6 +219,9 @@ export interface Transfer {
     formatted_destination_amount: string;
     exchange_rate: number;
     formatted_exchange_rate: string;
+    fee_amount?: number;
+    formatted_fee?: string;
+    has_fee?: boolean;
     description?: string;
     date: string;
     created_at: string;
@@ -226,6 +229,7 @@ export interface Transfer {
     [key: string]:
         | string
         | number
+        | boolean
         | { id: number; name: string; currency_code: string }
         | undefined;
 }

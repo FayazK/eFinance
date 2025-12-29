@@ -62,9 +62,9 @@ describe('Transfer Create', function () {
         expect($destinationAccount->current_balance)->toBe(100000); // $1000 total
 
         // Verify transfer record created
-        $this->assertDatabaseHas('transfers', [
-            'exchange_rate' => 1.0,
-        ]);
+        $transfer = Transfer::first();
+        expect((float) $transfer->exchange_rate)->toBe(1.0);
+        expect($transfer->fee_transaction_id)->toBeNull(); // No fee for this transfer
 
         // Verify both transactions created
         $this->assertDatabaseHas('transactions', [
@@ -107,6 +107,7 @@ describe('Transfer Create', function () {
         // Verify exchange rate calculated
         $transfer = Transfer::first();
         expect((float) $transfer->exchange_rate)->toBe(278.0);
+        expect($transfer->fee_transaction_id)->toBeNull(); // No fee for this transfer
 
         // Verify balances
         $usdAccount->refresh();
@@ -200,6 +201,151 @@ describe('Transfer Create', function () {
         // Verify no transfer created
         expect(Transfer::count())->toBe(0);
     });
+
+    test('same-currency transfer with implicit fee is created successfully', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 100000, // $1000.00
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 50000, // $500.00
+        ]);
+
+        // Send $503, receive $500 → implicit fee of $3
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 503.00, // Total sent
+            'destination_amount' => 500.00, // Amount received
+            'description' => 'Test transfer with implicit fee',
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertCreated();
+
+        // Verify 3 transactions created (withdrawal $500, deposit $500, fee $3)
+        expect(\App\Models\Transaction::count())->toBe(3);
+
+        // Verify balances: source -= 503, dest += 500
+        $sourceAccount->refresh();
+        $destinationAccount->refresh();
+
+        expect($sourceAccount->current_balance)->toBe(49700); // $497 left ($1000 - $503)
+        expect($destinationAccount->current_balance)->toBe(100000); // $1000 total ($500 + $500)
+
+        // Verify transfer has fee_transaction_id
+        $transfer = Transfer::first();
+        expect($transfer->fee_transaction_id)->not->toBeNull();
+
+        // Verify fee transaction is $3
+        $this->assertDatabaseHas('transactions', [
+            'account_id' => $sourceAccount->id,
+            'type' => 'debit',
+            'amount' => 300, // $3 in cents
+        ]);
+
+        // Verify fee transaction has correct category
+        $feeTransaction = \App\Models\Transaction::find($transfer->fee_transaction_id);
+        expect($feeTransaction->category->name)->toBe('Bank Charges & Fees');
+    });
+
+    test('same-currency transfer without fee works as before', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 100000,
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 50000,
+        ]);
+
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 500.00,
+            'destination_amount' => 500.00,
+            'description' => 'Test transfer without fee',
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertCreated();
+
+        // Verify only 2 transactions created (withdrawal and deposit)
+        expect(\App\Models\Transaction::count())->toBe(2);
+
+        // Verify transfer has null fee_transaction_id
+        $transfer = Transfer::first();
+        expect($transfer->fee_transaction_id)->toBeNull();
+    });
+
+    test('same-currency negative fee is rejected', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 100000,
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 50000,
+        ]);
+
+        // Try to send $500 but receive $503 (would create negative fee)
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 500.00,
+            'destination_amount' => 503.00, // More than sent
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['source_amount']);
+    });
+
+    test('cross-currency with different amounts calculates exchange rate not fee', function () {
+        $this->actingAs($this->user);
+
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 200000, // $2000
+        ]);
+
+        $pkrAccount = Account::factory()->create([
+            'currency_code' => 'PKR',
+            'current_balance' => 0,
+        ]);
+
+        // Cross-currency: different amounts represent exchange rate, not fee
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $usdAccount->id,
+            'destination_account_id' => $pkrAccount->id,
+            'source_amount' => 1000.00,
+            'destination_amount' => 278000.00,
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertCreated();
+
+        // Verify only 2 transactions created (no fee for cross-currency)
+        expect(\App\Models\Transaction::count())->toBe(2);
+
+        // Verify transfer has no fee
+        $transfer = Transfer::first();
+        expect($transfer->fee_transaction_id)->toBeNull();
+
+        // Verify exchange rate calculated
+        expect((float) $transfer->exchange_rate)->toBe(278.0);
+    });
+
 });
 
 describe('Transfer Data Fetching', function () {
