@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,13 +32,13 @@ class Account extends Model
     }
 
     /**
-     * Get formatted balance for display (e.g., "USD 100.00")
+     * Get formatted balance for display (e.g., "$ 100.00")
      */
     public function getFormattedBalanceAttribute(): string
     {
         $amount = $this->current_balance / 100;
 
-        return $this->currency_code.' '.number_format($amount, 2);
+        return CurrencyHelper::format($amount, $this->currency_code);
     }
 
     /**

@@ -259,7 +259,7 @@ describe('Transaction Accessors', function () {
         ]);
 
         $transaction->load('account');
-        expect($transaction->formatted_amount)->toContain('USD');
+        expect($transaction->formatted_amount)->toContain('$');
         expect($transaction->formatted_amount)->toContain('1,250.50');
     });
 });

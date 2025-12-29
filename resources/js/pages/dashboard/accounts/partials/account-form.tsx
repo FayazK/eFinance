@@ -4,6 +4,7 @@ import { router } from '@inertiajs/react';
 import api from '@/lib/axios';
 import { useEffect, useState } from 'react';
 import { index } from '@/routes/accounts';
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 
 interface AccountFormProps {
     account?: Account;
@@ -16,13 +17,10 @@ const accountTypes = [
     { label: 'Cash', value: 'cash' },
 ];
 
-const currencies = [
-    { label: 'USD - US Dollar', value: 'USD' },
-    { label: 'PKR - Pakistani Rupee', value: 'PKR' },
-    { label: 'EUR - Euro', value: 'EUR' },
-    { label: 'GBP - British Pound', value: 'GBP' },
-    { label: 'AED - UAE Dirham', value: 'AED' },
-];
+const currencies = SUPPORTED_CURRENCIES.map((currency) => ({
+    label: `${currency.symbol} ${currency.code} - ${currency.name}`,
+    value: currency.code,
+}));
 
 export default function AccountForm({ account, isEdit = false }: AccountFormProps) {
     const [form] = Form.useForm();

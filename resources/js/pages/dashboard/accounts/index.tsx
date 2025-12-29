@@ -15,9 +15,24 @@ import { create } from '@/routes/accounts';
 
 const { useToken } = theme;
 
+interface NetWorthData {
+    total_pkr: number;
+    formatted_total_pkr: string;
+    currency_breakdown: Array<{
+        currency_code: string;
+        currency_symbol: string;
+        currency_name: string;
+        balance: number;
+        pkr_value: number;
+        formatted_balance: string;
+        formatted_pkr_value: string;
+    }>;
+}
+
 interface AccountsIndexProps extends SharedData {
     accounts: LaravelPaginatedResponse<Account>;
     netWorth: string;
+    netWorthData: NetWorthData;
 }
 
 const accountTypeIcons = {
@@ -27,7 +42,7 @@ const accountTypeIcons = {
 };
 
 export default function AccountsIndex() {
-    const { accounts, netWorth } = usePage<AccountsIndexProps>().props;
+    const { accounts, netWorth, netWorthData } = usePage<AccountsIndexProps>().props;
     const { token } = useToken();
 
     const accountsData = accounts.data || [];
@@ -75,6 +90,55 @@ export default function AccountsIndex() {
                         </Card>
                     </Col>
                 </Row>
+
+                {/* Currency Breakdown */}
+                {netWorthData?.currency_breakdown && netWorthData.currency_breakdown.length > 0 && (
+                    <Card title="Net Worth by Currency">
+                        <Row gutter={[16, 16]}>
+                            {netWorthData.currency_breakdown.map((currency) => (
+                                <Col xs={24} sm={12} lg={8} key={currency.currency_code}>
+                                    <Card
+                                        size="small"
+                                        style={{
+                                            backgroundColor: token.colorBgContainer,
+                                            borderColor: token.colorBorder,
+                                        }}
+                                    >
+                                        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                                                <Tag color="blue">{currency.currency_symbol}</Tag>
+                                                <span style={{ fontSize: 14, fontWeight: 600 }}>
+                                                    {currency.currency_name}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <div
+                                                    style={{
+                                                        fontSize: 20,
+                                                        fontWeight: 700,
+                                                        color: token.colorPrimary,
+                                                    }}
+                                                >
+                                                    {currency.formatted_balance}
+                                                </div>
+                                                {currency.currency_code !== 'PKR' && currency.pkr_value > 0 && (
+                                                    <div
+                                                        style={{
+                                                            fontSize: 12,
+                                                            color: token.colorTextSecondary,
+                                                        }}
+                                                    >
+                                                        ≈ {currency.formatted_pkr_value}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Space>
+                                    </Card>
+                                </Col>
+                            ))}
+                        </Row>
+                    </Card>
+                )}
 
                 {/* Accounts Grid */}
                 {accountsData.length > 0 ? (

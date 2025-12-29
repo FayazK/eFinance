@@ -212,7 +212,7 @@ describe('Account Accessors', function () {
             'current_balance' => 125050, // $1250.50
         ]);
 
-        expect($account->formatted_balance)->toContain('USD');
+        expect($account->formatted_balance)->toContain('$');
         expect($account->formatted_balance)->toContain('1,250.50');
     });
 

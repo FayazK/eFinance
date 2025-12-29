@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,7 +46,7 @@ class Transaction extends Model
         $amount = $this->amount / 100;
         $currencyCode = $this->account->currency_code ?? '';
 
-        return $currencyCode.' '.number_format($amount, 2);
+        return CurrencyHelper::format($amount, $currencyCode);
     }
 
     public function account(): BelongsTo

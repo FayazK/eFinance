@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Repositories\AccountRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -93,7 +94,7 @@ class AccountService
     {
         $accounts = $this->getAllAccounts();
         $totalPkr = 0;
-        $breakdown = [];
+        $currencyTotals = [];
 
         foreach ($accounts as $account) {
             $balanceInMajor = $account->current_balance / 100;
@@ -108,17 +109,32 @@ class AccountService
             }
 
             $totalPkr += $pkrValue;
-            $breakdown[] = [
-                'account' => $account->name,
-                'balance' => $balanceInMajor,
-                'currency' => $account->currency_code,
-                'pkr_value' => $pkrValue,
-            ];
+
+            // Group by currency
+            if (! isset($currencyTotals[$account->currency_code])) {
+                $currencyTotals[$account->currency_code] = [
+                    'currency_code' => $account->currency_code,
+                    'currency_symbol' => CurrencyHelper::getSymbol($account->currency_code),
+                    'currency_name' => CurrencyHelper::getName($account->currency_code),
+                    'balance' => 0,
+                    'pkr_value' => 0,
+                ];
+            }
+
+            $currencyTotals[$account->currency_code]['balance'] += $balanceInMajor;
+            $currencyTotals[$account->currency_code]['pkr_value'] += $pkrValue;
+        }
+
+        // Format the currency totals
+        foreach ($currencyTotals as $code => &$total) {
+            $total['formatted_balance'] = CurrencyHelper::format($total['balance'], $code);
+            $total['formatted_pkr_value'] = CurrencyHelper::format($total['pkr_value'], 'PKR');
         }
 
         return [
             'total_pkr' => $totalPkr,
-            'breakdown' => $breakdown,
+            'formatted_total_pkr' => CurrencyHelper::format($totalPkr, 'PKR'),
+            'currency_breakdown' => array_values($currencyTotals),
         ];
     }
 }

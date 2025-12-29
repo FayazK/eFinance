@@ -31,7 +31,8 @@ class AccountController extends Controller
 
         return Inertia::render('dashboard/accounts/index', [
             'accounts' => AccountResource::collection($accounts),
-            'netWorth' => 'PKR '.number_format($netWorthData['total_pkr'], 2),
+            'netWorth' => $netWorthData['formatted_total_pkr'],
+            'netWorthData' => $netWorthData,
         ]);
     }
 
