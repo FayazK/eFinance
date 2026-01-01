@@ -11,6 +11,8 @@ import {
     SwapOutlined,
     GithubOutlined,
     BookOutlined,
+    IdcardOutlined,
+    DollarOutlined,
 } from '@ant-design/icons';
 
 export const appMainNavItems: NavItem[] = [
@@ -48,6 +50,16 @@ export const appMainNavItems: NavItem[] = [
         title: 'Transfers',
         href: '/dashboard/transfers',
         icon: SwapOutlined,
+    },
+    {
+        title: 'Employees',
+        href: '/dashboard/employees',
+        icon: IdcardOutlined,
+    },
+    {
+        title: 'Payroll',
+        href: '/dashboard/payroll',
+        icon: DollarOutlined,
     },
     {
         title: 'User Management',

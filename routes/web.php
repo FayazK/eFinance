@@ -4,7 +4,9 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
@@ -135,6 +137,28 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/void', [InvoiceController::class, 'void'])->name('void');
         Route::get('/{id}/pdf', [InvoiceController::class, 'generatePdf'])->name('pdf');
         Route::post('/{id}/send-email', [InvoiceController::class, 'sendEmail'])->name('send-email');
+    });
+
+    // Employees
+    Route::prefix('dashboard/employees')->name('employees.')->group(function () {
+        Route::get('/', [EmployeeController::class, 'index'])->name('index');
+        Route::get('/data', [EmployeeController::class, 'data'])->name('data');
+        Route::get('/create', [EmployeeController::class, 'create'])->name('create');
+        Route::get('/{employee}', [EmployeeController::class, 'show'])->name('show');
+        Route::get('/{employee}/edit', [EmployeeController::class, 'edit'])->name('edit');
+        Route::post('/', [EmployeeController::class, 'store'])->name('store');
+        Route::put('/{employee}', [EmployeeController::class, 'update'])->name('update');
+        Route::delete('/{id}', [EmployeeController::class, 'destroy'])->name('destroy');
+    });
+
+    // Payroll
+    Route::prefix('dashboard/payroll')->name('payroll.')->group(function () {
+        Route::get('/', [PayrollController::class, 'index'])->name('index');
+        Route::get('/data', [PayrollController::class, 'data'])->name('data');
+        Route::get('/{payroll}', [PayrollController::class, 'show'])->name('show');
+        Route::post('/generate', [PayrollController::class, 'generate'])->name('generate');
+        Route::put('/{id}/adjustments', [PayrollController::class, 'updateAdjustments'])->name('update-adjustments');
+        Route::post('/pay', [PayrollController::class, 'pay'])->name('pay');
     });
 });
 

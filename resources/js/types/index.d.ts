@@ -316,6 +316,59 @@ export interface Invoice {
         | undefined;
 }
 
+export interface Employee {
+    id: number;
+    name: string;
+    designation: string;
+    email: string;
+    joining_date: string;
+    base_salary_pkr: number; // In major units (PKR)
+    formatted_salary: string;
+    iban?: string;
+    bank_name?: string;
+    status: 'active' | 'terminated';
+    is_active: boolean;
+    termination_date?: string;
+    created_at: string;
+    updated_at: string;
+    payrolls?: Payroll[];
+    [key: string]: string | number | boolean | Payroll[] | null | undefined;
+}
+
+export interface Payroll {
+    id: number;
+    employee_id: number;
+    employee?: Employee;
+    month: number;
+    year: number;
+    period_label: string;
+    base_salary: number; // In major units (PKR)
+    bonus: number;
+    deductions: number;
+    net_payable: number;
+    formatted_base_salary: string;
+    formatted_bonus: string;
+    formatted_deductions: string;
+    formatted_net_payable: string;
+    status: 'pending' | 'paid';
+    is_pending: boolean;
+    is_paid: boolean;
+    paid_at?: string;
+    transaction_id?: number;
+    transaction?: Transaction;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | Employee
+        | Transaction
+        | null
+        | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;
