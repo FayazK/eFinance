@@ -234,6 +234,88 @@ export interface Transfer {
         | undefined;
 }
 
+export type InvoiceStatus = 'draft' | 'sent' | 'partial' | 'paid' | 'void' | 'overdue';
+
+export interface InvoiceItem {
+    id: number;
+    description: string;
+    quantity: number;
+    unit: string;
+    unit_price: number; // In major units for editing
+    amount: number; // In major units for editing
+    formatted_unit_price: string; // For display
+    formatted_amount: string; // For display
+    sort_order: number;
+}
+
+export interface InvoicePayment {
+    id: number;
+    account_id: number;
+    account?: {
+        id: number;
+        name: string;
+        currency_code: string;
+    };
+    payment_amount: number; // In major units
+    amount_received: number; // In major units
+    fee_amount: number; // In major units
+    formatted_payment_amount: string;
+    formatted_amount_received: string;
+    formatted_fee: string;
+    has_fee: boolean;
+    payment_date: string;
+    notes?: string;
+    created_at: string;
+}
+
+export interface Invoice {
+    id: number;
+    invoice_number: string;
+    status: InvoiceStatus;
+    client_id: number;
+    client?: Client;
+    project_id?: number;
+    project?: {
+        id: number;
+        name: string;
+    };
+    currency_code: string;
+    subtotal: number; // In major units
+    tax_amount: number; // In major units
+    total_amount: number; // In major units
+    amount_paid: number; // In major units
+    balance_due: number; // In major units
+    formatted_subtotal: string;
+    formatted_tax: string;
+    formatted_total: string;
+    formatted_amount_paid: string;
+    formatted_balance: string;
+    issue_date: string;
+    due_date: string;
+    paid_at?: string;
+    sent_at?: string;
+    voided_at?: string;
+    notes?: string;
+    terms?: string;
+    client_notes?: string;
+    created_at: string;
+    updated_at: string;
+    items?: InvoiceItem[];
+    payments?: InvoicePayment[];
+    is_overdue: boolean;
+    is_payable: boolean;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | Client
+        | { id: number; name: string }
+        | InvoiceItem[]
+        | InvoicePayment[]
+        | null
+        | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;

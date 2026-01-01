@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DropdownController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
@@ -115,6 +116,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [TransferController::class, 'create'])->name('create');
         Route::get('/{transfer}', [TransferController::class, 'show'])->name('show');
         Route::post('/', [TransferController::class, 'store'])->name('store');
+    });
+
+    // Invoices
+    Route::prefix('dashboard/invoices')->name('invoices.')->group(function () {
+        Route::get('/', [InvoiceController::class, 'index'])->name('index');
+        Route::get('/data', [InvoiceController::class, 'data'])->name('data');
+        Route::get('/create', [InvoiceController::class, 'create'])->name('create');
+        Route::get('/{id}', [InvoiceController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [InvoiceController::class, 'edit'])->name('edit');
+        Route::post('/', [InvoiceController::class, 'store'])->name('store');
+        Route::put('/{id}', [InvoiceController::class, 'update'])->name('update');
+        Route::delete('/{id}', [InvoiceController::class, 'destroy'])->name('destroy');
+
+        // Custom invoice actions
+        Route::post('/{id}/change-status', [InvoiceController::class, 'changeStatus'])->name('change-status');
+        Route::post('/{id}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
+        Route::post('/{id}/void', [InvoiceController::class, 'void'])->name('void');
+        Route::get('/{id}/pdf', [InvoiceController::class, 'generatePdf'])->name('pdf');
+        Route::post('/{id}/send-email', [InvoiceController::class, 'sendEmail'])->name('send-email');
     });
 });
 

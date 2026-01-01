@@ -233,7 +233,7 @@ export default function NotificationsCenter() {
 
     return (
         <Dropdown
-            dropdownRender={() => dropdownContent}
+            popupRender={() => dropdownContent}
             trigger={['click']}
             placement="bottomRight"
         >

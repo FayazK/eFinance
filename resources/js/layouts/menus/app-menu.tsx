@@ -6,6 +6,7 @@ import {
     TeamOutlined,
     UserOutlined,
     ProjectOutlined,
+    FileTextOutlined,
     WalletOutlined,
     SwapOutlined,
     GithubOutlined,
@@ -32,6 +33,11 @@ export const appMainNavItems: NavItem[] = [
         title: 'Projects',
         href: '/dashboard/projects',
         icon: ProjectOutlined,
+    },
+    {
+        title: 'Invoices',
+        href: '/dashboard/invoices',
+        icon: FileTextOutlined,
     },
     {
         title: 'Accounts',
