@@ -1,18 +1,20 @@
-import { type NavItem } from '@/types';
 import { dashboard } from '@/routes';
+import { type NavItem } from '@/types';
 import {
-    DashboardOutlined,
-    UsergroupAddOutlined,
-    TeamOutlined,
-    UserOutlined,
-    ProjectOutlined,
-    FileTextOutlined,
-    WalletOutlined,
-    SwapOutlined,
-    GithubOutlined,
+    BankOutlined,
     BookOutlined,
-    IdcardOutlined,
+    DashboardOutlined,
     DollarOutlined,
+    FileTextOutlined,
+    GithubOutlined,
+    IdcardOutlined,
+    PieChartOutlined,
+    ProjectOutlined,
+    SwapOutlined,
+    TeamOutlined,
+    UsergroupAddOutlined,
+    UserOutlined,
+    WalletOutlined,
 } from '@ant-design/icons';
 
 export const appMainNavItems: NavItem[] = [
@@ -60,6 +62,16 @@ export const appMainNavItems: NavItem[] = [
         title: 'Payroll',
         href: '/dashboard/payroll',
         icon: DollarOutlined,
+    },
+    {
+        title: 'Shareholders',
+        href: '/dashboard/shareholders',
+        icon: BankOutlined,
+    },
+    {
+        title: 'Distributions',
+        href: '/dashboard/distributions',
+        icon: PieChartOutlined,
     },
     {
         title: 'User Management',

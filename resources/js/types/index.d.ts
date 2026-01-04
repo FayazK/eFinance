@@ -1,6 +1,6 @@
+import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 import { InertiaLinkProps } from '@inertiajs/react';
 import { ForwardRefExoticComponent, RefAttributes } from 'react';
-import { AntdIconProps } from '@ant-design/icons/lib/components/AntdIcon';
 
 export interface Auth {
     user: User;
@@ -191,14 +191,7 @@ export interface Transaction {
     date: string;
     created_at: string;
     updated_at: string;
-    [key: string]:
-        | string
-        | number
-        | boolean
-        | { id: number; name: string; currency_code?: string }
-        | TransactionCategory
-        | null
-        | undefined;
+    [key: string]: string | number | boolean | { id: number; name: string; currency_code?: string } | TransactionCategory | null | undefined;
 }
 
 export interface Transfer {
@@ -226,12 +219,7 @@ export interface Transfer {
     date: string;
     created_at: string;
     updated_at: string;
-    [key: string]:
-        | string
-        | number
-        | boolean
-        | { id: number; name: string; currency_code: string }
-        | undefined;
+    [key: string]: string | number | boolean | { id: number; name: string; currency_code: string } | undefined;
 }
 
 export type InvoiceStatus = 'draft' | 'sent' | 'partial' | 'paid' | 'void' | 'overdue';
@@ -304,16 +292,7 @@ export interface Invoice {
     payments?: InvoicePayment[];
     is_overdue: boolean;
     is_payable: boolean;
-    [key: string]:
-        | string
-        | number
-        | boolean
-        | Client
-        | { id: number; name: string }
-        | InvoiceItem[]
-        | InvoicePayment[]
-        | null
-        | undefined;
+    [key: string]: string | number | boolean | Client | { id: number; name: string } | InvoiceItem[] | InvoicePayment[] | null | undefined;
 }
 
 export interface Employee {
@@ -359,14 +338,67 @@ export interface Payroll {
     notes?: string;
     created_at: string;
     updated_at: string;
-    [key: string]:
-        | string
-        | number
-        | boolean
-        | Employee
-        | Transaction
-        | null
-        | undefined;
+    [key: string]: string | number | boolean | Employee | Transaction | null | undefined;
+}
+
+export interface Shareholder {
+    id: number;
+    name: string;
+    email?: string;
+    equity_percentage: string; // As decimal string (e.g., "25.50")
+    formatted_equity: string; // Formatted with % sign
+    is_office_reserve: boolean;
+    is_human_partner: boolean;
+    is_active: boolean;
+    notes?: string;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | null | undefined;
+}
+
+export type DistributionStatus = 'draft' | 'processed';
+
+export interface DistributionLine {
+    id: number;
+    distribution_id: number;
+    shareholder_id: number;
+    shareholder?: Shareholder;
+    equity_percentage_snapshot: string;
+    formatted_equity: string;
+    allocated_amount_pkr: number; // In major units (PKR)
+    formatted_allocated_amount: string;
+    transaction_id?: number;
+    transaction?: Transaction;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface Distribution {
+    id: number;
+    distribution_number: string;
+    status: DistributionStatus;
+    is_draft: boolean;
+    is_processed: boolean;
+    period_start: string;
+    period_end: string;
+    period_label: string;
+    total_revenue_pkr: number; // In major units (PKR)
+    total_expenses_pkr: number;
+    calculated_net_profit_pkr: number;
+    adjusted_net_profit_pkr?: number;
+    final_net_profit: number;
+    distributed_amount_pkr: number;
+    formatted_revenue: string;
+    formatted_expenses: string;
+    formatted_net_profit: string;
+    is_manually_adjusted: boolean;
+    adjustment_reason?: string;
+    processed_at?: string;
+    notes?: string;
+    lines?: DistributionLine[];
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | DistributionLine[] | null | undefined;
 }
 
 export interface PaginationLinks {
@@ -394,15 +426,15 @@ export interface LaravelPaginatedResponse<T = unknown> {
 
 // Re-export DataTable types from dedicated module
 export type {
-    FilterConfig,
     BooleanFilterConfig,
-    SelectFilterConfig,
-    DateRangeFilterConfig,
     CustomFilterConfig,
-    SortState,
-    DataTableError,
     DataTableColumn,
-    DataTableProps,
+    DataTableError,
     DataTableFilters,
+    DataTableProps,
     DataTableQueryParams,
+    DateRangeFilterConfig,
+    FilterConfig,
+    SelectFilterConfig,
+    SortState,
 } from './datatable';

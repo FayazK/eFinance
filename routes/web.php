@@ -3,6 +3,8 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\InvoiceController;
@@ -10,6 +12,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
+use App\Http\Controllers\ShareholderController;
 use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransferController;
@@ -22,9 +25,7 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('dropdown', DropdownController::class)->name('dropdown');
 
@@ -159,6 +160,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/generate', [PayrollController::class, 'generate'])->name('generate');
         Route::put('/{id}/adjustments', [PayrollController::class, 'updateAdjustments'])->name('update-adjustments');
         Route::post('/pay', [PayrollController::class, 'pay'])->name('pay');
+    });
+
+    // Shareholders
+    Route::prefix('dashboard/shareholders')->name('shareholders.')->group(function () {
+        Route::get('/', [ShareholderController::class, 'index'])->name('index');
+        Route::get('/data', [ShareholderController::class, 'data'])->name('data');
+        Route::get('/validate-equity', [ShareholderController::class, 'validateEquity'])->name('validate-equity');
+        Route::post('/', [ShareholderController::class, 'store'])->name('store');
+        Route::put('/{id}', [ShareholderController::class, 'update'])->name('update');
+        Route::delete('/{id}', [ShareholderController::class, 'destroy'])->name('destroy');
+    });
+
+    // Distributions
+    Route::prefix('dashboard/distributions')->name('distributions.')->group(function () {
+        Route::get('/', [DistributionController::class, 'index'])->name('index');
+        Route::get('/create', [DistributionController::class, 'create'])->name('create');
+        Route::get('/data', [DistributionController::class, 'data'])->name('data');
+        Route::get('/{id}', [DistributionController::class, 'show'])->name('show');
+        Route::post('/', [DistributionController::class, 'store'])->name('store');
+        Route::put('/{id}', [DistributionController::class, 'update'])->name('update');
+        Route::delete('/{id}', [DistributionController::class, 'destroy'])->name('destroy');
+        Route::put('/{id}/adjust-profit', [DistributionController::class, 'adjustProfit'])->name('adjust-profit');
+        Route::post('/{id}/process', [DistributionController::class, 'process'])->name('process');
+        Route::get('/{id}/statements/{shareholderId}', [DistributionController::class, 'downloadStatement'])->name('download-statement');
     });
 });
 
