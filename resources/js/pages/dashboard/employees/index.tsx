@@ -178,10 +178,8 @@ export default function EmployeesIndex() {
         >
             <DataTable<Employee>
                 columns={columns}
-                dataUrl="/dashboard/employees/data"
+                fetchUrl="/dashboard/employees/data"
                 filters={filters}
-                defaultSortBy="name"
-                defaultSortDirection="asc"
             />
         </AppLayout>
     );

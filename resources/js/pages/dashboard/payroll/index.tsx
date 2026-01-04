@@ -184,11 +184,8 @@ export default function PayrollIndex() {
             <DataTable<Payroll>
                 key={tableKey}
                 columns={columns}
-                dataUrl="/dashboard/payroll/data"
+                fetchUrl={`/dashboard/payroll/data?month=${selectedMonth}&year=${selectedYear}`}
                 filters={filters}
-                defaultSortBy="employee.name"
-                defaultSortDirection="asc"
-                queryParams={{ month: selectedMonth, year: selectedYear }}
             />
         </AppLayout>
     );
