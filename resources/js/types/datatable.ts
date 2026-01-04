@@ -130,6 +130,12 @@ export interface DataTableProps<T = unknown> {
     emptyMessage?: string;
     /** Empty state message when filters return no results */
     emptyFilterMessage?: string;
+    /** Row selection configuration */
+    rowSelection?: {
+        selectedRowKeys?: React.Key[];
+        onChange?: (selectedKeys: React.Key[], selectedRows: T[]) => void;
+        getCheckboxProps?: (record: T) => { disabled?: boolean };
+    };
 }
 
 // ============================================

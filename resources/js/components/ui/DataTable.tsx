@@ -40,6 +40,7 @@ function DataTable<T extends Record<string, unknown>>({
     defaultPageSize = 15,
     emptyMessage,
     emptyFilterMessage,
+    rowSelection,
 }: DataTableProps<T>) {
     const { token } = useToken();
     const searchInputRef = useRef<InputRef>(null);
@@ -385,6 +386,7 @@ function DataTable<T extends Record<string, unknown>>({
                 rowKey="id"
                 scroll={{ x: 'max-content' }}
                 size="middle"
+                rowSelection={rowSelection}
             />
         );
     };

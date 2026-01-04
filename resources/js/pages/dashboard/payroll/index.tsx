@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Space, Tag, Select, notification, Statistic, Card, Row, Col, theme } from 'antd';
+import { Button, Space, Tag, Select, notification, Statistic, Card, Row, Col, theme, Modal, Form, DatePicker, Input } from 'antd';
 import {
     PlusOutlined,
     DollarOutlined,
@@ -8,9 +8,10 @@ import {
 } from '@ant-design/icons';
 import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import type { Payroll, FilterConfig } from '@/types';
-import { router } from '@inertiajs/react';
+import type { Payroll, FilterConfig, Account } from '@/types';
+import { router, usePage } from '@inertiajs/react';
 import api from '@/lib/axios';
+import dayjs from 'dayjs';
 
 const { useToken } = theme;
 
@@ -46,12 +47,21 @@ const filters: FilterConfig[] = [
     },
 ];
 
+interface PageProps {
+    pkrAccounts: Account[];
+}
+
 export default function PayrollIndex() {
     const { token } = useToken();
+    const { pkrAccounts } = usePage<PageProps>().props;
     const currentDate = new Date();
     const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth() + 1);
     const [selectedYear, setSelectedYear] = useState(currentDate.getFullYear());
     const [tableKey, setTableKey] = useState(0);
+    const [selectedPayrollIds, setSelectedPayrollIds] = useState<number[]>([]);
+    const [paymentModalVisible, setPaymentModalVisible] = useState(false);
+    const [paymentForm] = Form.useForm();
+    const [paymentLoading, setPaymentLoading] = useState(false);
 
     const handleGenerate = async () => {
         try {
@@ -75,6 +85,61 @@ export default function PayrollIndex() {
                 description: errorMessage,
             });
         }
+    };
+
+    const handlePayment = async (values: Record<string, unknown>) => {
+        setPaymentLoading(true);
+        try {
+            const formattedValues = {
+                ...values,
+                payroll_ids: selectedPayrollIds,
+                payment_date: values.payment_date ? dayjs(values.payment_date as dayjs.Dayjs).format('YYYY-MM-DD') : null,
+            };
+
+            await api.post('/dashboard/payroll/pay', formattedValues);
+            notification.success({
+                message: 'Payroll paid successfully',
+            });
+            setPaymentModalVisible(false);
+            setSelectedPayrollIds([]);
+            paymentForm.resetFields();
+            setTableKey((prev) => prev + 1); // Force table reload
+        } catch (error: unknown) {
+            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; };
+            if (err.response && err.response.status === 422) {
+                const validationErrors = err.response.data.errors;
+                const formErrors = Object.keys(validationErrors).map(key => ({
+                    name: key,
+                    errors: validationErrors[key],
+                }));
+                paymentForm.setFields(formErrors);
+                notification.error({
+                    message: 'Validation Error',
+                    description: err.response.data.message,
+                });
+            } else {
+                notification.error({
+                    message: 'Error',
+                    description: 'An unexpected error occurred while processing payment.',
+                });
+            }
+        } finally {
+            setPaymentLoading(false);
+        }
+    };
+
+    const openPaymentModal = () => {
+        if (selectedPayrollIds.length === 0) {
+            notification.warning({
+                message: 'No payrolls selected',
+                description: 'Please select at least one payroll entry to pay.',
+            });
+            return;
+        }
+        paymentForm.setFieldsValue({
+            payment_date: dayjs(),
+        });
+        setPaymentModalVisible(true);
     };
 
     const columns = [
@@ -175,6 +240,13 @@ export default function PayrollIndex() {
                         options={YEARS}
                         style={{ width: 100 }}
                     />
+                    <Button
+                        icon={<DollarOutlined />}
+                        onClick={openPaymentModal}
+                        disabled={selectedPayrollIds.length === 0}
+                    >
+                        Pay Selected ({selectedPayrollIds.length})
+                    </Button>
                     <Button type="primary" icon={<PlusOutlined />} onClick={handleGenerate}>
                         Generate Payroll
                     </Button>
@@ -186,7 +258,73 @@ export default function PayrollIndex() {
                 columns={columns}
                 fetchUrl={`/dashboard/payroll/data?month=${selectedMonth}&year=${selectedYear}`}
                 filters={filters}
+                rowSelection={{
+                    selectedRowKeys: selectedPayrollIds,
+                    onChange: (selectedKeys) => {
+                        setSelectedPayrollIds(selectedKeys as number[]);
+                    },
+                    getCheckboxProps: (record: Payroll) => ({
+                        disabled: record.status === 'paid',
+                    }),
+                }}
             />
+
+            <Modal
+                title="Pay Payroll"
+                open={paymentModalVisible}
+                onCancel={() => {
+                    setPaymentModalVisible(false);
+                    paymentForm.resetFields();
+                }}
+                footer={null}
+                destroyOnClose
+            >
+                <Form
+                    form={paymentForm}
+                    layout="vertical"
+                    onFinish={handlePayment}
+                >
+                    <Form.Item
+                        label="Account"
+                        name="account_id"
+                        rules={[{ required: true, message: 'Please select an account!' }]}
+                    >
+                        <Select
+                            placeholder="Select PKR account"
+                            options={pkrAccounts.map(account => ({
+                                label: `${account.name} (${account.formatted_current_balance})`,
+                                value: account.id,
+                            }))}
+                        />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Payment Date"
+                        name="payment_date"
+                        rules={[{ required: true, message: 'Please select payment date!' }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Notes"
+                        name="notes"
+                    >
+                        <Input.TextArea rows={3} placeholder="Optional payment notes" />
+                    </Form.Item>
+
+                    <Form.Item>
+                        <Space>
+                            <Button type="primary" htmlType="submit" loading={paymentLoading}>
+                                Pay {selectedPayrollIds.length} Payroll{selectedPayrollIds.length > 1 ? 's' : ''}
+                            </Button>
+                            <Button onClick={() => setPaymentModalVisible(false)}>
+                                Cancel
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </AppLayout>
     );
 }
