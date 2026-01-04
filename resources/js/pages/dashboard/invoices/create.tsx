@@ -1,10 +1,10 @@
-import React from 'react';
-import { Card, Button } from 'antd';
+import AppLayout from '@/layouts/app-layout';
+import { index } from '@/routes/invoices';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
+import { Button, Card } from 'antd';
+import React from 'react';
 import InvoiceForm from './partials/invoice-form';
-import { index } from '@/routes/invoices';
 
 interface InvoiceCreateProps {
     clients: { id: number; name: string; currency_code: string }[];

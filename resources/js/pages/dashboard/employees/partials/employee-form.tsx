@@ -1,10 +1,10 @@
-import { Form, Input, Button, Row, Col, notification, DatePicker, InputNumber } from 'antd';
+import api from '@/lib/axios';
+import { index } from '@/routes/employees';
 import { Employee } from '@/types';
 import { router } from '@inertiajs/react';
-import api from '@/lib/axios';
-import { useEffect, useState } from 'react';
-import { index } from '@/routes/employees';
+import { Button, Col, DatePicker, Form, Input, InputNumber, notification, Row } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 interface EmployeeFormProps {
     employee?: Employee;
@@ -46,10 +46,10 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
             });
             router.visit(index.url());
         } catch (error: unknown) {
-            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; };
+            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string } } };
             if (err.response && err.response.status === 422) {
                 const validationErrors = err.response.data.errors;
-                const formErrors = Object.keys(validationErrors).map(key => ({
+                const formErrors = Object.keys(validationErrors).map((key) => ({
                     name: key,
                     errors: validationErrors[key],
                 }));
@@ -70,27 +70,15 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
     };
 
     return (
-        <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Name"
-                        name="name"
-                        rules={[{ required: true, message: 'Please input the employee name!' }]}
-                    >
+                    <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input the employee name!' }]}>
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}
-                    >
+                    <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}>
                         <Input type="email" />
                     </Form.Item>
                 </Col>
@@ -98,20 +86,12 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Designation"
-                        name="designation"
-                        rules={[{ required: true, message: 'Please input the designation!' }]}
-                    >
+                    <Form.Item label="Designation" name="designation" rules={[{ required: true, message: 'Please input the designation!' }]}>
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Joining Date"
-                        name="joining_date"
-                        rules={[{ required: true, message: 'Please select the joining date!' }]}
-                    >
+                    <Form.Item label="Joining Date" name="joining_date" rules={[{ required: true, message: 'Please select the joining date!' }]}>
                         <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                     </Form.Item>
                 </Col>
@@ -119,11 +99,7 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Base Salary (PKR)"
-                        name="base_salary"
-                        rules={[{ required: true, message: 'Please input the base salary!' }]}
-                    >
+                    <Form.Item label="Base Salary (PKR)" name="base_salary" rules={[{ required: true, message: 'Please input the base salary!' }]}>
                         <InputNumber
                             style={{ width: '100%' }}
                             min={0}
@@ -136,18 +112,12 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="IBAN"
-                        name="iban"
-                    >
+                    <Form.Item label="IBAN" name="iban">
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Bank Name"
-                        name="bank_name"
-                    >
+                    <Form.Item label="Bank Name" name="bank_name">
                         <Input />
                     </Form.Item>
                 </Col>

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Upload, Button, List, Space, Modal, notification, theme } from 'antd';
+import { Media, Project } from '@/types';
 import {
-    UploadOutlined,
     DeleteOutlined,
     DownloadOutlined,
+    FileExcelOutlined,
     FileOutlined,
     FilePdfOutlined,
     FileWordOutlined,
-    FileExcelOutlined,
+    UploadOutlined,
 } from '@ant-design/icons';
-import type { UploadProps, RcFile } from 'antd/es/upload';
-import { Project, Media } from '@/types';
 import { router } from '@inertiajs/react';
+import { Button, List, Modal, notification, Space, theme, Upload } from 'antd';
+import type { RcFile, UploadProps } from 'antd/es/upload';
+import { useState } from 'react';
 
 interface ProjectDocumentsProps {
     project: Project;
@@ -35,7 +35,7 @@ export default function ProjectDocuments({ project }: ProjectDocumentsProps) {
         const k = 1024;
         const sizes = ['Bytes', 'KB', 'MB', 'GB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
     };
 
     const beforeUpload = (file: RcFile): boolean => {
@@ -126,12 +126,7 @@ export default function ProjectDocuments({ project }: ProjectDocumentsProps) {
 
     return (
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Upload
-                showUploadList={false}
-                beforeUpload={beforeUpload}
-                customRequest={customRequest}
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-            >
+            <Upload showUploadList={false} beforeUpload={beforeUpload} customRequest={customRequest} accept=".pdf,.doc,.docx,.xls,.xlsx">
                 <Button icon={<UploadOutlined />} loading={uploading}>
                     Upload Document
                 </Button>
@@ -143,22 +138,10 @@ export default function ProjectDocuments({ project }: ProjectDocumentsProps) {
                     renderItem={(doc: Media) => (
                         <List.Item
                             actions={[
-                                <Button
-                                    key="download"
-                                    type="link"
-                                    icon={<DownloadOutlined />}
-                                    href={doc.url}
-                                    target="_blank"
-                                >
+                                <Button key="download" type="link" icon={<DownloadOutlined />} href={doc.url} target="_blank">
                                     Download
                                 </Button>,
-                                <Button
-                                    key="delete"
-                                    type="link"
-                                    danger
-                                    icon={<DeleteOutlined />}
-                                    onClick={() => handleDelete(doc)}
-                                >
+                                <Button key="delete" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(doc)}>
                                     Delete
                                 </Button>,
                             ]}
@@ -178,9 +161,7 @@ export default function ProjectDocuments({ project }: ProjectDocumentsProps) {
                     )}
                 />
             ) : (
-                <div style={{ textAlign: 'center', padding: '40px', color: token.colorTextSecondary }}>
-                    No documents uploaded yet.
-                </div>
+                <div style={{ textAlign: 'center', padding: '40px', color: token.colorTextSecondary }}>No documents uploaded yet.</div>
             )}
         </Space>
     );

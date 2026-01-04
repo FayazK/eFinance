@@ -1,13 +1,21 @@
-import React from 'react';
-import { Button, Space, Tag, Dropdown, theme } from 'antd';
-import { PlusOutlined, MoreOutlined, EyeOutlined, EditOutlined, FileTextOutlined, DollarOutlined, SendOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import type { Invoice, FilterConfig, InvoiceStatus } from '@/types';
-import { data, create, show, edit, pdf } from '@/routes/invoices';
+import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
-import { notification } from 'antd';
+import { create, data, edit, pdf, show } from '@/routes/invoices';
+import type { FilterConfig, Invoice, InvoiceStatus } from '@/types';
+import {
+    DeleteOutlined,
+    DollarOutlined,
+    EditOutlined,
+    EyeOutlined,
+    FileTextOutlined,
+    MoreOutlined,
+    PlusOutlined,
+    SendOutlined,
+} from '@ant-design/icons';
+import { Link, router } from '@inertiajs/react';
+import { Button, Dropdown, notification, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -80,11 +88,7 @@ export default function InvoicesIndex() {
             render: (_: unknown, record: Invoice) => (
                 <div>
                     <div style={{ fontWeight: 500 }}>{record.client?.name || '—'}</div>
-                    {record.project && (
-                        <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-                            {record.project.name}
-                        </div>
-                    )}
+                    {record.project && <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>{record.project.name}</div>}
                 </div>
             ),
         },
@@ -94,11 +98,7 @@ export default function InvoicesIndex() {
             key: 'status',
             width: 120,
             filterable: true,
-            render: (status: InvoiceStatus) => (
-                <Tag color={STATUS_COLORS[status]}>
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                </Tag>
-            ),
+            render: (status: InvoiceStatus) => <Tag color={STATUS_COLORS[status]}>{status.charAt(0).toUpperCase() + status.slice(1)}</Tag>,
         },
         {
             title: 'Issue Date',
@@ -116,11 +116,7 @@ export default function InvoicesIndex() {
             sorter: true,
             render: (date: string, record: Invoice) => {
                 const isOverdue = record.is_overdue;
-                return (
-                    <span style={{ color: isOverdue ? token.colorError : undefined }}>
-                        {new Date(date).toLocaleDateString()}
-                    </span>
-                );
+                return <span style={{ color: isOverdue ? token.colorError : undefined }}>{new Date(date).toLocaleDateString()}</span>;
             },
         },
         {
@@ -133,9 +129,7 @@ export default function InvoicesIndex() {
                 <div>
                     <div style={{ fontWeight: 600 }}>{record.formatted_total}</div>
                     {record.amount_paid > 0 && (
-                        <div style={{ fontSize: '12px', color: token.colorTextSecondary }}>
-                            Paid: {record.formatted_amount_paid}
-                        </div>
+                        <div style={{ fontSize: '12px', color: token.colorTextSecondary }}>Paid: {record.formatted_amount_paid}</div>
                     )}
                 </div>
             ),
@@ -168,13 +162,13 @@ export default function InvoicesIndex() {
                             },
                             ...(record.status === 'draft'
                                 ? [
-                                    {
-                                        key: 'edit',
-                                        label: 'Edit',
-                                        icon: <EditOutlined />,
-                                        onClick: () => router.visit(edit.url({ id: record.id })),
-                                    },
-                                ]
+                                      {
+                                          key: 'edit',
+                                          label: 'Edit',
+                                          icon: <EditOutlined />,
+                                          onClick: () => router.visit(edit.url({ id: record.id })),
+                                      },
+                                  ]
                                 : []),
                             {
                                 key: 'pdf',
@@ -184,44 +178,44 @@ export default function InvoicesIndex() {
                             },
                             ...(record.is_payable
                                 ? [
-                                    {
-                                        type: 'divider' as const,
-                                    },
-                                    {
-                                        key: 'payment',
-                                        label: 'Record Payment',
-                                        icon: <DollarOutlined />,
-                                        onClick: () => router.visit(show.url({ id: record.id })),
-                                    },
-                                ]
+                                      {
+                                          type: 'divider' as const,
+                                      },
+                                      {
+                                          key: 'payment',
+                                          label: 'Record Payment',
+                                          icon: <DollarOutlined />,
+                                          onClick: () => router.visit(show.url({ id: record.id })),
+                                      },
+                                  ]
                                 : []),
                             ...(record.status === 'draft'
                                 ? [
-                                    {
-                                        type: 'divider' as const,
-                                    },
-                                    {
-                                        key: 'send',
-                                        label: 'Send to Client',
-                                        icon: <SendOutlined />,
-                                        onClick: async () => {
-                                            try {
-                                                await api.post(`/dashboard/invoices/${record.id}/send-email`);
-                                                notification.success({ message: 'Invoice sent successfully' });
-                                                router.reload();
-                                            } catch {
-                                                notification.error({ message: 'Failed to send invoice' });
-                                            }
-                                        },
-                                    },
-                                    {
-                                        key: 'delete',
-                                        label: 'Delete',
-                                        icon: <DeleteOutlined />,
-                                        danger: true,
-                                        onClick: () => handleDelete(record.id),
-                                    },
-                                ]
+                                      {
+                                          type: 'divider' as const,
+                                      },
+                                      {
+                                          key: 'send',
+                                          label: 'Send to Client',
+                                          icon: <SendOutlined />,
+                                          onClick: async () => {
+                                              try {
+                                                  await api.post(`/dashboard/invoices/${record.id}/send-email`);
+                                                  notification.success({ message: 'Invoice sent successfully' });
+                                                  router.reload();
+                                              } catch {
+                                                  notification.error({ message: 'Failed to send invoice' });
+                                              }
+                                          },
+                                      },
+                                      {
+                                          key: 'delete',
+                                          label: 'Delete',
+                                          icon: <DeleteOutlined />,
+                                          danger: true,
+                                          onClick: () => handleDelete(record.id),
+                                      },
+                                  ]
                                 : []),
                         ],
                     }}

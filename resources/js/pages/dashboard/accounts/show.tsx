@@ -1,31 +1,21 @@
-import React, { useState } from 'react';
+import DataTable from '@/components/ui/DataTable';
+import AppLayout from '@/layouts/app-layout';
+import api from '@/lib/axios';
+import { destroy, edit, index } from '@/routes/accounts';
+import type { Account, FilterConfig, Transaction } from '@/types';
 import {
-    Card,
-    Tabs,
-    Descriptions,
-    Tag,
-    Button,
-    Space,
-    Modal,
-    notification,
-    theme,
-} from 'antd';
-import {
-    EditOutlined,
     ArrowLeftOutlined,
-    DeleteOutlined,
-    CheckCircleOutlined,
-    StopOutlined,
     BankOutlined,
-    WalletOutlined,
+    CheckCircleOutlined,
+    DeleteOutlined,
     DollarOutlined,
+    EditOutlined,
+    StopOutlined,
+    WalletOutlined,
 } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import DataTable from '@/components/ui/DataTable';
-import type { Account, Transaction, FilterConfig } from '@/types';
-import { edit, index, destroy } from '@/routes/accounts';
-import api from '@/lib/axios';
+import { Button, Card, Descriptions, Modal, notification, Space, Tabs, Tag, theme } from 'antd';
+import { useState } from 'react';
 
 const { useToken } = theme;
 
@@ -127,12 +117,7 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
             key: 'type',
             width: 100,
             filterable: true,
-            render: (type: unknown) =>
-                type === 'credit' ? (
-                    <Tag color="green">Credit</Tag>
-                ) : (
-                    <Tag color="red">Debit</Tag>
-                ),
+            render: (type: unknown) => (type === 'credit' ? <Tag color="green">Credit</Tag> : <Tag color="red">Debit</Tag>),
         },
         {
             title: 'Amount',
@@ -188,10 +173,7 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
                             style={{
                                 fontSize: 18,
                                 fontWeight: 700,
-                                color:
-                                    account.current_balance >= 0
-                                        ? token.colorSuccess
-                                        : token.colorError,
+                                color: account.current_balance >= 0 ? token.colorSuccess : token.colorError,
                             }}
                         >
                             {account.formatted_balance}
@@ -207,12 +189,8 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
                             {account.account_number}
                         </Descriptions.Item>
                     )}
-                    <Descriptions.Item label="Created At">
-                        {new Date(account.created_at).toLocaleString()}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Last Updated">
-                        {new Date(account.updated_at).toLocaleString()}
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Created At">{new Date(account.created_at).toLocaleString()}</Descriptions.Item>
+                    <Descriptions.Item label="Last Updated">{new Date(account.updated_at).toLocaleString()}</Descriptions.Item>
                 </Descriptions>
             ),
         },

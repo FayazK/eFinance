@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import ClientForm from './partials/client-form';
 import { Card } from 'antd';
+import ClientForm from './partials/client-form';
 
 export default function CreateClient() {
     return (

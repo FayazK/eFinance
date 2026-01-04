@@ -1,21 +1,21 @@
-import React from 'react';
-import { Button, Space, Tag, Dropdown, theme, Modal, notification, Badge } from 'antd';
+import DataTable from '@/components/ui/DataTable';
+import AppLayout from '@/layouts/app-layout';
+import api from '@/lib/axios';
+import { create, data, destroy, edit, show } from '@/routes/projects';
+import type { FilterConfig, Project } from '@/types';
 import {
-    EditOutlined,
     DeleteOutlined,
-    PlusOutlined,
+    EditOutlined,
     EyeOutlined,
-    MoreOutlined,
-    ProjectOutlined,
     FileOutlined,
+    MoreOutlined,
+    PlusOutlined,
+    ProjectOutlined,
     TeamOutlined,
 } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import DataTable from '@/components/ui/DataTable';
-import type { Project, FilterConfig } from '@/types';
-import { data, create, edit, show, destroy } from '@/routes/projects';
-import api from '@/lib/axios';
+import { Badge, Button, Dropdown, Modal, notification, Space, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -128,9 +128,7 @@ export default function ProjectsIndex() {
             width: 120,
             filterable: true,
             sorter: true,
-            render: (status: string) => (
-                <Tag color={statusColors[status as keyof typeof statusColors]}>{status}</Tag>
-            ),
+            render: (status: string) => <Tag color={statusColors[status as keyof typeof statusColors]}>{status}</Tag>,
         },
         {
             title: 'Budget',
@@ -169,8 +167,7 @@ export default function ProjectsIndex() {
             width: 120,
             filterable: true,
             sorter: true,
-            render: (createdAt: unknown) =>
-                createdAt ? new Date(createdAt as string).toLocaleDateString() : '—',
+            render: (createdAt: unknown) => (createdAt ? new Date(createdAt as string).toLocaleDateString() : '—'),
         },
         {
             title: 'Actions',
@@ -217,11 +214,7 @@ export default function ProjectsIndex() {
                 ];
 
                 return (
-                    <Dropdown
-                        menu={{ items: menuItems }}
-                        trigger={['click']}
-                        placement="bottomRight"
-                    >
+                    <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
                         <Button type="text" icon={<MoreOutlined />} />
                     </Dropdown>
                 );

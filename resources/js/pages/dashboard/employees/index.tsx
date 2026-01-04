@@ -1,18 +1,10 @@
-import React from 'react';
-import { Button, Space, Tag, Dropdown, Modal, notification, theme } from 'antd';
-import {
-    EditOutlined,
-    DeleteOutlined,
-    PlusOutlined,
-    IdcardOutlined,
-    MoreOutlined,
-    MailOutlined,
-} from '@ant-design/icons';
-import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import type { Employee, FilterConfig } from '@/types';
+import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
+import type { Employee, FilterConfig } from '@/types';
+import { DeleteOutlined, EditOutlined, IdcardOutlined, MailOutlined, MoreOutlined, PlusOutlined } from '@ant-design/icons';
+import { Link } from '@inertiajs/react';
+import { Button, Dropdown, Modal, notification, Space, Tag, theme } from 'antd';
 
 const { useToken } = theme;
 
@@ -84,9 +76,7 @@ export default function EmployeesIndex() {
                     </div>
                     <div>
                         <div style={{ fontWeight: 500 }}>{record.name}</div>
-                        <div style={{ fontSize: 12, color: token.colorTextSecondary }}>
-                            {record.designation}
-                        </div>
+                        <div style={{ fontSize: 12, color: token.colorTextSecondary }}>{record.designation}</div>
                     </div>
                 </Space>
             ),
@@ -114,11 +104,7 @@ export default function EmployeesIndex() {
             dataIndex: 'status',
             key: 'status',
             filterable: true,
-            render: (status: string) => (
-                <Tag color={status === 'active' ? 'success' : 'default'}>
-                    {status.toUpperCase()}
-                </Tag>
-            ),
+            render: (status: string) => <Tag color={status === 'active' ? 'success' : 'default'}>{status.toUpperCase()}</Tag>,
         },
         {
             title: 'Joining Date',
@@ -137,11 +123,7 @@ export default function EmployeesIndex() {
                         items: [
                             {
                                 key: 'edit',
-                                label: (
-                                    <Link href={`/dashboard/employees/${record.id}/edit`}>
-                                        Edit Employee
-                                    </Link>
-                                ),
+                                label: <Link href={`/dashboard/employees/${record.id}/edit`}>Edit Employee</Link>,
                                 icon: <EditOutlined />,
                             },
                             {
@@ -176,11 +158,7 @@ export default function EmployeesIndex() {
                 </Link>
             }
         >
-            <DataTable<Employee>
-                columns={columns}
-                fetchUrl="/dashboard/employees/data"
-                filters={filters}
-            />
+            <DataTable<Employee> columns={columns} fetchUrl="/dashboard/employees/data" filters={filters} />
         </AppLayout>
     );
 }

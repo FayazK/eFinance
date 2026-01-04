@@ -1,9 +1,9 @@
-import { Form, Input, Button, Row, Col, notification, Select, InputNumber, DatePicker, Alert } from 'antd';
-import { router } from '@inertiajs/react';
 import api from '@/lib/axios';
-import { useState, useEffect } from 'react';
 import { index } from '@/routes/transfers';
+import { router } from '@inertiajs/react';
+import { Alert, Button, Col, DatePicker, Form, Input, InputNumber, notification, Row, Select } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 interface Account {
     id: number;
@@ -30,22 +30,14 @@ export default function TransferForm({ accounts }: TransferFormProps) {
     const destinationAccount = accounts.find((acc) => acc.id === destinationAccountId);
 
     // Check if same currency
-    const sameCurrency =
-        sourceAccount && destinationAccount
-            ? sourceAccount.currency_code === destinationAccount.currency_code
-            : false;
+    const sameCurrency = sourceAccount && destinationAccount ? sourceAccount.currency_code === destinationAccount.currency_code : false;
 
     // Calculate exchange rate
-    const exchangeRate =
-        sourceAmount && destinationAmount && sourceAmount > 0
-            ? destinationAmount / sourceAmount
-            : undefined;
+    const exchangeRate = sourceAmount && destinationAmount && sourceAmount > 0 ? destinationAmount / sourceAmount : undefined;
 
     // Calculate implicit fee for same-currency transfers
     const calculatedFee =
-        sameCurrency && sourceAmount && destinationAmount && sourceAmount > destinationAmount
-            ? sourceAmount - destinationAmount
-            : 0;
+        sameCurrency && sourceAmount && destinationAmount && sourceAmount > destinationAmount ? sourceAmount - destinationAmount : 0;
 
     // Set default date to today
     useEffect(() => {
@@ -99,18 +91,12 @@ export default function TransferForm({ accounts }: TransferFormProps) {
         <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="From Account"
-                        name="source_account_id"
-                        rules={[{ required: true, message: 'Please select source account!' }]}
-                    >
+                    <Form.Item label="From Account" name="source_account_id" rules={[{ required: true, message: 'Please select source account!' }]}>
                         <Select
                             placeholder="Select source account"
                             showSearch
                             onChange={(value) => setSourceAccountId(value)}
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
                                 label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
                                 value: account.id,
@@ -128,9 +114,7 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                             placeholder="Select destination account"
                             showSearch
                             onChange={(value) => setDestinationAccountId(value)}
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
                                 label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
                                 value: account.id,
@@ -230,11 +214,7 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                 />
             )}
 
-            <Form.Item
-                label="Date"
-                name="date"
-                rules={[{ required: true, message: 'Please select a date!' }]}
-            >
+            <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select a date!' }]}>
                 <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
             </Form.Item>
 

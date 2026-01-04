@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { Card, Tabs, Descriptions, Tag, Button, Space } from 'antd';
-import { EditOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
+import { edit, index } from '@/routes/projects';
 import { Project } from '@/types';
+import { ArrowLeftOutlined, EditOutlined } from '@ant-design/icons';
+import { Link } from '@inertiajs/react';
+import { Button, Card, Descriptions, Space, Tabs, Tag } from 'antd';
+import { useState } from 'react';
 import ProjectDocuments from './partials/project-documents';
 import ProjectLinks from './partials/project-links';
-import { edit, index } from '@/routes/projects';
 
 interface ProjectShowProps {
     project: Project;
@@ -34,34 +34,20 @@ export default function ProjectShow({ project }: ProjectShowProps) {
                     <Descriptions.Item label="Description" span={2}>
                         {project.description || '—'}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Client">
-                        {project.client?.name || '—'}
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Client">{project.client?.name || '—'}</Descriptions.Item>
                     <Descriptions.Item label="Status">
                         <Tag color={statusColors[project.status]}>{project.status}</Tag>
                     </Descriptions.Item>
-                    <Descriptions.Item label="Start Date">
-                        {project.start_date || '—'}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Completion Date">
-                        {project.completion_date || '—'}
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Start Date">{project.start_date || '—'}</Descriptions.Item>
+                    <Descriptions.Item label="Completion Date">{project.completion_date || '—'}</Descriptions.Item>
                     <Descriptions.Item label="Budget">
-                        {project.budget
-                            ? `${project.client?.currency?.symbol || '$'}${Number(project.budget).toLocaleString()}`
-                            : '—'}
+                        {project.budget ? `${project.client?.currency?.symbol || '$'}${Number(project.budget).toLocaleString()}` : '—'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Actual Cost">
-                        {project.actual_cost
-                            ? `${project.client?.currency?.symbol || '$'}${Number(project.actual_cost).toLocaleString()}`
-                            : '—'}
+                        {project.actual_cost ? `${project.client?.currency?.symbol || '$'}${Number(project.actual_cost).toLocaleString()}` : '—'}
                     </Descriptions.Item>
-                    <Descriptions.Item label="Created At">
-                        {new Date(project.created_at).toLocaleString()}
-                    </Descriptions.Item>
-                    <Descriptions.Item label="Last Updated">
-                        {new Date(project.updated_at).toLocaleString()}
-                    </Descriptions.Item>
+                    <Descriptions.Item label="Created At">{new Date(project.created_at).toLocaleString()}</Descriptions.Item>
+                    <Descriptions.Item label="Last Updated">{new Date(project.updated_at).toLocaleString()}</Descriptions.Item>
                 </Descriptions>
             ),
         },

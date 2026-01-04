@@ -1,13 +1,8 @@
-import React, { useState } from 'react';
-import { Button, List, Space, Modal, Form, Input, notification, theme } from 'antd';
-import {
-    PlusOutlined,
-    EditOutlined,
-    DeleteOutlined,
-    LinkOutlined,
-} from '@ant-design/icons';
 import { Project, ProjectLink } from '@/types';
+import { DeleteOutlined, EditOutlined, LinkOutlined, PlusOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
+import { Button, Form, Input, List, Modal, notification, Space, theme } from 'antd';
+import { useState } from 'react';
 
 interface ProjectLinksProps {
     project: Project;
@@ -39,9 +34,7 @@ export default function ProjectLinks({ project }: ProjectLinksProps) {
         setLoading(true);
         try {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-            const url = editingLink
-                ? `/dashboard/projects/${project.id}/links/${editingLink.id}`
-                : `/dashboard/projects/${project.id}/links`;
+            const url = editingLink ? `/dashboard/projects/${project.id}/links/${editingLink.id}` : `/dashboard/projects/${project.id}/links`;
             const method = editingLink ? 'PUT' : 'POST';
 
             const response = await fetch(url, {
@@ -115,21 +108,10 @@ export default function ProjectLinks({ project }: ProjectLinksProps) {
                         renderItem={(link: ProjectLink) => (
                             <List.Item
                                 actions={[
-                                    <Button
-                                        key="edit"
-                                        type="link"
-                                        icon={<EditOutlined />}
-                                        onClick={() => handleEdit(link)}
-                                    >
+                                    <Button key="edit" type="link" icon={<EditOutlined />} onClick={() => handleEdit(link)}>
                                         Edit
                                     </Button>,
-                                    <Button
-                                        key="delete"
-                                        type="link"
-                                        danger
-                                        icon={<DeleteOutlined />}
-                                        onClick={() => handleDelete(link)}
-                                    >
+                                    <Button key="delete" type="link" danger icon={<DeleteOutlined />} onClick={() => handleDelete(link)}>
                                         Delete
                                     </Button>,
                                 ]}
@@ -143,12 +125,8 @@ export default function ProjectLinks({ project }: ProjectLinksProps) {
                                     }
                                     description={
                                         <Space direction="vertical" size={0}>
-                                            <span style={{ fontSize: '12px', color: token.colorTextSecondary }}>
-                                                {link.url}
-                                            </span>
-                                            {link.description && (
-                                                <span style={{ fontSize: '13px' }}>{link.description}</span>
-                                            )}
+                                            <span style={{ fontSize: '12px', color: token.colorTextSecondary }}>{link.url}</span>
+                                            {link.description && <span style={{ fontSize: '13px' }}>{link.description}</span>}
                                         </Space>
                                     }
                                 />
@@ -156,24 +134,13 @@ export default function ProjectLinks({ project }: ProjectLinksProps) {
                         )}
                     />
                 ) : (
-                    <div style={{ textAlign: 'center', padding: '40px', color: token.colorTextSecondary }}>
-                        No links added yet.
-                    </div>
+                    <div style={{ textAlign: 'center', padding: '40px', color: token.colorTextSecondary }}>No links added yet.</div>
                 )}
             </Space>
 
-            <Modal
-                title={editingLink ? 'Edit Link' : 'Add Link'}
-                open={isModalOpen}
-                onCancel={() => setIsModalOpen(false)}
-                footer={null}
-            >
+            <Modal title={editingLink ? 'Edit Link' : 'Add Link'} open={isModalOpen} onCancel={() => setIsModalOpen(false)} footer={null}>
                 <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                    <Form.Item
-                        label="Title"
-                        name="title"
-                        rules={[{ required: true, message: 'Please input the title!' }]}
-                    >
+                    <Form.Item label="Title" name="title" rules={[{ required: true, message: 'Please input the title!' }]}>
                         <Input />
                     </Form.Item>
 

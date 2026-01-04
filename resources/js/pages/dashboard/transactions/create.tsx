@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import TransactionForm from './partials/transaction-form';
 import { Card } from 'antd';
+import TransactionForm from './partials/transaction-form';
 
 interface CreateTransactionProps {
     accounts: Array<{ id: number; name: string; currency_code: string }>;

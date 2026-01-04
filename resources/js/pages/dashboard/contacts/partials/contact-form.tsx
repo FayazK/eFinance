@@ -1,10 +1,10 @@
-import { Form, Input, Button, Row, Col, notification, Space, Card } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { Contact } from '@/types';
-import { router } from '@inertiajs/react';
-import api from '@/lib/axios';
-import { useEffect, useState } from 'react';
 import AdvancedSelect from '@/components/advanced-select';
+import api from '@/lib/axios';
+import { Contact } from '@/types';
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { router } from '@inertiajs/react';
+import { Button, Card, Col, Form, Input, notification, Row, Space } from 'antd';
+import { useEffect, useState } from 'react';
 
 interface ContactFormProps {
     contact?: Contact;
@@ -81,30 +81,18 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
             <Card title="Basic Information" style={{ marginBottom: 16 }}>
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item
-                            label="First Name"
-                            name="first_name"
-                            rules={[{ required: true, message: 'Please input the first name!' }]}
-                        >
+                        <Form.Item label="First Name" name="first_name" rules={[{ required: true, message: 'Please input the first name!' }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Last Name"
-                            name="last_name"
-                            rules={[{ required: true, message: 'Please input the last name!' }]}
-                        >
+                        <Form.Item label="Last Name" name="last_name" rules={[{ required: true, message: 'Please input the last name!' }]}>
                             <Input />
                         </Form.Item>
                     </Col>
                 </Row>
 
-                <Form.Item
-                    label="Client"
-                    name="client_id"
-                    rules={[{ required: true, message: 'Please select a client!' }]}
-                >
+                <Form.Item label="Client" name="client_id" rules={[{ required: true, message: 'Please select a client!' }]}>
                     <AdvancedSelect type="clients" id={contact?.client?.id} />
                 </Form.Item>
             </Card>

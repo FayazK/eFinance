@@ -53,28 +53,19 @@ export interface DateRangeFilterConfig extends BaseFilterConfig {
  */
 export interface CustomFilterConfig extends BaseFilterConfig {
     type: 'custom';
-    render: (props: {
-        value: unknown;
-        onChange: (value: unknown) => void;
-    }) => ReactNode;
+    render: (props: { value: unknown; onChange: (value: unknown) => void }) => ReactNode;
 }
 
 /**
  * Union type of all filter configurations
  */
-export type FilterConfig =
-    | BooleanFilterConfig
-    | SelectFilterConfig
-    | DateRangeFilterConfig
-    | CustomFilterConfig;
+export type FilterConfig = BooleanFilterConfig | SelectFilterConfig | DateRangeFilterConfig | CustomFilterConfig;
 
 // ============================================
 // Sort State Types
 // ============================================
 
-export type SortState =
-    | { status: 'idle' }
-    | { status: 'sorted'; field: string; direction: 'asc' | 'desc' };
+export type SortState = { status: 'idle' } | { status: 'sorted'; field: string; direction: 'asc' | 'desc' };
 
 // ============================================
 // Error State Type

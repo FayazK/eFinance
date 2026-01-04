@@ -1,11 +1,11 @@
-import { Form, Input, Button, Row, Col, notification, Select, DatePicker } from 'antd';
+import AdvancedSelect from '@/components/advanced-select';
+import api from '@/lib/axios';
+import { index } from '@/routes/projects';
 import { Project } from '@/types';
 import { router } from '@inertiajs/react';
-import api from '@/lib/axios';
-import { useEffect, useState } from 'react';
-import AdvancedSelect from '@/components/advanced-select';
-import { index } from '@/routes/projects';
+import { Button, Col, DatePicker, Form, Input, notification, Row, Select } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 interface ProjectFormProps {
     project?: Project;
@@ -52,10 +52,10 @@ export default function ProjectForm({ project, isEdit = false }: ProjectFormProp
             });
             router.visit(index.url());
         } catch (error: unknown) {
-            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; };
+            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string } } };
             if (err.response && err.response.status === 422) {
                 const validationErrors = err.response.data.errors;
-                const formErrors = Object.keys(validationErrors).map(key => ({
+                const formErrors = Object.keys(validationErrors).map((key) => ({
                     name: key,
                     errors: validationErrors[key],
                 }));
@@ -76,62 +76,37 @@ export default function ProjectForm({ project, isEdit = false }: ProjectFormProp
     };
 
     return (
-        <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Project Name"
-                        name="name"
-                        rules={[{ required: true, message: 'Please input the project name!' }]}
-                    >
+                    <Form.Item label="Project Name" name="name" rules={[{ required: true, message: 'Please input the project name!' }]}>
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Client"
-                        name="client_id"
-                        rules={[{ required: true, message: 'Please select a client!' }]}
-                    >
+                    <Form.Item label="Client" name="client_id" rules={[{ required: true, message: 'Please select a client!' }]}>
                         <AdvancedSelect type="clients" id={project?.client?.id} />
                     </Form.Item>
                 </Col>
             </Row>
 
-            <Form.Item
-                label="Description"
-                name="description"
-            >
+            <Form.Item label="Description" name="description">
                 <TextArea rows={3} />
             </Form.Item>
 
             <Row gutter={16}>
                 <Col span={8}>
-                    <Form.Item
-                        label="Start Date"
-                        name="start_date"
-                    >
+                    <Form.Item label="Start Date" name="start_date">
                         <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                    <Form.Item
-                        label="Completion Date"
-                        name="completion_date"
-                    >
+                    <Form.Item label="Completion Date" name="completion_date">
                         <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                    <Form.Item
-                        label="Status"
-                        name="status"
-                        rules={[{ required: true, message: 'Please select a status!' }]}
-                    >
+                    <Form.Item label="Status" name="status" rules={[{ required: true, message: 'Please select a status!' }]}>
                         <Select>
                             <Option value="Planning">Planning</Option>
                             <Option value="Active">Active</Option>
@@ -144,18 +119,12 @@ export default function ProjectForm({ project, isEdit = false }: ProjectFormProp
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Budget"
-                        name="budget"
-                    >
+                    <Form.Item label="Budget" name="budget">
                         <Input type="number" min={0} step={0.01} />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Actual Cost"
-                        name="actual_cost"
-                    >
+                    <Form.Item label="Actual Cost" name="actual_cost">
                         <Input type="number" min={0} step={0.01} />
                     </Form.Item>
                 </Col>

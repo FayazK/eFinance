@@ -1,13 +1,12 @@
-import { Button, Card } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
-import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import { Transfer } from '@/types';
+import AppLayout from '@/layouts/app-layout';
 import { create, data } from '@/routes/transfers';
 import type { DataTableColumn } from '@/types';
+import { Transfer } from '@/types';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Card } from 'antd';
 
 export default function TransfersIndex() {
-
     const columns: DataTableColumn<Transfer>[] = [
         {
             title: 'Date',
@@ -23,11 +22,7 @@ export default function TransfersIndex() {
                     <div className="font-medium">{record.source_account?.name}</div>
                     <div className="text-sm text-gray-500">
                         {record.formatted_source_amount}
-                        {record.has_fee && (
-                            <span className="text-xs ml-1 text-orange-600">
-                                (+{record.formatted_fee} fee)
-                            </span>
-                        )}
+                        {record.has_fee && <span className="ml-1 text-xs text-orange-600">(+{record.formatted_fee} fee)</span>}
                     </div>
                 </div>
             ),
@@ -38,9 +33,7 @@ export default function TransfersIndex() {
             render: (_, record) => (
                 <div>
                     <div className="font-medium">{record.destination_account?.name}</div>
-                    <div className="text-sm text-gray-500">
-                        {record.formatted_destination_amount}
-                    </div>
+                    <div className="text-sm text-gray-500">{record.formatted_destination_amount}</div>
                 </div>
             ),
         },
@@ -50,9 +43,7 @@ export default function TransfersIndex() {
             key: 'exchange_rate',
             sorter: true,
             render: (rate, record) => {
-                const isSameCurrency =
-                    record.source_account?.currency_code ===
-                    record.destination_account?.currency_code;
+                const isSameCurrency = record.source_account?.currency_code === record.destination_account?.currency_code;
                 return isSameCurrency ? '—' : rate;
             },
         },

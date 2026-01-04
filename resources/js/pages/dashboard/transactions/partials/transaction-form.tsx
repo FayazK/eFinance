@@ -1,9 +1,9 @@
-import { Form, Input, Button, Row, Col, notification, Select, InputNumber, DatePicker } from 'antd';
-import { router } from '@inertiajs/react';
 import api from '@/lib/axios';
-import { useState, useEffect } from 'react';
 import { index } from '@/routes/transactions';
+import { router } from '@inertiajs/react';
+import { Button, Col, DatePicker, Form, Input, InputNumber, notification, Row, Select } from 'antd';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 interface TransactionFormProps {
     accounts?: Array<{ id: number; name: string; currency_code: string }>;
@@ -16,9 +16,7 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
     const [selectedType, setSelectedType] = useState<'income' | 'expense' | undefined>(undefined);
 
     // Filter categories based on transaction type
-    const filteredCategories = selectedType
-        ? categories.filter((cat) => cat.type === selectedType)
-        : categories;
+    const filteredCategories = selectedType ? categories.filter((cat) => cat.type === selectedType) : categories;
 
     const handleTypeChange = (value: 'credit' | 'debit') => {
         // Map credit -> income, debit -> expense for category filtering
@@ -80,17 +78,11 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
         <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Account"
-                        name="account_id"
-                        rules={[{ required: true, message: 'Please select an account!' }]}
-                    >
+                    <Form.Item label="Account" name="account_id" rules={[{ required: true, message: 'Please select an account!' }]}>
                         <Select
                             placeholder="Select an account"
                             showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
                                 label: `${account.name} (${account.currency_code})`,
                                 value: account.id,
@@ -99,11 +91,7 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Type"
-                        name="type"
-                        rules={[{ required: true, message: 'Please select a transaction type!' }]}
-                    >
+                    <Form.Item label="Type" name="type" rules={[{ required: true, message: 'Please select a transaction type!' }]}>
                         <Select
                             placeholder="Select type"
                             onChange={handleTypeChange}
@@ -130,21 +118,11 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
                             },
                         ]}
                     >
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            placeholder="0.00"
-                            precision={2}
-                            step={0.01}
-                            min={0.01}
-                        />
+                        <InputNumber style={{ width: '100%' }} placeholder="0.00" precision={2} step={0.01} min={0.01} />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Date"
-                        name="date"
-                        rules={[{ required: true, message: 'Please select a date!' }]}
-                    >
+                    <Form.Item label="Date" name="date" rules={[{ required: true, message: 'Please select a date!' }]}>
                         <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                     </Form.Item>
                 </Col>
@@ -155,9 +133,7 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
                     placeholder="Select a category (optional)"
                     allowClear
                     showSearch
-                    filterOption={(input, option) =>
-                        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                    }
+                    filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                     options={filteredCategories.map((category) => ({
                         label: category.name,
                         value: category.id,
@@ -166,10 +142,7 @@ export default function TransactionForm({ accounts = [], categories = [] }: Tran
             </Form.Item>
 
             <Form.Item label="Description" name="description">
-                <Input.TextArea
-                    rows={4}
-                    placeholder="Enter transaction description (optional)"
-                />
+                <Input.TextArea rows={4} placeholder="Enter transaction description (optional)" />
             </Form.Item>
 
             <Form.Item>

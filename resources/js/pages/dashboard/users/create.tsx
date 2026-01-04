@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import UserForm from './partials/user-form';
 import { Card } from 'antd';
+import UserForm from './partials/user-form';
 
 export default function CreateUser() {
     return (

@@ -1,0 +1,25 @@
+{
+  "cookies": [
+    {
+      "name": "XSRF-TOKEN",
+      "value": "eyJpdiI6IkUrdkE5NTkxUzNmMEJnRVgyZExSU2c9PSIsInZhbHVlIjoiOGhVbFRvVGM1Q3RGUXU0ZEx2di9LcTFvdGhZaVNhb1V3N2pSNWdnUlQrcFU2RnRmWWhqVkN3KzBFRHovdVk1SUgvR1c3QkZmU3h1RkVIK1lZcnpab1hoYXYxNUV2Um5LQmlWdVFJekVybUhra0FRM3R1MmJETWYySU5ZOXlDZVUiLCJtYWMiOiJjYTNmYzZkZGJmYTNkZmFkY2MxZjUyMDA0MjYxMzk5N2Q2MDJjZjVlMWI0YWU2YzFlYTM4MWVkMjY2YTRjYzQxIiwidGFnIjoiIn0%3D",
+      "domain": "efinance.test",
+      "path": "/",
+      "expires": 1767549061.143694,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "laravel_session",
+      "value": "eyJpdiI6IjRaU0hHMkhFeng0RFRKakdKZzliZGc9PSIsInZhbHVlIjoiUkZxWHdHaU83ZmVLMzQzL0l0enBMdnVBbDRQcHJRYXlVdmlJd01YQnM4VDVQR0Q3cjdMUm52OXJUdnVhR2s3QzgyRGc1L1FwZ0kzb2NFUGFzNDJxRFNpUnNxblc1eE14ZjJWTytFV2p0SVo1dkpIazJobE9qOVdpMFJCYWdTK0giLCJtYWMiOiIyNzE2MDE1NzQzYzEzYzE3MzFiMjczYTBjMWNjODY1NzdjZDJjOTcxYzRhNmIzNjg0YmM2MTFlYjVlNWM4M2M4IiwidGFnIjoiIn0%3D",
+      "domain": "efinance.test",
+      "path": "/",
+      "expires": 1767549061.143787,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": []
+}

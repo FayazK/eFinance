@@ -1,10 +1,10 @@
-import { Form, Input, Button, Row, Col, notification, Select, InputNumber, Switch } from 'antd';
+import api from '@/lib/axios';
+import { SUPPORTED_CURRENCIES } from '@/lib/currencies';
+import { index } from '@/routes/accounts';
 import { Account } from '@/types';
 import { router } from '@inertiajs/react';
-import api from '@/lib/axios';
+import { Button, Col, Form, Input, InputNumber, notification, Row, Select, Switch } from 'antd';
 import { useEffect, useState } from 'react';
-import { index } from '@/routes/accounts';
-import { SUPPORTED_CURRENCIES } from '@/lib/currencies';
 
 interface AccountFormProps {
     account?: Account;
@@ -83,20 +83,12 @@ export default function AccountForm({ account, isEdit = false }: AccountFormProp
         <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Account Name"
-                        name="name"
-                        rules={[{ required: true, message: 'Please input the account name!' }]}
-                    >
+                    <Form.Item label="Account Name" name="name" rules={[{ required: true, message: 'Please input the account name!' }]}>
                         <Input placeholder="e.g., Payoneer USD Account" />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Account Type"
-                        name="type"
-                        rules={[{ required: true, message: 'Please select an account type!' }]}
-                    >
+                    <Form.Item label="Account Type" name="type" rules={[{ required: true, message: 'Please select an account type!' }]}>
                         <Select options={accountTypes} />
                     </Form.Item>
                 </Col>
@@ -104,17 +96,11 @@ export default function AccountForm({ account, isEdit = false }: AccountFormProp
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Currency"
-                        name="currency_code"
-                        rules={[{ required: true, message: 'Please select a currency!' }]}
-                    >
+                    <Form.Item label="Currency" name="currency_code" rules={[{ required: true, message: 'Please select a currency!' }]}>
                         <Select
                             options={currencies}
                             showSearch
-                            filterOption={(input, option) =>
-                                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                            }
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                         />
                     </Form.Item>
                 </Col>
@@ -124,12 +110,7 @@ export default function AccountForm({ account, isEdit = false }: AccountFormProp
                         name="current_balance"
                         tooltip="Enter the current balance in major units (e.g., dollars, not cents)"
                     >
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            placeholder="0.00"
-                            precision={2}
-                            step={0.01}
-                        />
+                        <InputNumber style={{ width: '100%' }} placeholder="0.00" precision={2} step={0.01} />
                     </Form.Item>
                 </Col>
             </Row>

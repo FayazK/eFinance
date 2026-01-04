@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
-import AccountForm from './partials/account-form';
-import { Card } from 'antd';
 import { Account } from '@/types';
+import { Card } from 'antd';
+import AccountForm from './partials/account-form';
 
 interface EditAccountProps {
     account: Account;

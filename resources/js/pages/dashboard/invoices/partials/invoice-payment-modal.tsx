@@ -1,9 +1,9 @@
-import { Modal, Form, Select, InputNumber, DatePicker, Input, notification, Alert, Card, Radio } from 'antd';
-import { useState, useEffect } from 'react';
 import api from '@/lib/axios';
-import dayjs from 'dayjs';
-import type { Invoice, Account } from '@/types';
+import type { Account, Invoice } from '@/types';
 import { router } from '@inertiajs/react';
+import { Alert, Card, DatePicker, Form, Input, InputNumber, Modal, notification, Radio, Select } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 
 interface InvoicePaymentModalProps {
     open: boolean;
@@ -110,24 +110,13 @@ export default function InvoicePaymentModal({ open, onCancel, invoice, accounts 
             width={700}
         >
             <Form form={form} layout="vertical" onFinish={handleSubmit}>
-                <Alert
-                    message={`Invoice Balance Due: ${invoice.formatted_balance}`}
-                    type="info"
-                    showIcon
-                    style={{ marginBottom: 16 }}
-                />
+                <Alert message={`Invoice Balance Due: ${invoice.formatted_balance}`} type="info" showIcon style={{ marginBottom: 16 }} />
 
-                <Form.Item
-                    label="Account"
-                    name="account_id"
-                    rules={[{ required: true, message: 'Please select an account!' }]}
-                >
+                <Form.Item label="Account" name="account_id" rules={[{ required: true, message: 'Please select an account!' }]}>
                     <Select
                         placeholder="Select account"
                         showSearch
-                        filterOption={(input, option) =>
-                            (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                        }
+                        filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                         options={accounts.map((account) => ({
                             label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
                             value: account.id,
@@ -158,15 +147,8 @@ export default function InvoicePaymentModal({ open, onCancel, invoice, accounts 
                 </Form.Item>
 
                 {hasShortfall && (
-                    <Card
-                        title={`Shortfall Detected: ${invoice.currency_code} ${shortfall.toFixed(2)}`}
-                        size="small"
-                        style={{ marginBottom: 16 }}
-                    >
-                        <p>
-                            The amount received is less than the invoice balance. How would you like to classify this
-                            shortfall?
-                        </p>
+                    <Card title={`Shortfall Detected: ${invoice.currency_code} ${shortfall.toFixed(2)}`} size="small" style={{ marginBottom: 16 }}>
+                        <p>The amount received is less than the invoice balance. How would you like to classify this shortfall?</p>
 
                         <Radio.Group
                             value={paymentClassification}
@@ -190,11 +172,7 @@ export default function InvoicePaymentModal({ open, onCancel, invoice, accounts 
                     </Card>
                 )}
 
-                <Form.Item
-                    label="Payment Date"
-                    name="payment_date"
-                    rules={[{ required: true, message: 'Please select payment date!' }]}
-                >
+                <Form.Item label="Payment Date" name="payment_date" rules={[{ required: true, message: 'Please select payment date!' }]}>
                     <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                 </Form.Item>
 

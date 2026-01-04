@@ -1,21 +1,21 @@
-import React from 'react';
-import { Button, Space, Tag, Dropdown, theme, Modal, notification } from 'antd';
+import DataTable from '@/components/ui/DataTable';
+import AppLayout from '@/layouts/app-layout';
+import api from '@/lib/axios';
+import { create, data, destroy, edit } from '@/routes/clients';
+import type { Client, FilterConfig } from '@/types';
 import {
-    EditOutlined,
     DeleteOutlined,
-    PlusOutlined,
-    TeamOutlined,
-    MoreOutlined,
+    EditOutlined,
     GlobalOutlined,
     MailOutlined,
+    MoreOutlined,
     PhoneOutlined,
+    PlusOutlined,
+    TeamOutlined,
 } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import DataTable from '@/components/ui/DataTable';
-import type { Client, FilterConfig } from '@/types';
-import { data, create, edit, destroy } from '@/routes/clients';
-import api from '@/lib/axios';
+import { Button, Dropdown, Modal, notification, Space, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -80,11 +80,7 @@ export default function ClientsIndex() {
                     </div>
                     <div>
                         <div style={{ fontWeight: 500 }}>{record.name}</div>
-                        {record.company && (
-                            <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-                                {record.company}
-                            </div>
-                        )}
+                        {record.company && <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>{record.company}</div>}
                     </div>
                 </Space>
             ),
@@ -104,9 +100,7 @@ export default function ClientsIndex() {
                     {record.phone && (
                         <Space size={4}>
                             <PhoneOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
-                            <span style={{ fontSize: '13px', color: token.colorTextSecondary }}>
-                                {record.phone}
-                            </span>
+                            <span style={{ fontSize: '13px', color: token.colorTextSecondary }}>{record.phone}</span>
                         </Space>
                     )}
                 </Space>
@@ -134,11 +128,7 @@ export default function ClientsIndex() {
             key: 'currency',
             width: 100,
             render: (_: unknown, record: Client) =>
-                record.currency ? (
-                    <Tag color="blue">{record.currency.code}</Tag>
-                ) : (
-                    <span style={{ color: token.colorTextDisabled }}>—</span>
-                ),
+                record.currency ? <Tag color="blue">{record.currency.code}</Tag> : <span style={{ color: token.colorTextDisabled }}>—</span>,
         },
         {
             title: 'Created',
@@ -147,8 +137,7 @@ export default function ClientsIndex() {
             width: 120,
             filterable: true,
             sorter: true,
-            render: (createdAt: unknown) =>
-                createdAt ? new Date(createdAt as string).toLocaleDateString() : '—',
+            render: (createdAt: unknown) => (createdAt ? new Date(createdAt as string).toLocaleDateString() : '—'),
         },
         {
             title: 'Actions',
@@ -184,11 +173,7 @@ export default function ClientsIndex() {
                 ];
 
                 return (
-                    <Dropdown
-                        menu={{ items: menuItems }}
-                        trigger={['click']}
-                        placement="bottomRight"
-                    >
+                    <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
                         <Button type="text" icon={<MoreOutlined />} />
                     </Dropdown>
                 );

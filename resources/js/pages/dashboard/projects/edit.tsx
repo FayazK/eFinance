@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
-import ProjectForm from './partials/project-form';
-import { Card } from 'antd';
 import { Project } from '@/types';
+import { Card } from 'antd';
+import ProjectForm from './partials/project-form';
 
 interface EditProjectProps {
     project: Project;

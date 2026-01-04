@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import EmployeeForm from './partials/employee-form';
 import { Card } from 'antd';
+import EmployeeForm from './partials/employee-form';
 
 export default function CreateEmployee() {
     return (

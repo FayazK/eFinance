@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import ProjectForm from './partials/project-form';
 import { Card } from 'antd';
+import ProjectForm from './partials/project-form';
 
 export default function CreateProject() {
     return (

@@ -1,6 +1,6 @@
-import { Table, Button, Input, InputNumber, Select, Popconfirm } from 'antd';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import type { InvoiceItem } from '@/types';
+import { DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Input, InputNumber, Popconfirm, Select, Table } from 'antd';
 import { useState } from 'react';
 
 interface InvoiceLineItemsTableProps {
@@ -70,11 +70,7 @@ export default function InvoiceLineItemsTable({ items, onChange, currency }: Inv
             key: 'description',
             width: '35%',
             render: (text: string, record: InvoiceItem) => (
-                <Input
-                    value={text}
-                    onChange={(e) => updateItem(record.id, 'description', e.target.value)}
-                    placeholder="Enter description"
-                />
+                <Input value={text} onChange={(e) => updateItem(record.id, 'description', e.target.value)} placeholder="Enter description" />
             ),
         },
         {
@@ -98,12 +94,7 @@ export default function InvoiceLineItemsTable({ items, onChange, currency }: Inv
             key: 'unit',
             width: '12%',
             render: (value: string, record: InvoiceItem) => (
-                <Select
-                    value={value}
-                    onChange={(val) => updateItem(record.id, 'unit', val)}
-                    options={UNIT_OPTIONS}
-                    style={{ width: '100%' }}
-                />
+                <Select value={value} onChange={(val) => updateItem(record.id, 'unit', val)} options={UNIT_OPTIONS} style={{ width: '100%' }} />
             ),
         },
         {
@@ -134,12 +125,7 @@ export default function InvoiceLineItemsTable({ items, onChange, currency }: Inv
             key: 'action',
             width: '11%',
             render: (_: unknown, record: InvoiceItem) => (
-                <Popconfirm
-                    title="Delete this item?"
-                    onConfirm={() => removeItem(record.id)}
-                    okText="Yes"
-                    cancelText="No"
-                >
+                <Popconfirm title="Delete this item?" onConfirm={() => removeItem(record.id)} okText="Yes" cancelText="No">
                     <Button type="text" danger icon={<DeleteOutlined />} />
                 </Popconfirm>
             ),
@@ -159,12 +145,7 @@ export default function InvoiceLineItemsTable({ items, onChange, currency }: Inv
                     emptyText: 'No line items added yet. Click "Add Line Item" to start.',
                 }}
             />
-            <Button
-                type="dashed"
-                onClick={addNewItem}
-                icon={<PlusOutlined />}
-                style={{ width: '100%', marginTop: 16 }}
-            >
+            <Button type="dashed" onClick={addNewItem} icon={<PlusOutlined />} style={{ width: '100%', marginTop: 16 }}>
                 Add Line Item
             </Button>
         </div>

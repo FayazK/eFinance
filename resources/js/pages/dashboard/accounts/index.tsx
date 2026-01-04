@@ -1,17 +1,10 @@
-import React from 'react';
-import { Row, Col, Card, Statistic, Button, Space, Tag, theme, Empty } from 'antd';
-import {
-    PlusOutlined,
-    WalletOutlined,
-    BankOutlined,
-    DollarOutlined,
-    CheckCircleOutlined,
-    StopOutlined,
-} from '@ant-design/icons';
-import { Link, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import type { Account, LaravelPaginatedResponse, SharedData } from '@/types';
 import { create } from '@/routes/accounts';
+import type { Account, LaravelPaginatedResponse, SharedData } from '@/types';
+import { BankOutlined, CheckCircleOutlined, DollarOutlined, PlusOutlined, StopOutlined, WalletOutlined } from '@ant-design/icons';
+import { Link, usePage } from '@inertiajs/react';
+import { Button, Card, Col, Empty, Row, Space, Statistic, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -107,9 +100,7 @@ export default function AccountsIndex() {
                                         <Space direction="vertical" size="small" style={{ width: '100%' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                                                 <Tag color="blue">{currency.currency_symbol}</Tag>
-                                                <span style={{ fontSize: 14, fontWeight: 600 }}>
-                                                    {currency.currency_name}
-                                                </span>
+                                                <span style={{ fontSize: 14, fontWeight: 600 }}>{currency.currency_name}</span>
                                             </div>
                                             <div>
                                                 <div
@@ -150,16 +141,10 @@ export default function AccountsIndex() {
                                         hoverable
                                         style={{
                                             height: '100%',
-                                            borderColor: account.is_active
-                                                ? token.colorBorder
-                                                : token.colorBorderSecondary,
+                                            borderColor: account.is_active ? token.colorBorder : token.colorBorderSecondary,
                                         }}
                                     >
-                                        <Space
-                                            direction="vertical"
-                                            size="middle"
-                                            style={{ width: '100%' }}
-                                        >
+                                        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                                             {/* Account Header */}
                                             <Space style={{ width: '100%', justifyContent: 'space-between' }}>
                                                 <Space>
@@ -179,9 +164,7 @@ export default function AccountsIndex() {
                                                         })}
                                                     </div>
                                                     <div>
-                                                        <div style={{ fontWeight: 600, fontSize: 16 }}>
-                                                            {account.name}
-                                                        </div>
+                                                        <div style={{ fontWeight: 600, fontSize: 16 }}>{account.name}</div>
                                                         {account.bank_name && (
                                                             <div
                                                                 style={{
@@ -207,17 +190,12 @@ export default function AccountsIndex() {
 
                                             {/* Balance */}
                                             <div>
-                                                <div style={{ color: token.colorTextSecondary, fontSize: 12 }}>
-                                                    Current Balance
-                                                </div>
+                                                <div style={{ color: token.colorTextSecondary, fontSize: 12 }}>Current Balance</div>
                                                 <div
                                                     style={{
                                                         fontSize: 24,
                                                         fontWeight: 700,
-                                                        color:
-                                                            account.current_balance >= 0
-                                                                ? token.colorSuccess
-                                                                : token.colorError,
+                                                        color: account.current_balance >= 0 ? token.colorSuccess : token.colorError,
                                                     }}
                                                 >
                                                     {account.formatted_balance}
@@ -235,9 +213,7 @@ export default function AccountsIndex() {
                                                     >
                                                         Account Number
                                                     </div>
-                                                    <div style={{ fontSize: 13 }}>
-                                                        {account.account_number}
-                                                    </div>
+                                                    <div style={{ fontSize: 13 }}>{account.account_number}</div>
                                                 </div>
                                             )}
                                         </Space>
@@ -248,10 +224,7 @@ export default function AccountsIndex() {
                     </Row>
                 ) : (
                     <Card>
-                        <Empty
-                            image={Empty.PRESENTED_IMAGE_SIMPLE}
-                            description="No accounts have been created yet."
-                        >
+                        <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="No accounts have been created yet.">
                             <Link href={create.url()}>
                                 <Button type="primary" icon={<PlusOutlined />}>
                                     Create First Account

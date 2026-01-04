@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import AccountForm from './partials/account-form';
 import { Card } from 'antd';
+import AccountForm from './partials/account-form';
 
 export default function CreateAccount() {
     return (

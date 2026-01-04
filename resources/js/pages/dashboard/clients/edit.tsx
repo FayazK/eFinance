@@ -1,11 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
-import ClientForm from './partials/client-form';
-import { Card, Tabs, Table, Button, Space, Modal, notification, theme } from 'antd';
-import { Client, Contact } from '@/types';
-import { useEffect, useState } from 'react';
 import api from '@/lib/axios';
+import { Client, Contact } from '@/types';
+import { DeleteOutlined, EditOutlined, MailOutlined, PhoneOutlined, PlusOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import { PlusOutlined, EditOutlined, DeleteOutlined, MailOutlined, PhoneOutlined } from '@ant-design/icons';
+import { Button, Card, Modal, notification, Space, Table, Tabs, theme } from 'antd';
+import { useEffect, useState } from 'react';
+import ClientForm from './partials/client-form';
 
 const { useToken } = theme;
 
@@ -99,12 +99,7 @@ export default function EditClient({ client }: EditClientProps) {
                             Edit
                         </Button>
                     </Link>
-                    <Button
-                        type="link"
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDeleteContact(record)}
-                    >
+                    <Button type="link" danger icon={<DeleteOutlined />} onClick={() => handleDeleteContact(record)}>
                         Delete
                     </Button>
                 </Space>
@@ -130,13 +125,7 @@ export default function EditClient({ client }: EditClientProps) {
                             </Button>
                         </Link>
                     </div>
-                    <Table
-                        dataSource={contacts}
-                        columns={contactColumns}
-                        rowKey="id"
-                        loading={loadingContacts}
-                        pagination={false}
-                    />
+                    <Table dataSource={contacts} columns={contactColumns} rowKey="id" loading={loadingContacts} pagination={false} />
                 </div>
             ),
         },

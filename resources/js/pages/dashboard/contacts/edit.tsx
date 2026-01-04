@@ -1,7 +1,7 @@
 import AppLayout from '@/layouts/app-layout';
-import ContactForm from './partials/contact-form';
-import { Card } from 'antd';
 import { Contact } from '@/types';
+import { Card } from 'antd';
+import ContactForm from './partials/contact-form';
 
 interface EditContactProps {
     contact: Contact;

@@ -1,11 +1,11 @@
-import React from 'react';
-import { Card, Button } from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Link } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
-import InvoiceForm from './partials/invoice-form';
 import { index } from '@/routes/invoices';
 import type { Invoice } from '@/types';
+import { ArrowLeftOutlined } from '@ant-design/icons';
+import { Link } from '@inertiajs/react';
+import { Button, Card } from 'antd';
+import React from 'react';
+import InvoiceForm from './partials/invoice-form';
 
 interface InvoiceEditProps {
     invoice: Invoice;

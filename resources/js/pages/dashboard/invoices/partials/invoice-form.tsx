@@ -1,11 +1,11 @@
-import { Form, Input, Button, Row, Col, notification, Select, DatePicker, InputNumber, Card, Alert, Space } from 'antd';
-import { router } from '@inertiajs/react';
 import api from '@/lib/axios';
-import { useState, useEffect, useCallback } from 'react';
 import { index } from '@/routes/invoices';
-import dayjs from 'dayjs';
-import type { Invoice, InvoiceItem, Client } from '@/types';
 import { useInvoiceBuilderStore } from '@/stores/invoice-builder-store';
+import type { Invoice, InvoiceItem } from '@/types';
+import { router } from '@inertiajs/react';
+import { Alert, Button, Card, Col, DatePicker, Form, Input, InputNumber, notification, Row, Select, Space } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
 import InvoiceLineItemsTable from './invoice-line-items-table';
 
 interface Project {
@@ -177,18 +177,12 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
             <Card title="Invoice Details" style={{ marginBottom: 16 }}>
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item
-                            label="Client"
-                            name="client_id"
-                            rules={[{ required: true, message: 'Please select a client!' }]}
-                        >
+                        <Form.Item label="Client" name="client_id" rules={[{ required: true, message: 'Please select a client!' }]}>
                             <Select
                                 placeholder="Select client"
                                 showSearch
                                 onChange={handleClientChange}
-                                filterOption={(input, option) =>
-                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                }
+                                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                                 options={clients.map((client) => ({
                                     label: `${client.name} (${client.currency_code})`,
                                     value: client.id,
@@ -203,9 +197,7 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
                                 showSearch
                                 allowClear
                                 disabled={!clientId}
-                                filterOption={(input, option) =>
-                                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                                }
+                                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                                 options={filteredProjects.map((project) => ({
                                     label: project.name,
                                     value: project.id,
@@ -227,20 +219,12 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
 
                 <Row gutter={16}>
                     <Col span={12}>
-                        <Form.Item
-                            label="Issue Date"
-                            name="issue_date"
-                            rules={[{ required: true, message: 'Please select issue date!' }]}
-                        >
+                        <Form.Item label="Issue Date" name="issue_date" rules={[{ required: true, message: 'Please select issue date!' }]}>
                             <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                         </Form.Item>
                     </Col>
                     <Col span={12}>
-                        <Form.Item
-                            label="Due Date"
-                            name="due_date"
-                            rules={[{ required: true, message: 'Please select due date!' }]}
-                        >
+                        <Form.Item label="Due Date" name="due_date" rules={[{ required: true, message: 'Please select due date!' }]}>
                             <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                         </Form.Item>
                     </Col>
@@ -248,11 +232,7 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
             </Card>
 
             <Card title="Line Items" style={{ marginBottom: 16 }}>
-                <InvoiceLineItemsTable
-                    items={items}
-                    onChange={setItems}
-                    currency={selectedClient?.currency_code || 'USD'}
-                />
+                <InvoiceLineItemsTable items={items} onChange={setItems} currency={selectedClient?.currency_code || 'USD'} />
 
                 <Row justify="end" style={{ marginTop: 16 }}>
                     <Col span={8}>

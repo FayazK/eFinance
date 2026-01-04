@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import TransferForm from './partials/transfer-form';
 import { Card } from 'antd';
+import TransferForm from './partials/transfer-form';
 
 interface Account {
     id: number;

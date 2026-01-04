@@ -1,6 +1,6 @@
+import type { InvoiceItem } from '@/types';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { InvoiceItem } from '@/types';
 
 export interface InvoiceDraft {
     client_id?: number;
@@ -54,6 +54,6 @@ export const useInvoiceBuilderStore = create<InvoiceBuilderState>()(
         }),
         {
             name: 'invoice-builder-storage',
-        }
-    )
+        },
+    ),
 );

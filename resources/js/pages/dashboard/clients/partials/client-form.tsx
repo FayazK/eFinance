@@ -1,10 +1,10 @@
-import { Form, Input, Button, Row, Col, notification } from 'antd';
+import AdvancedSelect from '@/components/advanced-select';
+import api from '@/lib/axios';
+import { index } from '@/routes/clients';
 import { Client } from '@/types';
 import { router } from '@inertiajs/react';
-import api from '@/lib/axios';
+import { Button, Col, Form, Input, notification, Row } from 'antd';
 import { useEffect, useState } from 'react';
-import AdvancedSelect from '@/components/advanced-select';
-import { index } from '@/routes/clients';
 
 interface ClientFormProps {
     client?: Client;
@@ -44,10 +44,10 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
             });
             router.visit(index.url());
         } catch (error: unknown) {
-            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; };
+            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string } } };
             if (err.response && err.response.status === 422) {
                 const validationErrors = err.response.data.errors;
-                const formErrors = Object.keys(validationErrors).map(key => ({
+                const formErrors = Object.keys(validationErrors).map((key) => ({
                     name: key,
                     errors: validationErrors[key],
                 }));
@@ -68,27 +68,15 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
     };
 
     return (
-        <Form
-            form={form}
-            layout="vertical"
-            onFinish={onFinish}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Name"
-                        name="name"
-                        rules={[{ required: true, message: 'Please input the client name!' }]}
-                    >
+                    <Form.Item label="Name" name="name" rules={[{ required: true, message: 'Please input the client name!' }]}>
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Email"
-                        name="email"
-                        rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}
-                    >
+                    <Form.Item label="Email" name="email" rules={[{ required: true, type: 'email', message: 'Please input a valid email!' }]}>
                         <Input type="email" />
                     </Form.Item>
                 </Col>
@@ -96,18 +84,12 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Company"
-                        name="company"
-                    >
+                    <Form.Item label="Company" name="company">
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Phone"
-                        name="phone"
-                    >
+                    <Form.Item label="Phone" name="phone">
                         <Input />
                     </Form.Item>
                 </Col>
@@ -115,63 +97,40 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
 
             <Row gutter={16}>
                 <Col span={8}>
-                    <Form.Item
-                        label="Country"
-                        name="country_id"
-                        rules={[{ required: true, message: 'Please select a country!' }]}
-                    >
+                    <Form.Item label="Country" name="country_id" rules={[{ required: true, message: 'Please select a country!' }]}>
                         <AdvancedSelect type="countries" id={client?.country?.id} />
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                    <Form.Item
-                        label="City"
-                        name="city_id"
-                    >
+                    <Form.Item label="City" name="city_id">
                         <AdvancedSelect type="cities" id={client?.city?.id} />
                     </Form.Item>
                 </Col>
                 <Col span={8}>
-                    <Form.Item
-                        label="Currency"
-                        name="currency_id"
-                        rules={[{ required: true, message: 'Please select a currency!' }]}
-                    >
+                    <Form.Item label="Currency" name="currency_id" rules={[{ required: true, message: 'Please select a currency!' }]}>
                         <AdvancedSelect type="currencies" id={client?.currency?.id} />
                     </Form.Item>
                 </Col>
             </Row>
 
-            <Form.Item
-                label="Address"
-                name="address"
-            >
+            <Form.Item label="Address" name="address">
                 <Input.TextArea rows={2} />
             </Form.Item>
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item
-                        label="Tax ID"
-                        name="tax_id"
-                    >
+                    <Form.Item label="Tax ID" name="tax_id">
                         <Input />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item
-                        label="Website"
-                        name="website"
-                    >
+                    <Form.Item label="Website" name="website">
                         <Input type="url" placeholder="https://" />
                     </Form.Item>
                 </Col>
             </Row>
 
-            <Form.Item
-                label="Notes"
-                name="notes"
-            >
+            <Form.Item label="Notes" name="notes">
                 <Input.TextArea rows={4} />
             </Form.Item>
 

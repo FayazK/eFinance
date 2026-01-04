@@ -1,17 +1,12 @@
-import React, { useState } from 'react';
-import { Button, Space, Tag, Select, notification, Statistic, Card, Row, Col, theme, Modal, Form, DatePicker, Input } from 'antd';
-import {
-    PlusOutlined,
-    DollarOutlined,
-    CheckCircleOutlined,
-    ClockCircleOutlined,
-} from '@ant-design/icons';
-import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import type { Payroll, FilterConfig, Account } from '@/types';
-import { router, usePage } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
+import type { Account, FilterConfig, Payroll } from '@/types';
+import { CheckCircleOutlined, ClockCircleOutlined, DollarOutlined, PlusOutlined } from '@ant-design/icons';
+import { usePage } from '@inertiajs/react';
+import { Button, DatePicker, Form, Input, Modal, notification, Select, Space, Tag, theme } from 'antd';
 import dayjs from 'dayjs';
+import { useState } from 'react';
 
 const { useToken } = theme;
 
@@ -76,8 +71,7 @@ export default function PayrollIndex() {
         } catch (error: unknown) {
             const errorMessage =
                 typeof error === 'object' && error !== null && 'response' in error
-                    ? (error as { response?: { data?: { message?: string } } }).response?.data
-                          ?.message
+                    ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
                     : 'An error occurred while generating payroll';
 
             notification.error({
@@ -105,10 +99,10 @@ export default function PayrollIndex() {
             paymentForm.resetFields();
             setTableKey((prev) => prev + 1); // Force table reload
         } catch (error: unknown) {
-            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string; }; }; };
+            const err = error as { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string } } };
             if (err.response && err.response.status === 422) {
                 const validationErrors = err.response.data.errors;
-                const formErrors = Object.keys(validationErrors).map(key => ({
+                const formErrors = Object.keys(validationErrors).map((key) => ({
                     name: key,
                     errors: validationErrors[key],
                 }));
@@ -151,9 +145,7 @@ export default function PayrollIndex() {
             render: (_: unknown, record: Payroll) => (
                 <div>
                     <div style={{ fontWeight: 500 }}>{record.employee?.name}</div>
-                    <div style={{ fontSize: 12, color: token.colorTextSecondary }}>
-                        {record.employee?.designation}
-                    </div>
+                    <div style={{ fontSize: 12, color: token.colorTextSecondary }}>{record.employee?.designation}</div>
                 </div>
             ),
         },
@@ -185,9 +177,7 @@ export default function PayrollIndex() {
             dataIndex: 'formatted_net_payable',
             key: 'net_payable',
             align: 'right' as const,
-            render: (value: string) => (
-                <span style={{ fontWeight: 600, color: token.colorPrimary }}>{value}</span>
-            ),
+            render: (value: string) => <span style={{ fontWeight: 600, color: token.colorPrimary }}>{value}</span>,
         },
         {
             title: 'Status',
@@ -195,12 +185,7 @@ export default function PayrollIndex() {
             key: 'status',
             filterable: true,
             render: (status: string) => (
-                <Tag
-                    icon={
-                        status === 'paid' ? <CheckCircleOutlined /> : <ClockCircleOutlined />
-                    }
-                    color={status === 'paid' ? 'success' : 'warning'}
-                >
+                <Tag icon={status === 'paid' ? <CheckCircleOutlined /> : <ClockCircleOutlined />} color={status === 'paid' ? 'success' : 'warning'}>
                     {status.toUpperCase()}
                 </Tag>
             ),
@@ -240,11 +225,7 @@ export default function PayrollIndex() {
                         options={YEARS}
                         style={{ width: 100 }}
                     />
-                    <Button
-                        icon={<DollarOutlined />}
-                        onClick={openPaymentModal}
-                        disabled={selectedPayrollIds.length === 0}
-                    >
+                    <Button icon={<DollarOutlined />} onClick={openPaymentModal} disabled={selectedPayrollIds.length === 0}>
                         Pay Selected ({selectedPayrollIds.length})
                     </Button>
                     <Button type="primary" icon={<PlusOutlined />} onClick={handleGenerate}>
@@ -279,37 +260,22 @@ export default function PayrollIndex() {
                 footer={null}
                 destroyOnClose
             >
-                <Form
-                    form={paymentForm}
-                    layout="vertical"
-                    onFinish={handlePayment}
-                >
-                    <Form.Item
-                        label="Account"
-                        name="account_id"
-                        rules={[{ required: true, message: 'Please select an account!' }]}
-                    >
+                <Form form={paymentForm} layout="vertical" onFinish={handlePayment}>
+                    <Form.Item label="Account" name="account_id" rules={[{ required: true, message: 'Please select an account!' }]}>
                         <Select
                             placeholder="Select PKR account"
-                            options={pkrAccounts.map(account => ({
+                            options={pkrAccounts.map((account) => ({
                                 label: `${account.name} (${account.formatted_current_balance})`,
                                 value: account.id,
                             }))}
                         />
                     </Form.Item>
 
-                    <Form.Item
-                        label="Payment Date"
-                        name="payment_date"
-                        rules={[{ required: true, message: 'Please select payment date!' }]}
-                    >
+                    <Form.Item label="Payment Date" name="payment_date" rules={[{ required: true, message: 'Please select payment date!' }]}>
                         <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
                     </Form.Item>
 
-                    <Form.Item
-                        label="Notes"
-                        name="notes"
-                    >
+                    <Form.Item label="Notes" name="notes">
                         <Input.TextArea rows={3} placeholder="Optional payment notes" />
                     </Form.Item>
 
@@ -318,9 +284,7 @@ export default function PayrollIndex() {
                             <Button type="primary" htmlType="submit" loading={paymentLoading}>
                                 Pay {selectedPayrollIds.length} Payroll{selectedPayrollIds.length > 1 ? 's' : ''}
                             </Button>
-                            <Button onClick={() => setPaymentModalVisible(false)}>
-                                Cancel
-                            </Button>
+                            <Button onClick={() => setPaymentModalVisible(false)}>Cancel</Button>
                         </Space>
                     </Form.Item>
                 </Form>

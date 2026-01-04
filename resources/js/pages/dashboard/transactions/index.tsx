@@ -1,11 +1,11 @@
-import React from 'react';
-import { Button, Space, Tag, theme } from 'antd';
+import DataTable from '@/components/ui/DataTable';
+import AppLayout from '@/layouts/app-layout';
+import { create, data } from '@/routes/transactions';
+import type { FilterConfig, Transaction } from '@/types';
 import { PlusOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
-import DataTable from '@/components/ui/DataTable';
-import type { Transaction, FilterConfig } from '@/types';
-import { data, create } from '@/routes/transactions';
+import { Button, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -48,9 +48,7 @@ export default function TransactionsIndex() {
                 <div>
                     <div style={{ fontWeight: 500 }}>{record.account?.name || '—'}</div>
                     {record.account?.currency_code && (
-                        <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-                            {record.account.currency_code}
-                        </div>
+                        <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>{record.account.currency_code}</div>
                     )}
                 </div>
             ),
@@ -80,8 +78,7 @@ export default function TransactionsIndex() {
             key: 'type',
             width: 100,
             filterable: true,
-            render: (type: unknown) =>
-                type === 'credit' ? <Tag color="green">Credit</Tag> : <Tag color="red">Debit</Tag>,
+            render: (type: unknown) => (type === 'credit' ? <Tag color="green">Credit</Tag> : <Tag color="red">Debit</Tag>),
         },
         {
             title: 'Amount',

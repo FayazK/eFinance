@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
-import ContactForm from './partials/contact-form';
 import { Card } from 'antd';
+import ContactForm from './partials/contact-form';
 
 export default function CreateContact() {
     return (

@@ -1,20 +1,11 @@
-import React from 'react';
-import { Button, Space, Tag, Dropdown, theme, Modal, notification } from 'antd';
-import {
-    EditOutlined,
-    DeleteOutlined,
-    PlusOutlined,
-    UserOutlined,
-    MoreOutlined,
-    MailOutlined,
-    PhoneOutlined,
-    TeamOutlined,
-} from '@ant-design/icons';
-import { Link } from '@inertiajs/react';
-import AppLayout from '@/layouts/app-layout';
 import DataTable from '@/components/ui/DataTable';
-import type { Contact, FilterConfig } from '@/types';
+import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
+import type { Contact, FilterConfig } from '@/types';
+import { DeleteOutlined, EditOutlined, MailOutlined, MoreOutlined, PhoneOutlined, PlusOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import { Link } from '@inertiajs/react';
+import { Button, Dropdown, Modal, notification, Space, Tag, theme } from 'antd';
+import React from 'react';
 
 const { useToken } = theme;
 
@@ -102,9 +93,7 @@ export default function ContactsIndex() {
                     {record.primary_phone && (
                         <Space size={4}>
                             <PhoneOutlined style={{ color: token.colorTextSecondary, fontSize: 12 }} />
-                            <span style={{ fontSize: '13px', color: token.colorTextSecondary }}>
-                                {record.primary_phone}
-                            </span>
+                            <span style={{ fontSize: '13px', color: token.colorTextSecondary }}>{record.primary_phone}</span>
                         </Space>
                     )}
                     {record.additional_emails && record.additional_emails.length > 0 && (
@@ -140,8 +129,7 @@ export default function ContactsIndex() {
             width: 120,
             filterable: true,
             sorter: true,
-            render: (createdAt: unknown) =>
-                createdAt ? new Date(createdAt as string).toLocaleDateString() : '—',
+            render: (createdAt: unknown) => (createdAt ? new Date(createdAt as string).toLocaleDateString() : '—'),
         },
         {
             title: 'Actions',
@@ -177,11 +165,7 @@ export default function ContactsIndex() {
                 ];
 
                 return (
-                    <Dropdown
-                        menu={{ items: menuItems }}
-                        trigger={['click']}
-                        placement="bottomRight"
-                    >
+                    <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">
                         <Button type="text" icon={<MoreOutlined />} />
                     </Dropdown>
                 );
