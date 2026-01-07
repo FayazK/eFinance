@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
 * @see app/Http/Controllers/DropdownController.php:15
@@ -42,42 +42,5 @@ DropdownController.head = (options?: RouteQueryOptions): RouteDefinition<'head'>
     url: DropdownController.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
-* @route '/dropdown'
-*/
-const DropdownControllerForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DropdownController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
-* @route '/dropdown'
-*/
-DropdownControllerForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DropdownController.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
-* @route '/dropdown'
-*/
-DropdownControllerForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: DropdownController.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-DropdownController.form = DropdownControllerForm
 
 export default DropdownController

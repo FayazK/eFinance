@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProjectLinkController::index
 * @see app/Http/Controllers/ProjectLinkController.php:21
@@ -68,43 +68,6 @@ index.head = (args: { project: number | { id: number } } | [project: number | { 
 })
 
 /**
-* @see \App\Http\Controllers\ProjectLinkController::index
-* @see app/Http/Controllers/ProjectLinkController.php:21
-* @route '/dashboard/projects/{project}/links'
-*/
-const indexForm = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::index
-* @see app/Http/Controllers/ProjectLinkController.php:21
-* @route '/dashboard/projects/{project}/links'
-*/
-indexForm.get = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::index
-* @see app/Http/Controllers/ProjectLinkController.php:21
-* @route '/dashboard/projects/{project}/links'
-*/
-indexForm.head = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
-
-/**
 * @see \App\Http\Controllers\ProjectLinkController::store
 * @see app/Http/Controllers/ProjectLinkController.php:30
 * @route '/dashboard/projects/{project}/links'
@@ -163,28 +126,6 @@ store.post = (args: { project: number | { id: number } } | [project: number | { 
 })
 
 /**
-* @see \App\Http\Controllers\ProjectLinkController::store
-* @see app/Http/Controllers/ProjectLinkController.php:30
-* @route '/dashboard/projects/{project}/links'
-*/
-const storeForm = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::store
-* @see app/Http/Controllers/ProjectLinkController.php:30
-* @route '/dashboard/projects/{project}/links'
-*/
-storeForm.post = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\ProjectLinkController::update
 * @see app/Http/Controllers/ProjectLinkController.php:41
 * @route '/dashboard/projects/{project}/links/{link}'
@@ -240,38 +181,6 @@ update.put = (args: { project: number | { id: number }, link: number | { id: num
 })
 
 /**
-* @see \App\Http\Controllers\ProjectLinkController::update
-* @see app/Http/Controllers/ProjectLinkController.php:41
-* @route '/dashboard/projects/{project}/links/{link}'
-*/
-const updateForm = (args: { project: number | { id: number }, link: number | { id: number } } | [project: number | { id: number }, link: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::update
-* @see app/Http/Controllers/ProjectLinkController.php:41
-* @route '/dashboard/projects/{project}/links/{link}'
-*/
-updateForm.put = (args: { project: number | { id: number }, link: number | { id: number } } | [project: number | { id: number }, link: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: update.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'PUT',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-update.form = updateForm
-
-/**
 * @see \App\Http\Controllers\ProjectLinkController::destroy
 * @see app/Http/Controllers/ProjectLinkController.php:56
 * @route '/dashboard/projects/{project}/links/{link}'
@@ -325,38 +234,6 @@ destroy.delete = (args: { project: number | { id: number }, link: number | { id:
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::destroy
-* @see app/Http/Controllers/ProjectLinkController.php:56
-* @route '/dashboard/projects/{project}/links/{link}'
-*/
-const destroyForm = (args: { project: number | { id: number }, link: number | { id: number } } | [project: number | { id: number }, link: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectLinkController::destroy
-* @see app/Http/Controllers/ProjectLinkController.php:56
-* @route '/dashboard/projects/{project}/links/{link}'
-*/
-destroyForm.delete = (args: { project: number | { id: number }, link: number | { id: number } } | [project: number | { id: number }, link: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const ProjectLinkController = { index, store, update, destroy }
 

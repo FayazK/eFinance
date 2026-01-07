@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DistributionController;
 use App\Http\Controllers\DropdownController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProjectController;
@@ -119,6 +120,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/create', [TransferController::class, 'create'])->name('create');
         Route::get('/{transfer}', [TransferController::class, 'show'])->name('show');
         Route::post('/', [TransferController::class, 'store'])->name('store');
+    });
+
+    // Expenses
+    Route::prefix('dashboard/expenses')->name('expenses.')->group(function () {
+        Route::get('/', [ExpenseController::class, 'index'])->name('index');
+        Route::get('/data', [ExpenseController::class, 'data'])->name('data');
+        Route::get('/create', [ExpenseController::class, 'create'])->name('create');
+        Route::get('/{id}', [ExpenseController::class, 'show'])->name('show');
+        Route::post('/', [ExpenseController::class, 'store'])->name('store');
+        Route::delete('/{id}', [ExpenseController::class, 'destroy'])->name('destroy');
+
+        // Helper route for exchange rates
+        Route::get('/last-exchange-rate/{currency}', [ExpenseController::class, 'lastExchangeRate'])->name('last-exchange-rate');
     });
 
     // Invoices

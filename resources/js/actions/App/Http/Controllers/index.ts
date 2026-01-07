@@ -10,6 +10,7 @@ import AccountController from './AccountController'
 import TransactionController from './TransactionController'
 import TransactionCategoryController from './TransactionCategoryController'
 import TransferController from './TransferController'
+import ExpenseController from './ExpenseController'
 import InvoiceController from './InvoiceController'
 import EmployeeController from './EmployeeController'
 import PayrollController from './PayrollController'
@@ -31,6 +32,7 @@ const Controllers = {
     TransactionController,
     TransactionCategoryController,
     TransferController,
+    ExpenseController,
     InvoiceController,
     EmployeeController,
     PayrollController,

@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\TransferController::index
 * @see app/Http/Controllers/TransferController.php:24
@@ -42,43 +42,6 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\TransferController::index
-* @see app/Http/Controllers/TransferController.php:24
-* @route '/dashboard/transfers'
-*/
-const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::index
-* @see app/Http/Controllers/TransferController.php:24
-* @route '/dashboard/transfers'
-*/
-indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::index
-* @see app/Http/Controllers/TransferController.php:24
-* @route '/dashboard/transfers'
-*/
-indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\TransferController::data
@@ -125,43 +88,6 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\TransferController::data
-* @see app/Http/Controllers/TransferController.php:29
-* @route '/dashboard/transfers/data'
-*/
-const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: data.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::data
-* @see app/Http/Controllers/TransferController.php:29
-* @route '/dashboard/transfers/data'
-*/
-dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: data.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::data
-* @see app/Http/Controllers/TransferController.php:29
-* @route '/dashboard/transfers/data'
-*/
-dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: data.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-data.form = dataForm
-
-/**
 * @see \App\Http\Controllers\TransferController::create
 * @see app/Http/Controllers/TransferController.php:42
 * @route '/dashboard/transfers/create'
@@ -204,43 +130,6 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: create.url(options),
     method: 'head',
 })
-
-/**
-* @see \App\Http\Controllers\TransferController::create
-* @see app/Http/Controllers/TransferController.php:42
-* @route '/dashboard/transfers/create'
-*/
-const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::create
-* @see app/Http/Controllers/TransferController.php:42
-* @route '/dashboard/transfers/create'
-*/
-createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::create
-* @see app/Http/Controllers/TransferController.php:42
-* @route '/dashboard/transfers/create'
-*/
-createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: create.url({
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-create.form = createForm
 
 /**
 * @see \App\Http\Controllers\TransferController::show
@@ -305,43 +194,6 @@ show.head = (args: { transfer: string | number } | [transfer: string | number ] 
 })
 
 /**
-* @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
-* @route '/dashboard/transfers/{transfer}'
-*/
-const showForm = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
-* @route '/dashboard/transfers/{transfer}'
-*/
-showForm.get = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
-* @route '/dashboard/transfers/{transfer}'
-*/
-showForm.head = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: show.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-show.form = showForm
-
-/**
 * @see \App\Http\Controllers\TransferController::store
 * @see app/Http/Controllers/TransferController.php:57
 * @route '/dashboard/transfers'
@@ -374,28 +226,6 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
-
-/**
-* @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
-* @route '/dashboard/transfers'
-*/
-const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
-* @route '/dashboard/transfers'
-*/
-storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(options),
-    method: 'post',
-})
-
-store.form = storeForm
 
 const transfers = {
     index,

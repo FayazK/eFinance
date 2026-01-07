@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults, validateParameters } from './../../../../../../wayfinder'
 /**
 * @see \Nnjeim\World\Http\Controllers\Country\CountryController::index
 * @see vendor/nnjeim/world/src/Http/Controllers/Country/CountryController.php:0
@@ -64,43 +64,6 @@ index.head = (args?: { prefix?: string | number } | [prefix: string | number ] |
     url: index.url(args, options),
     method: 'head',
 })
-
-/**
-* @see \Nnjeim\World\Http\Controllers\Country\CountryController::index
-* @see vendor/nnjeim/world/src/Http/Controllers/Country/CountryController.php:0
-* @route '/{prefix?}/countries'
-*/
-const indexForm = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \Nnjeim\World\Http\Controllers\Country\CountryController::index
-* @see vendor/nnjeim/world/src/Http/Controllers/Country/CountryController.php:0
-* @route '/{prefix?}/countries'
-*/
-indexForm.get = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, options),
-    method: 'get',
-})
-
-/**
-* @see \Nnjeim\World\Http\Controllers\Country\CountryController::index
-* @see vendor/nnjeim/world/src/Http/Controllers/Country/CountryController.php:0
-* @route '/{prefix?}/countries'
-*/
-indexForm.head = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
-    action: index.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'HEAD',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'get',
-})
-
-index.form = indexForm
 
 const CountryController = { index }
 

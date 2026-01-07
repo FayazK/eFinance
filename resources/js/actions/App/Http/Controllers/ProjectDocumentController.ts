@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ProjectDocumentController::store
 * @see app/Http/Controllers/ProjectDocumentController.php:19
@@ -58,28 +58,6 @@ store.post = (args: { project: number | { id: number } } | [project: number | { 
 })
 
 /**
-* @see \App\Http\Controllers\ProjectDocumentController::store
-* @see app/Http/Controllers/ProjectDocumentController.php:19
-* @route '/dashboard/projects/{project}/documents'
-*/
-const storeForm = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectDocumentController::store
-* @see app/Http/Controllers/ProjectDocumentController.php:19
-* @route '/dashboard/projects/{project}/documents'
-*/
-storeForm.post = (args: { project: number | { id: number } } | [project: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: store.url(args, options),
-    method: 'post',
-})
-
-store.form = storeForm
-
-/**
 * @see \App\Http\Controllers\ProjectDocumentController::destroy
 * @see app/Http/Controllers/ProjectDocumentController.php:38
 * @route '/dashboard/projects/{project}/documents/{media}'
@@ -133,38 +111,6 @@ destroy.delete = (args: { project: number | { id: number }, media: number | { id
     url: destroy.url(args, options),
     method: 'delete',
 })
-
-/**
-* @see \App\Http\Controllers\ProjectDocumentController::destroy
-* @see app/Http/Controllers/ProjectDocumentController.php:38
-* @route '/dashboard/projects/{project}/documents/{media}'
-*/
-const destroyForm = (args: { project: number | { id: number }, media: number | { id: number } } | [project: number | { id: number }, media: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-/**
-* @see \App\Http\Controllers\ProjectDocumentController::destroy
-* @see app/Http/Controllers/ProjectDocumentController.php:38
-* @route '/dashboard/projects/{project}/documents/{media}'
-*/
-destroyForm.delete = (args: { project: number | { id: number }, media: number | { id: number } } | [project: number | { id: number }, media: number | { id: number } ], options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
-    action: destroy.url(args, {
-        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
-            _method: 'DELETE',
-            ...(options?.query ?? options?.mergeQuery ?? {}),
-        }
-    }),
-    method: 'post',
-})
-
-destroy.form = destroyForm
 
 const ProjectDocumentController = { store, destroy }
 

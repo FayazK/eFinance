@@ -401,6 +401,53 @@ export interface Distribution {
     [key: string]: string | number | boolean | DistributionLine[] | null | undefined;
 }
 
+export type ExpenseStatus = 'draft' | 'processed' | 'cancelled';
+
+export interface Expense {
+    id: number;
+    account_id: number;
+    account?: {
+        id: number;
+        name: string;
+        currency_code: string;
+    };
+    category_id?: number;
+    category?: TransactionCategory;
+    transaction_id?: number;
+    transaction?: Transaction;
+    amount: number; // In major units for editing
+    formatted_amount: string; // For display
+    currency_code: string;
+    vendor?: string;
+    description?: string;
+    expense_date: string;
+    // Recurring fields
+    is_recurring: boolean;
+    is_active?: boolean;
+    recurrence_frequency?: 'monthly' | 'quarterly' | 'yearly';
+    recurrence_interval?: number;
+    recurrence_start_date?: string;
+    recurrence_end_date?: string;
+    next_occurrence_date?: string;
+    last_processed_date?: string;
+    // International/multi-currency fields
+    exchange_rate?: number;
+    reporting_amount_pkr?: number; // In major units (PKR)
+    formatted_reporting_amount?: string;
+    // Status
+    status: ExpenseStatus;
+    is_pending?: boolean;
+    is_processed?: boolean;
+    is_recurring_template?: boolean;
+    // Media
+    receipts?: Media[];
+    receipts_count?: number;
+    // Timestamps
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | { id: number; name: string; currency_code?: string } | TransactionCategory | Transaction | Media[] | null | undefined;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;

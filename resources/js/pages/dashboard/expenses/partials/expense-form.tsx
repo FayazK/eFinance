@@ -1,0 +1,370 @@
+import api from '@/lib/axios';
+import { index } from '@/routes/expenses';
+import { router } from '@inertiajs/react';
+import {
+    Button,
+    Col,
+    DatePicker,
+    Divider,
+    Form,
+    Input,
+    InputNumber,
+    notification,
+    Radio,
+    Row,
+    Select,
+    Space,
+    Upload,
+} from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+import type { UploadFile } from 'antd';
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+
+interface ExpenseFormProps {
+    accounts?: Array<{ id: number; name: string; currency_code: string; formatted_balance: string }>;
+    categories?: Array<{ id: number; name: string; color?: string }>;
+}
+
+export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseFormProps) {
+    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+    const [workflowType, setWorkflowType] = useState<'one-time' | 'recurring'>('one-time');
+    const [selectedAccount, setSelectedAccount] = useState<{ id: number; name: string; currency_code: string } | null>(null);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
+
+    const showExchangeRate = selectedAccount?.currency_code !== 'PKR';
+    const showRecurringFields = workflowType === 'recurring';
+
+    useEffect(() => {
+        // Set default date to today
+        form.setFieldValue('expense_date', dayjs());
+    }, [form]);
+
+    // Fetch last used exchange rate when account changes and it's a foreign currency
+    useEffect(() => {
+        if (selectedAccount && selectedAccount.currency_code !== 'PKR') {
+            fetchLastExchangeRate(selectedAccount.currency_code);
+        } else {
+            // Clear exchange rate for PKR accounts
+            form.setFieldValue('exchange_rate', undefined);
+        }
+    }, [selectedAccount, form]);
+
+    const fetchLastExchangeRate = async (currency: string) => {
+        setFetchingExchangeRate(true);
+        try {
+            const response = await api.get(`/dashboard/expenses/last-exchange-rate/${currency}`);
+            if (response.data.rate) {
+                form.setFieldValue('exchange_rate', response.data.rate);
+                notification.info({
+                    message: 'Exchange Rate Loaded',
+                    description: `Last used exchange rate for ${currency}: ${response.data.rate} PKR`,
+                    duration: 3,
+                });
+            }
+        } catch (error) {
+            console.error('Failed to fetch exchange rate:', error);
+        } finally {
+            setFetchingExchangeRate(false);
+        }
+    };
+
+    const handleAccountChange = (value: number) => {
+        const account = accounts.find((acc) => acc.id === value);
+        setSelectedAccount(account || null);
+    };
+
+    const handleWorkflowChange = (value: 'one-time' | 'recurring') => {
+        setWorkflowType(value);
+        // Clear recurring fields when switching to one-time
+        if (value === 'one-time') {
+            form.setFieldsValue({
+                recurrence_frequency: undefined,
+                recurrence_interval: undefined,
+                recurrence_start_date: undefined,
+                recurrence_end_date: undefined,
+            });
+        }
+    };
+
+    const onFinish = async (values: Record<string, unknown>) => {
+        setLoading(true);
+
+        // Format dates
+        const formattedValues = {
+            ...values,
+            expense_date: values.expense_date ? dayjs(values.expense_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
+            recurrence_start_date: values.recurrence_start_date
+                ? dayjs(values.recurrence_start_date as dayjs.Dayjs).format('YYYY-MM-DD')
+                : undefined,
+            recurrence_end_date: values.recurrence_end_date
+                ? dayjs(values.recurrence_end_date as dayjs.Dayjs).format('YYYY-MM-DD')
+                : undefined,
+            is_recurring: workflowType === 'recurring',
+            currency_code: selectedAccount?.currency_code,
+        };
+
+        // Create FormData for file upload
+        const formData = new FormData();
+        Object.keys(formattedValues).forEach((key) => {
+            const value = formattedValues[key];
+            if (value !== undefined && value !== null) {
+                formData.append(key, String(value));
+            }
+        });
+
+        // Append receipts if present
+        fileList.forEach((file) => {
+            if (file.originFileObj) {
+                formData.append('receipts[]', file.originFileObj);
+            }
+        });
+
+        try {
+            const response = await api.post('/dashboard/expenses', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            notification.success({
+                message: response.data.message || 'Expense recorded successfully',
+            });
+            router.visit(index.url());
+        } catch (error: unknown) {
+            const err = error as {
+                response?: {
+                    status: number;
+                    data: { errors: { [key: string]: string[] }; message: string };
+                };
+            };
+            if (err.response && err.response.status === 422) {
+                const validationErrors = err.response.data.errors;
+                const formErrors = Object.keys(validationErrors).map((key) => ({
+                    name: key,
+                    errors: validationErrors[key],
+                }));
+                form.setFields(formErrors);
+                notification.error({
+                    message: 'Validation Error',
+                    description: err.response.data.message,
+                });
+            } else {
+                notification.error({
+                    message: 'Error',
+                    description: 'An unexpected error occurred.',
+                });
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+            {/* Workflow Selector */}
+            <Form.Item label="Expense Type">
+                <Radio.Group
+                    value={workflowType}
+                    onChange={(e) => handleWorkflowChange(e.target.value as 'one-time' | 'recurring')}
+                    buttonStyle="solid"
+                >
+                    <Radio.Button value="one-time">One-Time Expense</Radio.Button>
+                    <Radio.Button value="recurring">Recurring Expense</Radio.Button>
+                </Radio.Group>
+            </Form.Item>
+
+            <Divider />
+
+            {/* Core Fields */}
+            <Row gutter={16}>
+                <Col span={12}>
+                    <Form.Item label="Account" name="account_id" rules={[{ required: true, message: 'Please select an account!' }]}>
+                        <Select
+                            placeholder="Select an account"
+                            showSearch
+                            onChange={handleAccountChange}
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                            options={accounts.map((account) => ({
+                                label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
+                                value: account.id,
+                            }))}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item label="Category" name="category_id">
+                        <Select
+                            placeholder="Select a category (optional)"
+                            allowClear
+                            showSearch
+                            filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                            options={categories.map((category) => ({
+                                label: category.name,
+                                value: category.id,
+                            }))}
+                        />
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Row gutter={16}>
+                <Col span={12}>
+                    <Form.Item
+                        label="Amount"
+                        name="amount"
+                        rules={[
+                            { required: true, message: 'Please input the amount!' },
+                            {
+                                type: 'number',
+                                min: 0.01,
+                                message: 'Amount must be greater than 0',
+                            },
+                        ]}
+                    >
+                        <InputNumber
+                            style={{ width: '100%' }}
+                            placeholder="0.00"
+                            precision={2}
+                            step={0.01}
+                            min={0.01}
+                            addonAfter={selectedAccount?.currency_code || 'Currency'}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label={workflowType === 'recurring' ? 'Start Date' : 'Expense Date'}
+                        name="expense_date"
+                        rules={[{ required: true, message: 'Please select a date!' }]}
+                    >
+                        <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            {/* Exchange Rate (International) */}
+            {showExchangeRate && (
+                <Form.Item
+                    label="Exchange Rate (to PKR)"
+                    name="exchange_rate"
+                    rules={[
+                        { required: true, message: 'Please input the exchange rate!' },
+                        {
+                            type: 'number',
+                            min: 0.01,
+                            message: 'Exchange rate must be greater than 0',
+                        },
+                    ]}
+                    extra={`1 ${selectedAccount?.currency_code} = X PKR`}
+                >
+                    <InputNumber
+                        style={{ width: '100%' }}
+                        placeholder="0.00"
+                        precision={4}
+                        step={0.01}
+                        min={0.01}
+                        loading={fetchingExchangeRate}
+                        addonAfter="PKR"
+                    />
+                </Form.Item>
+            )}
+
+            <Row gutter={16}>
+                <Col span={12}>
+                    <Form.Item label="Vendor" name="vendor">
+                        <Input placeholder="Enter vendor name (optional)" />
+                    </Form.Item>
+                </Col>
+            </Row>
+
+            <Form.Item label="Description" name="description">
+                <Input.TextArea rows={4} placeholder="Enter expense description (optional)" />
+            </Form.Item>
+
+            {/* Recurring Fields */}
+            {showRecurringFields && (
+                <>
+                    <Divider orientation="left">Recurring Settings</Divider>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item
+                                label="Frequency"
+                                name="recurrence_frequency"
+                                rules={[{ required: true, message: 'Please select a frequency!' }]}
+                            >
+                                <Select
+                                    placeholder="Select frequency"
+                                    options={[
+                                        { label: 'Monthly', value: 'monthly' },
+                                        { label: 'Quarterly', value: 'quarterly' },
+                                        { label: 'Yearly', value: 'yearly' },
+                                    ]}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item label="Interval" name="recurrence_interval" initialValue={1}>
+                                <InputNumber
+                                    style={{ width: '100%' }}
+                                    placeholder="1"
+                                    min={1}
+                                    max={12}
+                                    addonAfter="period(s)"
+                                />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Row gutter={16}>
+                        <Col span={12}>
+                            <Form.Item
+                                label="End Date (Optional)"
+                                name="recurrence_end_date"
+                                rules={[
+                                    {
+                                        validator: (_, value) => {
+                                            const startDate = form.getFieldValue('expense_date');
+                                            if (value && startDate && dayjs(value).isBefore(dayjs(startDate))) {
+                                                return Promise.reject('End date must be after start date');
+                                            }
+                                            return Promise.resolve();
+                                        },
+                                    },
+                                ]}
+                            >
+                                <DatePicker style={{ width: '100%' }} format="YYYY-MM-DD" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </>
+            )}
+
+            {/* Receipt Upload (One-time only) */}
+            {!showRecurringFields && (
+                <>
+                    <Divider orientation="left">Receipts</Divider>
+                    <Form.Item label="Upload Receipts" extra="Upload receipt images or PDFs (max 5MB each)">
+                        <Upload
+                            fileList={fileList}
+                            onChange={({ fileList: newFileList }) => setFileList(newFileList)}
+                            beforeUpload={() => false}
+                            multiple
+                            accept="image/jpeg,image/png,image/webp,application/pdf"
+                            maxCount={10}
+                        >
+                            <Button icon={<UploadOutlined />}>Select Files</Button>
+                        </Upload>
+                    </Form.Item>
+                </>
+            )}
+
+            <Form.Item>
+                <Space>
+                    <Button type="primary" htmlType="submit" loading={loading}>
+                        {workflowType === 'recurring' ? 'Create Recurring Template' : 'Record Expense'}
+                    </Button>
+                    <Button onClick={() => router.visit(index.url())}>Cancel</Button>
+                </Space>
+            </Form.Item>
+        </Form>
+    );
+}
