@@ -445,7 +445,16 @@ export interface Expense {
     // Timestamps
     created_at: string;
     updated_at: string;
-    [key: string]: string | number | boolean | { id: number; name: string; currency_code?: string } | TransactionCategory | Transaction | Media[] | null | undefined;
+    [key: string]:
+        | string
+        | number
+        | boolean
+        | { id: number; name: string; currency_code?: string }
+        | TransactionCategory
+        | Transaction
+        | Media[]
+        | null
+        | undefined;
 }
 
 export interface PaginationLinks {

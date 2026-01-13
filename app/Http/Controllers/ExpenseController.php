@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpenseStoreRequest;
+use App\Http\Resources\ExpenseResource;
 use App\Models\Account;
 use App\Models\TransactionCategory;
 use App\Services\ExpenseService;
 use App\Services\MediaService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -28,7 +30,7 @@ class ExpenseController extends Controller
         ]);
     }
 
-    public function data()
+    public function data(): AnonymousResourceCollection
     {
         $perPage = request()->integer('per_page', 15);
         $search = request()->string('search')->value();
@@ -44,7 +46,7 @@ class ExpenseController extends Controller
             $sortDirection
         );
 
-        return response()->json($expenses);
+        return ExpenseResource::collection($expenses);
     }
 
     public function create(): Response

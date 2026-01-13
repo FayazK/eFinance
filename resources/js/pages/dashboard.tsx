@@ -1,23 +1,91 @@
 import AppLayout from '@/layouts/app-layout';
-import { type SharedData } from '@/types';
+import type { SharedData } from '@/types';
 import {
     BankOutlined,
     CalendarOutlined,
-    ClockCircleOutlined,
     DollarOutlined,
     DownloadOutlined,
+    FileTextOutlined,
     FilterOutlined,
     MoreOutlined,
     PlusOutlined,
     ReloadOutlined,
-    ShoppingOutlined,
-    UserOutlined,
+    TeamOutlined,
 } from '@ant-design/icons';
-import { Head, usePage } from '@inertiajs/react';
-import { Avatar, Button, Card, Col, Dropdown, List, Progress, Row, Space, Statistic, Tag, theme, Tooltip, Typography } from 'antd';
+import { Head, router, usePage } from '@inertiajs/react';
+import { Button, Card, Col, Dropdown, Row, Space, Statistic, Tag, theme, Tooltip, Typography } from 'antd';
+import CashFlowChart from './dashboard/components/cash-flow-chart';
+import InvoiceStatusChart from './dashboard/components/invoice-status-chart';
+import RecentTransactionsList from './dashboard/components/recent-transactions-list';
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Paragraph, Text } = Typography;
 const { useToken } = theme;
+
+interface FinancialOverview {
+    accounts_by_currency: Array<{
+        currency_code: string;
+        total_balance: number;
+        formatted_balance: string;
+    }>;
+    total_active_accounts: number;
+}
+
+interface RevenueMetrics {
+    total_receivables: number;
+    formatted_receivables: string;
+    invoice_counts: {
+        draft: number;
+        sent: number;
+        partial: number;
+        paid: number;
+        overdue: number;
+    };
+    overdue_count: number;
+}
+
+interface PayrollSummary {
+    active_employees: number;
+    last_month_expense: number;
+    formatted_last_month: string;
+    pending_payrolls: number;
+}
+
+interface CashFlowTrend {
+    months: Array<{
+        label: string;
+        year: number;
+        month: number;
+        income: number;
+        expenses: number;
+        net: number;
+    }>;
+}
+
+interface InvoiceStatusBreakdown {
+    statuses: Array<{
+        status: string;
+        count: number;
+        total_amount: number;
+        formatted_amount: string;
+    }>;
+}
+
+interface RecentTransaction {
+    id: number;
+    date: string;
+    description: string;
+    amount: number;
+    formatted_amount: string;
+    type: 'credit' | 'debit';
+    account: {
+        name: string;
+        currency_code: string;
+    };
+    category: {
+        name: string;
+        color: string;
+    };
+}
 
 interface PageProps extends SharedData {
     distributableProfit: {
@@ -31,71 +99,32 @@ interface PageProps extends SharedData {
         avg_monthly_expenses_pkr: number;
         formatted_avg_monthly_expenses: string;
     };
+    financialOverview: FinancialOverview;
+    revenueMetrics: RevenueMetrics;
+    payrollSummary: PayrollSummary;
+    cashFlowTrend: CashFlowTrend;
+    invoiceStatusBreakdown: InvoiceStatusBreakdown;
+    recentTransactions: RecentTransaction[];
 }
 
 export default function Dashboard() {
-    const { auth, distributableProfit, runway } = usePage<PageProps>().props;
+    const {
+        auth,
+        distributableProfit,
+        runway,
+        financialOverview,
+        revenueMetrics,
+        payrollSummary,
+        cashFlowTrend,
+        invoiceStatusBreakdown,
+        recentTransactions,
+    } = usePage<PageProps>().props;
     const { token } = useToken();
-
-    const statsData = [
-        {
-            title: <Tooltip title="Undistributed profit available for distribution">Distributable Profit</Tooltip>,
-            value: distributableProfit.amount_pkr / 100,
-            prefix: <DollarOutlined style={{ color: token.colorSuccess }} />,
-            precision: 2,
-            formatter: () => distributableProfit.formatted_amount,
-        },
-        {
-            title: <Tooltip title="Months the company can operate on Office reserves based on average monthly expenses">Runway</Tooltip>,
-            value: runway.runway_months,
-            prefix: <CalendarOutlined style={{ color: token.colorInfo }} />,
-            suffix: runway.runway_months === 1 ? 'month' : 'months',
-            precision: 1,
-        },
-        {
-            title: <Tooltip title="Total retained earnings in Office Reserve">Office Reserve Balance</Tooltip>,
-            value: runway.office_balance_pkr / 100,
-            prefix: <BankOutlined style={{ color: token.colorPrimary }} />,
-            precision: 2,
-            formatter: () => runway.formatted_office_balance,
-        },
-    ];
-
-    const recentActivity = [
-        {
-            title: 'New user registered',
-            description: 'John Doe joined the platform',
-            time: '2 minutes ago',
-            avatar: <Avatar icon={<UserOutlined />} size="small" />,
-            tag: 'User',
-        },
-        {
-            title: 'Order completed',
-            description: 'Order #1234 has been processed',
-            time: '15 minutes ago',
-            avatar: <Avatar icon={<ShoppingOutlined />} size="small" style={{ backgroundColor: token.colorSuccess }} />,
-            tag: 'Order',
-        },
-        {
-            title: 'Payment received',
-            description: '$299.00 payment confirmed',
-            time: '1 hour ago',
-            avatar: <Avatar icon={<DollarOutlined />} size="small" style={{ backgroundColor: token.colorWarning }} />,
-            tag: 'Payment',
-        },
-        {
-            title: 'System update',
-            description: 'Database optimization completed',
-            time: '2 hours ago',
-            avatar: <Avatar icon={<ClockCircleOutlined />} size="small" style={{ backgroundColor: token.colorInfo }} />,
-            tag: 'System',
-        },
-    ];
 
     // Action buttons for the header
     const headerActions = (
         <Space>
-            <Button icon={<ReloadOutlined />} onClick={() => window.location.reload()}>
+            <Button icon={<ReloadOutlined />} onClick={() => router.reload()}>
                 Refresh
             </Button>
             <Button icon={<FilterOutlined />} type="default">
@@ -108,14 +137,14 @@ export default function Dashboard() {
                 menu={{
                     items: [
                         {
-                            key: 'new-user',
-                            icon: <UserOutlined />,
-                            label: 'Add User',
+                            key: 'new-invoice',
+                            icon: <FileTextOutlined />,
+                            label: 'New Invoice',
                         },
                         {
-                            key: 'new-report',
-                            icon: <PlusOutlined />,
-                            label: 'Create Report',
+                            key: 'new-expense',
+                            icon: <DollarOutlined />,
+                            label: 'New Expense',
                         },
                     ],
                 }}
@@ -137,90 +166,109 @@ export default function Dashboard() {
                     <Title level={2} style={{ marginBottom: token.marginXS }}>
                         Welcome back, {auth.user.full_name}!
                     </Title>
-                    <Paragraph type="secondary">Here's what's happening with your account today.</Paragraph>
+                    <Paragraph type="secondary">Here's your financial overview for the last 6 months.</Paragraph>
                 </div>
 
+                {/* Financial Overview - Dynamic columns based on currencies */}
                 <Row gutter={[16, 16]}>
-                    {statsData.map((stat, index) => (
-                        <Col xs={24} sm={12} lg={8} key={index}>
+                    {financialOverview.accounts_by_currency.map((currency) => (
+                        <Col xs={24} sm={12} lg={6} key={currency.currency_code}>
                             <Card>
                                 <Statistic
-                                    title={stat.title}
-                                    value={stat.value}
-                                    precision={stat.precision}
-                                    prefix={stat.prefix}
-                                    suffix={stat.suffix}
-                                    formatter={stat.formatter}
+                                    title={`Total Cash (${currency.currency_code})`}
+                                    value={currency.total_balance / 100}
+                                    precision={2}
+                                    prefix={<DollarOutlined style={{ color: token.colorSuccess }} />}
+                                    formatter={() => currency.formatted_balance}
                                 />
                             </Card>
                         </Col>
                     ))}
-                </Row>
-
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} lg={16}>
-                        <Card title="Recent Activity" style={{ height: '400px' }}>
-                            <List
-                                dataSource={recentActivity}
-                                renderItem={(item) => (
-                                    <List.Item>
-                                        <List.Item.Meta
-                                            avatar={item.avatar}
-                                            title={
-                                                <Space>
-                                                    {item.title}
-                                                    <Tag color="blue">{item.tag}</Tag>
-                                                </Space>
-                                            }
-                                            description={item.description}
-                                        />
-                                        <Text type="secondary">{item.time}</Text>
-                                    </List.Item>
-                                )}
+                    <Col xs={24} sm={12} lg={6}>
+                        <Card>
+                            <Statistic
+                                title={<Tooltip title="Undistributed profit available for distribution">Distributable Profit</Tooltip>}
+                                value={distributableProfit.amount_pkr / 100}
+                                precision={2}
+                                prefix={<DollarOutlined style={{ color: token.colorPrimary }} />}
+                                formatter={() => distributableProfit.formatted_amount}
                             />
                         </Card>
                     </Col>
+                </Row>
 
+                {/* Key Metrics - 3 columns */}
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} sm={12} lg={8}>
+                        <Card>
+                            <Statistic
+                                title="Total Receivables"
+                                value={revenueMetrics.total_receivables / 100}
+                                precision={2}
+                                prefix={<FileTextOutlined style={{ color: token.colorInfo }} />}
+                                formatter={() => revenueMetrics.formatted_receivables}
+                            />
+                            {revenueMetrics.overdue_count > 0 && (
+                                <Tag color="red" style={{ marginTop: 8 }}>
+                                    {revenueMetrics.overdue_count} Overdue
+                                </Tag>
+                            )}
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={12} lg={8}>
+                        <Card>
+                            <Statistic
+                                title={
+                                    <Tooltip title="Months the company can operate on Office reserves based on average monthly expenses">
+                                        Runway
+                                    </Tooltip>
+                                }
+                                value={runway.runway_months}
+                                precision={1}
+                                prefix={<CalendarOutlined style={{ color: token.colorWarning }} />}
+                                suffix={runway.runway_months === 1 ? 'month' : 'months'}
+                            />
+                        </Card>
+                    </Col>
+                    <Col xs={24} sm={12} lg={8}>
+                        <Card>
+                            <Statistic
+                                title="Active Employees"
+                                value={payrollSummary.active_employees}
+                                prefix={<TeamOutlined style={{ color: token.colorSuccess }} />}
+                            />
+                            <Text type="secondary" style={{ fontSize: 12 }}>
+                                Last month: {payrollSummary.formatted_last_month}
+                            </Text>
+                        </Card>
+                    </Col>
+                </Row>
+
+                {/* Charts Section */}
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} lg={16}>
+                        <CashFlowChart data={cashFlowTrend} />
+                    </Col>
                     <Col xs={24} lg={8}>
-                        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                            <Card title="Performance">
-                                <Space direction="vertical" style={{ width: '100%' }}>
-                                    <div>
-                                        <Text>CPU Usage</Text>
-                                        <Progress percent={65} strokeColor={token.colorSuccess} />
-                                    </div>
-                                    <div>
-                                        <Text>Memory Usage</Text>
-                                        <Progress percent={78} strokeColor={token.colorWarning} />
-                                    </div>
-                                    <div>
-                                        <Text>Storage</Text>
-                                        <Progress percent={45} strokeColor={token.colorInfo} />
-                                    </div>
-                                </Space>
-                            </Card>
+                        <InvoiceStatusChart data={invoiceStatusBreakdown} />
+                    </Col>
+                </Row>
 
-                            <Card title="Quick Stats">
-                                <Space direction="vertical" style={{ width: '100%' }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Text>Active Sessions</Text>
-                                        <Text strong>24</Text>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Text>Online Users</Text>
-                                        <Text strong>156</Text>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Text>Server Load</Text>
-                                        <Text strong>Low</Text>
-                                    </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                        <Text>Response Time</Text>
-                                        <Text strong>45ms</Text>
-                                    </div>
-                                </Space>
-                            </Card>
-                        </Space>
+                {/* Recent Transactions & Office Reserve */}
+                <Row gutter={[16, 16]}>
+                    <Col xs={24} lg={16}>
+                        <RecentTransactionsList transactions={recentTransactions} />
+                    </Col>
+                    <Col xs={24} lg={8}>
+                        <Card title="Office Reserve">
+                            <Statistic
+                                title={<Tooltip title="Total retained earnings in Office Reserve">Office Reserve Balance</Tooltip>}
+                                value={runway.office_balance_pkr / 100}
+                                precision={2}
+                                prefix={<BankOutlined style={{ color: token.colorPrimary }} />}
+                                formatter={() => runway.formatted_office_balance}
+                            />
+                        </Card>
                     </Col>
                 </Row>
             </Space>

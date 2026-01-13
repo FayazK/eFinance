@@ -5,7 +5,6 @@ import type { Expense, ExpenseStatus } from '@/types';
 import { ArrowLeftOutlined, DeleteOutlined, FileOutlined } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
 import { Button, Card, Col, Descriptions, Image, Modal, notification, Row, Space, Tag, theme } from 'antd';
-import React from 'react';
 
 const { useToken } = theme;
 
@@ -72,9 +71,7 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                             <Descriptions.Item label="Account">
                                 <div>
                                     <div style={{ fontWeight: 500 }}>{expense.account?.name}</div>
-                                    <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-                                        {expense.account?.currency_code}
-                                    </div>
+                                    <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>{expense.account?.currency_code}</div>
                                 </div>
                             </Descriptions.Item>
                             <Descriptions.Item label="Category">
@@ -85,18 +82,14 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                                 )}
                             </Descriptions.Item>
                             <Descriptions.Item label="Amount">
-                                <span style={{ fontWeight: 600, fontSize: '16px', color: token.colorError }}>
-                                    {expense.formatted_amount}
-                                </span>
+                                <span style={{ fontWeight: 600, fontSize: '16px', color: token.colorError }}>{expense.formatted_amount}</span>
                             </Descriptions.Item>
                             {expense.exchange_rate && expense.currency_code !== 'PKR' && (
                                 <>
                                     <Descriptions.Item label="Exchange Rate">
                                         1 {expense.currency_code} = {expense.exchange_rate} PKR
                                     </Descriptions.Item>
-                                    <Descriptions.Item label="PKR Amount">
-                                        {expense.formatted_reporting_amount || '—'}
-                                    </Descriptions.Item>
+                                    <Descriptions.Item label="PKR Amount">{expense.formatted_reporting_amount || '—'}</Descriptions.Item>
                                 </>
                             )}
                             {expense.vendor && <Descriptions.Item label="Vendor">{expense.vendor}</Descriptions.Item>}
@@ -112,15 +105,11 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                                     </Descriptions.Item>
                                     <Descriptions.Item label="Frequency">{expense.recurrence_frequency}</Descriptions.Item>
                                     {expense.next_occurrence_date && (
-                                        <Descriptions.Item label="Next Occurrence">
-                                            {expense.next_occurrence_date}
-                                        </Descriptions.Item>
+                                        <Descriptions.Item label="Next Occurrence">{expense.next_occurrence_date}</Descriptions.Item>
                                     )}
                                 </>
                             )}
-                            {expense.transaction_id && (
-                                <Descriptions.Item label="Transaction ID">#{expense.transaction_id}</Descriptions.Item>
-                            )}
+                            {expense.transaction_id && <Descriptions.Item label="Transaction ID">#{expense.transaction_id}</Descriptions.Item>}
                         </Descriptions>
                     </Card>
                 </Col>
@@ -140,9 +129,7 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                                             />
                                         ) : (
                                             <a href={receipt.url} target="_blank" rel="noopener noreferrer">
-                                                <Button icon={<FileOutlined />}>
-                                                    {receipt.name || `Receipt ${receipt.id}`}
-                                                </Button>
+                                                <Button icon={<FileOutlined />}>{receipt.name || `Receipt ${receipt.id}`}</Button>
                                             </a>
                                         )}
                                         <div style={{ marginTop: 8, fontSize: '12px', color: token.colorTextSecondary }}>

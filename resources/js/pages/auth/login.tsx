@@ -1,6 +1,5 @@
 import AuthLayout from '@/layouts/auth-layout';
 import api from '@/lib/axios';
-import { register } from '@/routes';
 import { request } from '@/routes/password';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Head, router } from '@inertiajs/react';
@@ -106,23 +105,6 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                     </Button>
                 </Form.Item>
             </Form>
-
-            <Flex
-                justify="center"
-                align="center"
-                style={{
-                    marginTop: token.marginLG,
-                    paddingTop: token.paddingLG,
-                    borderTop: `1px solid ${token.colorBorderSecondary}`,
-                }}
-            >
-                <Text style={{ color: token.colorTextSecondary, fontSize: token.fontSize }}>
-                    Don't have an account?{' '}
-                    <Link href={register.url()} style={{ color: token.colorPrimary, fontWeight: 500 }}>
-                        Create account
-                    </Link>
-                </Text>
-            </Flex>
         </AuthLayout>
     );
 }

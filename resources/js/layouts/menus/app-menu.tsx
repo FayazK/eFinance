@@ -1,12 +1,12 @@
 import { dashboard } from '@/routes';
+import { index as expenses } from '@/routes/expenses';
 import { type NavItem } from '@/types';
 import {
     BankOutlined,
-    BookOutlined,
+    CreditCardOutlined,
     DashboardOutlined,
     DollarOutlined,
     FileTextOutlined,
-    GithubOutlined,
     IdcardOutlined,
     PieChartOutlined,
     ProjectOutlined,
@@ -54,6 +54,11 @@ export const appMainNavItems: NavItem[] = [
         icon: SwapOutlined,
     },
     {
+        title: 'Expenses',
+        href: expenses.url(),
+        icon: CreditCardOutlined,
+    },
+    {
         title: 'Employees',
         href: '/dashboard/employees',
         icon: IdcardOutlined,
@@ -80,15 +85,4 @@ export const appMainNavItems: NavItem[] = [
     },
 ];
 
-export const appFooterNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: GithubOutlined,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOutlined,
-    },
-];
+export const appFooterNavItems: NavItem[] = [];

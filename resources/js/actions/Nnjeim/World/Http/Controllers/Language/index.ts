@@ -1,7 +1,7 @@
-import LanguageController from './LanguageController'
+import LanguageController from './LanguageController';
 
 const Language = {
     LanguageController,
-}
+};
 
-export default Language
+export default Language;

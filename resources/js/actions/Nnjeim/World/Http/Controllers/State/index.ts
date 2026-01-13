@@ -1,7 +1,7 @@
-import StateController from './StateController'
+import StateController from './StateController';
 
 const State = {
     StateController,
-}
+};
 
-export default State
+export default State;

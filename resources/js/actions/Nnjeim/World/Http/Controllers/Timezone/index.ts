@@ -1,7 +1,7 @@
-import TimezoneController from './TimezoneController'
+import TimezoneController from './TimezoneController';
 
 const Timezone = {
     TimezoneController,
-}
+};
 
-export default Timezone
+export default Timezone;

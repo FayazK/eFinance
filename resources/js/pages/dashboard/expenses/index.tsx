@@ -129,9 +129,7 @@ export default function ExpensesIndex() {
                 <div>
                     <div style={{ fontWeight: 600, color: token.colorError }}>−{record.formatted_amount}</div>
                     {record.exchange_rate && record.currency_code !== 'PKR' && (
-                        <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>
-                            @ {record.exchange_rate} PKR
-                        </div>
+                        <div style={{ color: token.colorTextSecondary, fontSize: '12px' }}>@ {record.exchange_rate} PKR</div>
                     )}
                 </div>
             ),

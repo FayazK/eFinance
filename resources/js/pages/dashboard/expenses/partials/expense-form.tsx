@@ -1,23 +1,9 @@
 import api from '@/lib/axios';
 import { index } from '@/routes/expenses';
-import { router } from '@inertiajs/react';
-import {
-    Button,
-    Col,
-    DatePicker,
-    Divider,
-    Form,
-    Input,
-    InputNumber,
-    notification,
-    Radio,
-    Row,
-    Select,
-    Space,
-    Upload,
-} from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import { router } from '@inertiajs/react';
 import type { UploadFile } from 'antd';
+import { Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Radio, Row, Select, Space, Upload } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
@@ -96,12 +82,8 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
         const formattedValues = {
             ...values,
             expense_date: values.expense_date ? dayjs(values.expense_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
-            recurrence_start_date: values.recurrence_start_date
-                ? dayjs(values.recurrence_start_date as dayjs.Dayjs).format('YYYY-MM-DD')
-                : undefined,
-            recurrence_end_date: values.recurrence_end_date
-                ? dayjs(values.recurrence_end_date as dayjs.Dayjs).format('YYYY-MM-DD')
-                : undefined,
+            recurrence_start_date: values.recurrence_start_date ? dayjs(values.recurrence_start_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
+            recurrence_end_date: values.recurrence_end_date ? dayjs(values.recurrence_end_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
             is_recurring: workflowType === 'recurring',
             currency_code: selectedAccount?.currency_code,
         };
@@ -304,13 +286,7 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
                         </Col>
                         <Col span={12}>
                             <Form.Item label="Interval" name="recurrence_interval" initialValue={1}>
-                                <InputNumber
-                                    style={{ width: '100%' }}
-                                    placeholder="1"
-                                    min={1}
-                                    max={12}
-                                    addonAfter="period(s)"
-                                />
+                                <InputNumber style={{ width: '100%' }} placeholder="1" min={1} max={12} addonAfter="period(s)" />
                             </Form.Item>
                         </Col>
                     </Row>

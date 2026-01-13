@@ -81,4 +81,31 @@ class TransactionRepository
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
     }
+
+    public function getRecentTransactions(int $limit = 10): \Illuminate\Support\Collection
+    {
+        return Transaction::with(['account', 'category'])
+            ->orderBy('date', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->get()
+            ->map(function ($transaction) {
+                return [
+                    'id' => $transaction->id,
+                    'date' => $transaction->date->format('M d, Y'),
+                    'description' => $transaction->description,
+                    'amount' => $transaction->amount,
+                    'formatted_amount' => $transaction->formatted_amount,
+                    'type' => $transaction->type,
+                    'account' => [
+                        'name' => $transaction->account?->name ?? 'N/A',
+                        'currency_code' => $transaction->account?->currency_code ?? 'PKR',
+                    ],
+                    'category' => [
+                        'name' => $transaction->category?->name ?? 'Uncategorized',
+                        'color' => $transaction->category?->color ?? 'default',
+                    ],
+                ];
+            });
+    }
 }
