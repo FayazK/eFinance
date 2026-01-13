@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\AccountController::index
 * @see app/Http/Controllers/AccountController.php:27
@@ -44,6 +44,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\AccountController::index
+* @see app/Http/Controllers/AccountController.php:27
+* @route '/dashboard/accounts'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::index
+* @see app/Http/Controllers/AccountController.php:27
+* @route '/dashboard/accounts'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::index
+* @see app/Http/Controllers/AccountController.php:27
+* @route '/dashboard/accounts'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
+
+/**
 * @see \App\Http\Controllers\AccountController::create
 * @see app/Http/Controllers/AccountController.php:39
 * @route '/dashboard/accounts/create'
@@ -86,6 +123,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: create.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\AccountController::create
+* @see app/Http/Controllers/AccountController.php:39
+* @route '/dashboard/accounts/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::create
+* @see app/Http/Controllers/AccountController.php:39
+* @route '/dashboard/accounts/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::create
+* @see app/Http/Controllers/AccountController.php:39
+* @route '/dashboard/accounts/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
 
 /**
 * @see \App\Http\Controllers\AccountController::show
@@ -156,6 +230,43 @@ show.head = (args: { account: number | { id: number } } | [account: number | { i
 })
 
 /**
+* @see \App\Http\Controllers\AccountController::show
+* @see app/Http/Controllers/AccountController.php:54
+* @route '/dashboard/accounts/{account}'
+*/
+const showForm = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::show
+* @see app/Http/Controllers/AccountController.php:54
+* @route '/dashboard/accounts/{account}'
+*/
+showForm.get = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::show
+* @see app/Http/Controllers/AccountController.php:54
+* @route '/dashboard/accounts/{account}'
+*/
+showForm.head = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\AccountController::edit
 * @see app/Http/Controllers/AccountController.php:61
 * @route '/dashboard/accounts/{account}/edit'
@@ -222,6 +333,43 @@ edit.head = (args: { account: number | { id: number } } | [account: number | { i
     url: edit.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\AccountController::edit
+* @see app/Http/Controllers/AccountController.php:61
+* @route '/dashboard/accounts/{account}/edit'
+*/
+const editForm = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::edit
+* @see app/Http/Controllers/AccountController.php:61
+* @route '/dashboard/accounts/{account}/edit'
+*/
+editForm.get = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::edit
+* @see app/Http/Controllers/AccountController.php:61
+* @route '/dashboard/accounts/{account}/edit'
+*/
+editForm.head = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\AccountController::transactions
@@ -292,6 +440,43 @@ transactions.head = (args: { account: number | { id: number } } | [account: numb
 })
 
 /**
+* @see \App\Http\Controllers\AccountController::transactions
+* @see app/Http/Controllers/AccountController.php:93
+* @route '/dashboard/accounts/{account}/transactions'
+*/
+const transactionsForm = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: transactions.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::transactions
+* @see app/Http/Controllers/AccountController.php:93
+* @route '/dashboard/accounts/{account}/transactions'
+*/
+transactionsForm.get = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: transactions.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::transactions
+* @see app/Http/Controllers/AccountController.php:93
+* @route '/dashboard/accounts/{account}/transactions'
+*/
+transactionsForm.head = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: transactions.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+transactions.form = transactionsForm
+
+/**
 * @see \App\Http\Controllers\AccountController::store
 * @see app/Http/Controllers/AccountController.php:44
 * @route '/dashboard/accounts'
@@ -324,6 +509,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\AccountController::store
+* @see app/Http/Controllers/AccountController.php:44
+* @route '/dashboard/accounts'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::store
+* @see app/Http/Controllers/AccountController.php:44
+* @route '/dashboard/accounts'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\AccountController::update
@@ -384,6 +591,38 @@ update.put = (args: { account: number | { id: number } } | [account: number | { 
 })
 
 /**
+* @see \App\Http\Controllers\AccountController::update
+* @see app/Http/Controllers/AccountController.php:68
+* @route '/dashboard/accounts/{account}'
+*/
+const updateForm = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::update
+* @see app/Http/Controllers/AccountController.php:68
+* @route '/dashboard/accounts/{account}'
+*/
+updateForm.put = (args: { account: number | { id: number } } | [account: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\AccountController::destroy
 * @see app/Http/Controllers/AccountController.php:78
 * @route '/dashboard/accounts/{account}'
@@ -434,6 +673,38 @@ destroy.delete = (args: { account: string | number } | [account: string | number
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\AccountController::destroy
+* @see app/Http/Controllers/AccountController.php:78
+* @route '/dashboard/accounts/{account}'
+*/
+const destroyForm = (args: { account: string | number } | [account: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\AccountController::destroy
+* @see app/Http/Controllers/AccountController.php:78
+* @route '/dashboard/accounts/{account}'
+*/
+destroyForm.delete = (args: { account: string | number } | [account: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const AccountController = { index, create, show, edit, transactions, store, update, destroy }
 

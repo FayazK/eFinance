@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition } from './../../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Settings\ProfileController::edit
 * @see app/Http/Controllers/Settings/ProfileController.php:28
@@ -44,6 +44,43 @@ edit.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\Settings\ProfileController::edit
+* @see app/Http/Controllers/Settings/ProfileController.php:28
+* @route '/settings/account'
+*/
+const editForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::edit
+* @see app/Http/Controllers/Settings/ProfileController.php:28
+* @route '/settings/account'
+*/
+editForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::edit
+* @see app/Http/Controllers/Settings/ProfileController.php:28
+* @route '/settings/account'
+*/
+editForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
+
+/**
 * @see \App\Http\Controllers\Settings\ProfileController::update
 * @see app/Http/Controllers/Settings/ProfileController.php:39
 * @route '/settings/profile'
@@ -76,6 +113,38 @@ update.patch = (options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(options),
     method: 'patch',
 })
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::update
+* @see app/Http/Controllers/Settings/ProfileController.php:39
+* @route '/settings/profile'
+*/
+const updateForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::update
+* @see app/Http/Controllers/Settings/ProfileController.php:39
+* @route '/settings/profile'
+*/
+updateForm.patch = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PATCH',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\Settings\ProfileController::destroy
@@ -112,6 +181,38 @@ destroy.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\Settings\ProfileController::destroy
+* @see app/Http/Controllers/Settings/ProfileController.php:49
+* @route '/settings/profile'
+*/
+const destroyForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::destroy
+* @see app/Http/Controllers/Settings/ProfileController.php:49
+* @route '/settings/profile'
+*/
+destroyForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
+
+/**
 * @see \App\Http\Controllers\Settings\ProfileController::updateAvatar
 * @see app/Http/Controllers/Settings/ProfileController.php:70
 * @route '/settings/avatar'
@@ -146,6 +247,28 @@ updateAvatar.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\Settings\ProfileController::updateAvatar
+* @see app/Http/Controllers/Settings/ProfileController.php:70
+* @route '/settings/avatar'
+*/
+const updateAvatarForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updateAvatar.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::updateAvatar
+* @see app/Http/Controllers/Settings/ProfileController.php:70
+* @route '/settings/avatar'
+*/
+updateAvatarForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updateAvatar.url(options),
+    method: 'post',
+})
+
+updateAvatar.form = updateAvatarForm
+
+/**
 * @see \App\Http\Controllers\Settings\ProfileController::destroyAvatar
 * @see app/Http/Controllers/Settings/ProfileController.php:87
 * @route '/settings/avatar'
@@ -178,6 +301,38 @@ destroyAvatar.delete = (options?: RouteQueryOptions): RouteDefinition<'delete'> 
     url: destroyAvatar.url(options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::destroyAvatar
+* @see app/Http/Controllers/Settings/ProfileController.php:87
+* @route '/settings/avatar'
+*/
+const destroyAvatarForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyAvatar.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\Settings\ProfileController::destroyAvatar
+* @see app/Http/Controllers/Settings/ProfileController.php:87
+* @route '/settings/avatar'
+*/
+destroyAvatarForm.delete = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroyAvatar.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroyAvatar.form = destroyAvatarForm
 
 const ProfileController = { edit, update, destroy, updateAvatar, destroyAvatar }
 

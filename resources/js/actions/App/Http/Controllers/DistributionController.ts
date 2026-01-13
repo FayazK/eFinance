@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\DistributionController::index
 * @see app/Http/Controllers/DistributionController.php:27
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::index
+* @see app/Http/Controllers/DistributionController.php:27
+* @route '/dashboard/distributions'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::index
+* @see app/Http/Controllers/DistributionController.php:27
+* @route '/dashboard/distributions'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::index
+* @see app/Http/Controllers/DistributionController.php:27
+* @route '/dashboard/distributions'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
@@ -88,6 +125,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\DistributionController::create
+* @see app/Http/Controllers/DistributionController.php:36
+* @route '/dashboard/distributions/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::create
+* @see app/Http/Controllers/DistributionController.php:36
+* @route '/dashboard/distributions/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::create
+* @see app/Http/Controllers/DistributionController.php:36
+* @route '/dashboard/distributions/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
+
+/**
 * @see \App\Http\Controllers\DistributionController::data
 * @see app/Http/Controllers/DistributionController.php:54
 * @route '/dashboard/distributions/data'
@@ -130,6 +204,43 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: data.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::data
+* @see app/Http/Controllers/DistributionController.php:54
+* @route '/dashboard/distributions/data'
+*/
+const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::data
+* @see app/Http/Controllers/DistributionController.php:54
+* @route '/dashboard/distributions/data'
+*/
+dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::data
+* @see app/Http/Controllers/DistributionController.php:54
+* @route '/dashboard/distributions/data'
+*/
+dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
@@ -194,6 +305,43 @@ show.head = (args: { id: string | number } | [id: string | number ] | string | n
 })
 
 /**
+* @see \App\Http\Controllers\DistributionController::show
+* @see app/Http/Controllers/DistributionController.php:81
+* @route '/dashboard/distributions/{id}'
+*/
+const showForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::show
+* @see app/Http/Controllers/DistributionController.php:81
+* @route '/dashboard/distributions/{id}'
+*/
+showForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::show
+* @see app/Http/Controllers/DistributionController.php:81
+* @route '/dashboard/distributions/{id}'
+*/
+showForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\DistributionController::store
 * @see app/Http/Controllers/DistributionController.php:67
 * @route '/dashboard/distributions'
@@ -226,6 +374,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::store
+* @see app/Http/Controllers/DistributionController.php:67
+* @route '/dashboard/distributions'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::store
+* @see app/Http/Controllers/DistributionController.php:67
+* @route '/dashboard/distributions'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
@@ -280,6 +450,38 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 })
 
 /**
+* @see \App\Http\Controllers\DistributionController::update
+* @see app/Http/Controllers/DistributionController.php:97
+* @route '/dashboard/distributions/{id}'
+*/
+const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::update
+* @see app/Http/Controllers/DistributionController.php:97
+* @route '/dashboard/distributions/{id}'
+*/
+updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\DistributionController::destroy
 * @see app/Http/Controllers/DistributionController.php:107
 * @route '/dashboard/distributions/{id}'
@@ -330,6 +532,38 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::destroy
+* @see app/Http/Controllers/DistributionController.php:107
+* @route '/dashboard/distributions/{id}'
+*/
+const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::destroy
+* @see app/Http/Controllers/DistributionController.php:107
+* @route '/dashboard/distributions/{id}'
+*/
+destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
@@ -384,6 +618,38 @@ adjustProfit.put = (args: { id: string | number } | [id: string | number ] | str
 })
 
 /**
+* @see \App\Http\Controllers\DistributionController::adjustProfit
+* @see app/Http/Controllers/DistributionController.php:116
+* @route '/dashboard/distributions/{id}/adjust-profit'
+*/
+const adjustProfitForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: adjustProfit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::adjustProfit
+* @see app/Http/Controllers/DistributionController.php:116
+* @route '/dashboard/distributions/{id}/adjust-profit'
+*/
+adjustProfitForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: adjustProfit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+adjustProfit.form = adjustProfitForm
+
+/**
 * @see \App\Http\Controllers\DistributionController::process
 * @see app/Http/Controllers/DistributionController.php:130
 * @route '/dashboard/distributions/{id}/process'
@@ -434,6 +700,28 @@ process.post = (args: { id: string | number } | [id: string | number ] | string 
     url: process.url(args, options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::process
+* @see app/Http/Controllers/DistributionController.php:130
+* @route '/dashboard/distributions/{id}/process'
+*/
+const processForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::process
+* @see app/Http/Controllers/DistributionController.php:130
+* @route '/dashboard/distributions/{id}/process'
+*/
+processForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+process.form = processForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
@@ -495,6 +783,43 @@ downloadStatement.head = (args: { id: string | number, shareholderId: string | n
     url: downloadStatement.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\DistributionController::downloadStatement
+* @see app/Http/Controllers/DistributionController.php:143
+* @route '/dashboard/distributions/{id}/statements/{shareholderId}'
+*/
+const downloadStatementForm = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadStatement.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::downloadStatement
+* @see app/Http/Controllers/DistributionController.php:143
+* @route '/dashboard/distributions/{id}/statements/{shareholderId}'
+*/
+downloadStatementForm.get = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadStatement.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\DistributionController::downloadStatement
+* @see app/Http/Controllers/DistributionController.php:143
+* @route '/dashboard/distributions/{id}/statements/{shareholderId}'
+*/
+downloadStatementForm.head = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: downloadStatement.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+downloadStatement.form = downloadStatementForm
 
 const DistributionController = { index, create, data, show, store, update, destroy, adjustProfit, process, downloadStatement }
 

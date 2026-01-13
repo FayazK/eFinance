@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\ExpenseController::index
 * @see app/Http/Controllers/ExpenseController.php:23
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ExpenseController::index
+* @see app/Http/Controllers/ExpenseController.php:23
+* @route '/dashboard/expenses'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::index
+* @see app/Http/Controllers/ExpenseController.php:23
+* @route '/dashboard/expenses'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::index
+* @see app/Http/Controllers/ExpenseController.php:23
+* @route '/dashboard/expenses'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
@@ -88,6 +125,43 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ExpenseController::data
+* @see app/Http/Controllers/ExpenseController.php:31
+* @route '/dashboard/expenses/data'
+*/
+const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::data
+* @see app/Http/Controllers/ExpenseController.php:31
+* @route '/dashboard/expenses/data'
+*/
+dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::data
+* @see app/Http/Controllers/ExpenseController.php:31
+* @route '/dashboard/expenses/data'
+*/
+dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+data.form = dataForm
+
+/**
 * @see \App\Http\Controllers\ExpenseController::create
 * @see app/Http/Controllers/ExpenseController.php:50
 * @route '/dashboard/expenses/create'
@@ -130,6 +204,43 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: create.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ExpenseController::create
+* @see app/Http/Controllers/ExpenseController.php:50
+* @route '/dashboard/expenses/create'
+*/
+const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::create
+* @see app/Http/Controllers/ExpenseController.php:50
+* @route '/dashboard/expenses/create'
+*/
+createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::create
+* @see app/Http/Controllers/ExpenseController.php:50
+* @route '/dashboard/expenses/create'
+*/
+createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: create.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+create.form = createForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
@@ -194,6 +305,43 @@ show.head = (args: { id: string | number } | [id: string | number ] | string | n
 })
 
 /**
+* @see \App\Http\Controllers\ExpenseController::show
+* @see app/Http/Controllers/ExpenseController.php:98
+* @route '/dashboard/expenses/{id}'
+*/
+const showForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::show
+* @see app/Http/Controllers/ExpenseController.php:98
+* @route '/dashboard/expenses/{id}'
+*/
+showForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::show
+* @see app/Http/Controllers/ExpenseController.php:98
+* @route '/dashboard/expenses/{id}'
+*/
+showForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: show.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+show.form = showForm
+
+/**
 * @see \App\Http\Controllers\ExpenseController::store
 * @see app/Http/Controllers/ExpenseController.php:71
 * @route '/dashboard/expenses'
@@ -226,6 +374,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ExpenseController::store
+* @see app/Http/Controllers/ExpenseController.php:71
+* @route '/dashboard/expenses'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::store
+* @see app/Http/Controllers/ExpenseController.php:71
+* @route '/dashboard/expenses'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::destroy
@@ -278,6 +448,38 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\ExpenseController::destroy
+* @see app/Http/Controllers/ExpenseController.php:111
+* @route '/dashboard/expenses/{id}'
+*/
+const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::destroy
+* @see app/Http/Controllers/ExpenseController.php:111
+* @route '/dashboard/expenses/{id}'
+*/
+destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
@@ -340,6 +542,43 @@ lastExchangeRate.head = (args: { currency: string | number } | [currency: string
     url: lastExchangeRate.url(args, options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ExpenseController::lastExchangeRate
+* @see app/Http/Controllers/ExpenseController.php:123
+* @route '/dashboard/expenses/last-exchange-rate/{currency}'
+*/
+const lastExchangeRateForm = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: lastExchangeRate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::lastExchangeRate
+* @see app/Http/Controllers/ExpenseController.php:123
+* @route '/dashboard/expenses/last-exchange-rate/{currency}'
+*/
+lastExchangeRateForm.get = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: lastExchangeRate.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::lastExchangeRate
+* @see app/Http/Controllers/ExpenseController.php:123
+* @route '/dashboard/expenses/last-exchange-rate/{currency}'
+*/
+lastExchangeRateForm.head = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: lastExchangeRate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+lastExchangeRate.form = lastExchangeRateForm
 
 const expenses = {
     index,

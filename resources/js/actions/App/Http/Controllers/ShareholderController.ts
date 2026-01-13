@@ -1,4 +1,4 @@
-import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ShareholderController::index
 * @see app/Http/Controllers/ShareholderController.php:22
@@ -42,6 +42,43 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(options),
     method: 'head',
 })
+
+/**
+* @see \App\Http\Controllers\ShareholderController::index
+* @see app/Http/Controllers/ShareholderController.php:22
+* @route '/dashboard/shareholders'
+*/
+const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::index
+* @see app/Http/Controllers/ShareholderController.php:22
+* @route '/dashboard/shareholders'
+*/
+indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::index
+* @see app/Http/Controllers/ShareholderController.php:22
+* @route '/dashboard/shareholders'
+*/
+indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: index.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ShareholderController::data
@@ -88,6 +125,43 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
+* @see \App\Http\Controllers\ShareholderController::data
+* @see app/Http/Controllers/ShareholderController.php:27
+* @route '/dashboard/shareholders/data'
+*/
+const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::data
+* @see app/Http/Controllers/ShareholderController.php:27
+* @route '/dashboard/shareholders/data'
+*/
+dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::data
+* @see app/Http/Controllers/ShareholderController.php:27
+* @route '/dashboard/shareholders/data'
+*/
+dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: data.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+data.form = dataForm
+
+/**
 * @see \App\Http\Controllers\ShareholderController::validateEquity
 * @see app/Http/Controllers/ShareholderController.php:69
 * @route '/dashboard/shareholders/validate-equity'
@@ -132,6 +206,43 @@ validateEquity.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => 
 })
 
 /**
+* @see \App\Http\Controllers\ShareholderController::validateEquity
+* @see app/Http/Controllers/ShareholderController.php:69
+* @route '/dashboard/shareholders/validate-equity'
+*/
+const validateEquityForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: validateEquity.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::validateEquity
+* @see app/Http/Controllers/ShareholderController.php:69
+* @route '/dashboard/shareholders/validate-equity'
+*/
+validateEquityForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: validateEquity.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::validateEquity
+* @see app/Http/Controllers/ShareholderController.php:69
+* @route '/dashboard/shareholders/validate-equity'
+*/
+validateEquityForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: validateEquity.url({
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+validateEquity.form = validateEquityForm
+
+/**
 * @see \App\Http\Controllers\ShareholderController::store
 * @see app/Http/Controllers/ShareholderController.php:40
 * @route '/dashboard/shareholders'
@@ -164,6 +275,28 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
     url: store.url(options),
     method: 'post',
 })
+
+/**
+* @see \App\Http\Controllers\ShareholderController::store
+* @see app/Http/Controllers/ShareholderController.php:40
+* @route '/dashboard/shareholders'
+*/
+const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::store
+* @see app/Http/Controllers/ShareholderController.php:40
+* @route '/dashboard/shareholders'
+*/
+storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: store.url(options),
+    method: 'post',
+})
+
+store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\ShareholderController::update
@@ -218,6 +351,38 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 })
 
 /**
+* @see \App\Http\Controllers\ShareholderController::update
+* @see app/Http/Controllers/ShareholderController.php:50
+* @route '/dashboard/shareholders/{id}'
+*/
+const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::update
+* @see app/Http/Controllers/ShareholderController.php:50
+* @route '/dashboard/shareholders/{id}'
+*/
+updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
 * @see \App\Http\Controllers\ShareholderController::destroy
 * @see app/Http/Controllers/ShareholderController.php:60
 * @route '/dashboard/shareholders/{id}'
@@ -268,6 +433,38 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
     url: destroy.url(args, options),
     method: 'delete',
 })
+
+/**
+* @see \App\Http\Controllers\ShareholderController::destroy
+* @see app/Http/Controllers/ShareholderController.php:60
+* @route '/dashboard/shareholders/{id}'
+*/
+const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ShareholderController::destroy
+* @see app/Http/Controllers/ShareholderController.php:60
+* @route '/dashboard/shareholders/{id}'
+*/
+destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: destroy.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'DELETE',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+destroy.form = destroyForm
 
 const ShareholderController = { index, data, validateEquity, store, update, destroy }
 
