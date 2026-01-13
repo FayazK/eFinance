@@ -1,10 +1,10 @@
-import AuthenticatedSessionController from './AuthenticatedSessionController';
-import ConfirmablePasswordController from './ConfirmablePasswordController';
-import EmailVerificationNotificationController from './EmailVerificationNotificationController';
-import EmailVerificationPromptController from './EmailVerificationPromptController';
-import NewPasswordController from './NewPasswordController';
-import PasswordResetLinkController from './PasswordResetLinkController';
-import VerifyEmailController from './VerifyEmailController';
+import AuthenticatedSessionController from './AuthenticatedSessionController'
+import PasswordResetLinkController from './PasswordResetLinkController'
+import NewPasswordController from './NewPasswordController'
+import EmailVerificationPromptController from './EmailVerificationPromptController'
+import VerifyEmailController from './VerifyEmailController'
+import EmailVerificationNotificationController from './EmailVerificationNotificationController'
+import ConfirmablePasswordController from './ConfirmablePasswordController'
 
 const Auth = {
     AuthenticatedSessionController,
@@ -14,6 +14,6 @@ const Auth = {
     VerifyEmailController,
     EmailVerificationNotificationController,
     ConfirmablePasswordController,
-};
+}
 
-export default Auth;
+export default Auth

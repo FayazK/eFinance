@@ -1,7 +1,7 @@
-import CurrencyController from './CurrencyController';
+import CurrencyController from './CurrencyController'
 
 const Currency = {
     CurrencyController,
-};
+}
 
-export default Currency;
+export default Currency

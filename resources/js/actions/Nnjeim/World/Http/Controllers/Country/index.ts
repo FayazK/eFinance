@@ -1,7 +1,7 @@
-import CountryController from './CountryController';
+import CountryController from './CountryController'
 
 const Country = {
     CountryController,
-};
+}
 
-export default Country;
+export default Country

@@ -1,130 +1,109 @@
-import {
-    applyUrlDefaults,
-    queryParams,
-    validateParameters,
-    type RouteDefinition,
-    type RouteFormDefinition,
-    type RouteQueryOptions,
-} from './../../wayfinder';
+import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults, validateParameters } from './../../wayfinder'
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-export const index = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteDefinition<'get'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+export const index = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
-});
+})
 
 index.definition = {
-    methods: ['get', 'head'],
+    methods: ["get","head"],
     url: '/{prefix?}/timezones',
-} satisfies RouteDefinition<['get', 'head']>;
+} satisfies RouteDefinition<["get","head"]>
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-index.url = (args?: { prefix?: string | number } | [prefix: string | number] | string | number, options?: RouteQueryOptions) => {
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+index.url = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
-        args = { prefix: args };
+        args = { prefix: args }
     }
 
     if (Array.isArray(args)) {
         args = {
             prefix: args[0],
-        };
+        }
     }
 
-    args = applyUrlDefaults(args);
+    args = applyUrlDefaults(args)
 
-    validateParameters(args, ['prefix']);
+    validateParameters(args, [
+        "prefix",
+    ])
 
     const parsedArgs = {
         prefix: args?.prefix,
-    };
+    }
 
-    return index.definition.url.replace('{prefix?}', parsedArgs.prefix?.toString() ?? '').replace(/\/+$/, '') + queryParams(options);
-};
+    return index.definition.url
+            .replace('{prefix?}', parsedArgs.prefix?.toString() ?? '')
+            .replace(/\/+$/, '') + queryParams(options)
+}
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-index.get = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteDefinition<'get'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+index.get = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: index.url(args, options),
     method: 'get',
-});
+})
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-index.head = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteDefinition<'head'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+index.head = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: index.url(args, options),
     method: 'head',
-});
+})
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-const indexForm = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteFormDefinition<'get'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+const indexForm = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, options),
     method: 'get',
-});
+})
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-indexForm.get = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteFormDefinition<'get'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+indexForm.get = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, options),
     method: 'get',
-});
+})
 
 /**
- * @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
- * @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
- * @route '/{prefix?}/timezones'
- */
-indexForm.head = (
-    args?: { prefix?: string | number } | [prefix: string | number] | string | number,
-    options?: RouteQueryOptions,
-): RouteFormDefinition<'get'> => ({
+* @see \Nnjeim\World\Http\Controllers\Timezone\TimezoneController::index
+* @see vendor/nnjeim/world/src/Http/Controllers/Timezone/TimezoneController.php:0
+* @route '/{prefix?}/timezones'
+*/
+indexForm.head = (args?: { prefix?: string | number } | [prefix: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: index.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
             ...(options?.query ?? options?.mergeQuery ?? {}),
-        },
+        }
     }),
     method: 'get',
-});
+})
 
-index.form = indexForm;
+index.form = indexForm
 
 const timezones = {
     index,
-};
+}
 
-export default timezones;
+export default timezones

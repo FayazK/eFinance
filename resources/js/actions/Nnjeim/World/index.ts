@@ -1,7 +1,7 @@
-import Http from './Http';
+import Http from './Http'
 
 const World = {
     Http,
-};
+}
 
-export default World;
+export default World
