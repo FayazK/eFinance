@@ -18,7 +18,7 @@ interface Notification {
 const mockNotifications: Notification[] = [
     {
         id: '1',
-        title: 'Welcome to Liar!',
+        title: 'Welcome to Envoice!',
         description: 'Thanks for joining us. Explore the dashboard to get started.',
         timestamp: '2 hours ago',
         read: false,

@@ -8,7 +8,6 @@ import { LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, Sea
 import { Link, router, usePage } from '@inertiajs/react';
 import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, theme, Typography } from 'antd';
 import { type ReactNode } from 'react';
-import logo from '../../images/logo.svg';
 
 const { Header, Sider, Content } = Layout;
 const { Text, Title } = Typography;
@@ -116,38 +115,11 @@ export default function MasterLayout({ children, pageTitle, actions, mainNavItem
                         flexShrink: 0,
                     }}
                 >
-                    {!collapsed || isMobile ? (
-                        <Link href={dashboard()} prefetch onClick={isMobile ? closeMobileMenu : undefined}>
-                            <Flex align="center" gap="small">
-                                <img
-                                    src={logo}
-                                    alt="Liar Logo"
-                                    width="32"
-                                    height="32"
-                                    style={{
-                                        height: '32px',
-                                        width: '32px',
-                                    }}
-                                />
-                                <Text strong style={{ fontSize: '24px', color: token.colorPrimary }}>
-                                    Liar
-                                </Text>
-                            </Flex>
-                        </Link>
-                    ) : (
-                        <Link href={dashboard()} prefetch>
-                            <img
-                                src={logo}
-                                alt="Liar Logo"
-                                width="28"
-                                height="28"
-                                style={{
-                                    height: '28px',
-                                    width: '28px',
-                                }}
-                            />
-                        </Link>
-                    )}
+                    <Link href={dashboard()} prefetch onClick={isMobile ? closeMobileMenu : undefined}>
+                        <Text strong style={{ fontSize: collapsed && !isMobile ? '18px' : '24px', color: token.colorPrimary }}>
+                            Envoice
+                        </Text>
+                    </Link>
                 </Flex>
 
                 {/* Menu Section */}
