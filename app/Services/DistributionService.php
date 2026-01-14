@@ -421,8 +421,10 @@ class DistributionService
     public function getDistributableProfit(): array
     {
         // Calculate total profit from all processed distributions
+        // Use adjusted_net_profit_pkr if set, otherwise calculated_net_profit_pkr
         $totalProfit = Distribution::where('status', 'processed')
-            ->sum('final_net_profit');
+            ->selectRaw('COALESCE(SUM(COALESCE(adjusted_net_profit_pkr, calculated_net_profit_pkr)), 0) as total')
+            ->value('total');
 
         // Calculate total distributed amount (what was actually paid out)
         $totalDistributed = Distribution::where('status', 'processed')
