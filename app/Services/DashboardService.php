@@ -135,10 +135,9 @@ class DashboardService
         $startDate = now()->subMonths($months)->startOfMonth();
 
         // Get transaction data grouped by month and type
-        // Use strftime for SQLite compatibility
         $transactionData = Transaction::select(
-            DB::raw("CAST(strftime('%Y', date) AS INTEGER) as year"),
-            DB::raw("CAST(strftime('%m', date) AS INTEGER) as month"),
+            DB::raw('YEAR(date) as year'),
+            DB::raw('MONTH(date) as month'),
             'type',
             DB::raw('SUM(reporting_amount_pkr) as total')
         )
