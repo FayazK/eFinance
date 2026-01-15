@@ -29,10 +29,11 @@ class ExpenseService
         return DB::transaction(function () use ($data) {
             // Convert amount to minor units and calculate PKR reporting amount
             $amountInMinor = (int) ($data['amount'] * 100);
+            $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
             $reportingAmountPkr = $this->calculateReportingAmountPkr(
                 $amountInMinor,
                 $data['currency_code'],
-                $data['exchange_rate'] ?? null
+                $exchangeRate
             );
 
             // Create expense record
@@ -70,7 +71,7 @@ class ExpenseService
         $nextOccurrence = $this->calculateNextOccurrenceFromDate(
             $startDate,
             $data['recurrence_frequency'],
-            $data['recurrence_interval'] ?? 1
+            (int) ($data['recurrence_interval'] ?? 1)
         );
 
         return $this->expenseRepository->create([
@@ -84,7 +85,7 @@ class ExpenseService
             'is_recurring' => true,
             'is_active' => true,
             'recurrence_frequency' => $data['recurrence_frequency'],
-            'recurrence_interval' => $data['recurrence_interval'] ?? 1,
+            'recurrence_interval' => (int) ($data['recurrence_interval'] ?? 1),
             'recurrence_start_date' => $startDate->format('Y-m-d'),
             'recurrence_end_date' => $data['recurrence_end_date'] ?? null,
             'next_occurrence_date' => $nextOccurrence->format('Y-m-d'),
