@@ -16,12 +16,16 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
     const [loading, setLoading] = useState(false);
 
     // Watch country_id and state_id for dependent dropdowns
-    const countryId = Form.useWatch('country_id', form);
-    const stateId = Form.useWatch('state_id', form);
+    // Use contact values as fallback for initial render before form is populated
+    const formCountryId = Form.useWatch('country_id', form);
+    const formStateId = Form.useWatch('state_id', form);
+    const countryId = formCountryId ?? contact?.country?.id;
+    const stateId = formStateId ?? contact?.state?.id;
 
     // Track previous values to avoid resetting on initial load
-    const prevCountryId = useRef<number | undefined>(undefined);
-    const prevStateId = useRef<number | undefined>(undefined);
+    const prevCountryId = useRef<number | undefined>(contact?.country?.id);
+    const prevStateId = useRef<number | undefined>(contact?.state?.id);
+    const isInitialized = useRef(false);
 
     useEffect(() => {
         // Check for client_id in URL query params (for pre-filling from Client page)
@@ -41,22 +45,20 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
             additional_phones: contact?.additional_phones || [],
             additional_emails: contact?.additional_emails || [],
         });
-        // Initialize refs with contact values
-        prevCountryId.current = contact?.country?.id;
-        prevStateId.current = contact?.state?.id;
+        isInitialized.current = true;
     }, [contact, form]);
 
-    // Reset state and city when country changes
+    // Reset state and city when country changes (only after initialization)
     useEffect(() => {
-        if (prevCountryId.current !== undefined && prevCountryId.current !== countryId) {
+        if (isInitialized.current && prevCountryId.current !== countryId) {
             form.setFieldsValue({ state_id: undefined, city_id: undefined });
         }
         prevCountryId.current = countryId;
     }, [countryId, form]);
 
-    // Reset city when state changes
+    // Reset city when state changes (only after initialization)
     useEffect(() => {
-        if (prevStateId.current !== undefined && prevStateId.current !== stateId) {
+        if (isInitialized.current && prevStateId.current !== stateId) {
             form.setFieldsValue({ city_id: undefined });
         }
         prevStateId.current = stateId;
@@ -209,7 +211,6 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
                                 id={contact?.state?.id}
                                 params={{ country_id: countryId }}
                                 disabled={!countryId}
-                                key={`state-${countryId}`}
                             />
                         </Form.Item>
                     </Col>
@@ -220,7 +221,6 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
                                 id={contact?.city?.id}
                                 params={{ state_id: stateId }}
                                 disabled={!stateId}
-                                key={`city-${stateId}`}
                             />
                         </Form.Item>
                     </Col>

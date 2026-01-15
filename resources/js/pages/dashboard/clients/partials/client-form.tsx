@@ -16,12 +16,16 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
     const [loading, setLoading] = useState(false);
 
     // Watch country_id and state_id for dependent dropdowns
-    const countryId = Form.useWatch('country_id', form);
-    const stateId = Form.useWatch('state_id', form);
+    // Use client values as fallback for initial render before form is populated
+    const formCountryId = Form.useWatch('country_id', form);
+    const formStateId = Form.useWatch('state_id', form);
+    const countryId = formCountryId ?? client?.country?.id;
+    const stateId = formStateId ?? client?.state?.id;
 
     // Track previous values to avoid resetting on initial load
-    const prevCountryId = useRef<number | undefined>(undefined);
-    const prevStateId = useRef<number | undefined>(undefined);
+    const prevCountryId = useRef<number | undefined>(client?.country?.id);
+    const prevStateId = useRef<number | undefined>(client?.state?.id);
+    const isInitialized = useRef(false);
 
     useEffect(() => {
         form.setFieldsValue({
@@ -38,22 +42,20 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
             website: client?.website || '',
             notes: client?.notes || '',
         });
-        // Initialize refs with client values
-        prevCountryId.current = client?.country?.id;
-        prevStateId.current = client?.state?.id;
+        isInitialized.current = true;
     }, [client, form]);
 
-    // Reset state and city when country changes
+    // Reset state and city when country changes (only after initialization)
     useEffect(() => {
-        if (prevCountryId.current !== undefined && prevCountryId.current !== countryId) {
+        if (isInitialized.current && prevCountryId.current !== countryId) {
             form.setFieldsValue({ state_id: undefined, city_id: undefined });
         }
         prevCountryId.current = countryId;
     }, [countryId, form]);
 
-    // Reset city when state changes
+    // Reset city when state changes (only after initialization)
     useEffect(() => {
-        if (prevStateId.current !== undefined && prevStateId.current !== stateId) {
+        if (isInitialized.current && prevStateId.current !== stateId) {
             form.setFieldsValue({ city_id: undefined });
         }
         prevStateId.current = stateId;
@@ -136,7 +138,6 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
                             id={client?.state?.id}
                             params={{ country_id: countryId }}
                             disabled={!countryId}
-                            key={`state-${countryId}`}
                         />
                     </Form.Item>
                 </Col>
@@ -147,7 +148,6 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
                             id={client?.city?.id}
                             params={{ state_id: stateId }}
                             disabled={!stateId}
-                            key={`city-${stateId}`}
                         />
                     </Form.Item>
                 </Col>
