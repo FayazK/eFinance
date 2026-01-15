@@ -76,19 +76,22 @@ export default function ExpensesIndex() {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
+            width: 200,
             searchable: true,
+            ellipsis: true,
             render: (description: unknown, record: Expense) => {
+                const text = (description as string) || '—';
                 if (record.is_recurring) {
                     return (
                         <div>
                             <Tag color="blue" style={{ marginBottom: 4 }}>
                                 Recurring
                             </Tag>
-                            <div>{(description as string) || '—'}</div>
+                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</div>
                         </div>
                     );
                 }
-                return (description as string) || '—';
+                return text;
             },
         },
         {
