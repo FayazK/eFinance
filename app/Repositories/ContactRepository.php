@@ -12,12 +12,12 @@ class ContactRepository
 {
     public function find(int $id): ?Contact
     {
-        return Contact::with(['client', 'country'])->find($id);
+        return Contact::with(['client', 'country', 'state', 'city'])->find($id);
     }
 
     public function findByEmail(string $email): ?Contact
     {
-        return Contact::with(['client', 'country'])
+        return Contact::with(['client', 'country', 'state', 'city'])
             ->where('primary_email', $email)
             ->first();
     }
@@ -32,7 +32,7 @@ class ContactRepository
         $contact = Contact::findOrFail($id);
         $contact->update($data);
 
-        return $contact->fresh(['client', 'country']);
+        return $contact->fresh(['client', 'country', 'state', 'city']);
     }
 
     public function delete(int $id): bool
@@ -55,12 +55,12 @@ class ContactRepository
 
     public function all(): Collection
     {
-        return Contact::with(['client', 'country'])->get();
+        return Contact::with(['client', 'country', 'state', 'city'])->get();
     }
 
     public function getByClient(int $clientId): Collection
     {
-        return Contact::with(['country'])
+        return Contact::with(['country', 'state', 'city'])
             ->where('client_id', $clientId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -73,7 +73,7 @@ class ContactRepository
         ?string $sortBy = 'created_at',
         string $sortDirection = 'desc'
     ): LengthAwarePaginator {
-        $query = Contact::query()->with(['client', 'country']);
+        $query = Contact::query()->with(['client', 'country', 'state', 'city']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {

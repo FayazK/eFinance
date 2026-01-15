@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Nnjeim\World\Models\City;
 use Nnjeim\World\Models\Country;
 use Nnjeim\World\Models\Currency;
+use Nnjeim\World\Models\State;
 
 class Client extends Model
 {
@@ -27,6 +28,7 @@ class Client extends Model
         'name',
         'email',
         'country_id',
+        'state_id',
         'city_id',
         'currency_id',
         'address',
@@ -43,6 +45,14 @@ class Client extends Model
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
+    }
+
+    /**
+     * Get the state that the client belongs to.
+     */
+    public function state(): BelongsTo
+    {
+        return $this->belongsTo(State::class);
     }
 
     /**

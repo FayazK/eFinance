@@ -33,7 +33,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             // Redirect to intended page or dashboard
             router.visit('/dashboard');
         } catch (error: any) {
-            // eslint-disable-line @typescript-eslint/no-explicit-any
+             
             if (error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;

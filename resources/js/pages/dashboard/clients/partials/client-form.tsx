@@ -4,7 +4,7 @@ import { index } from '@/routes/clients';
 import { Client } from '@/types';
 import { router } from '@inertiajs/react';
 import { Button, Col, Form, Input, notification, Row } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ClientFormProps {
     client?: Client;
@@ -15,11 +15,20 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
+    // Watch country_id and state_id for dependent dropdowns
+    const countryId = Form.useWatch('country_id', form);
+    const stateId = Form.useWatch('state_id', form);
+
+    // Track previous values to avoid resetting on initial load
+    const prevCountryId = useRef<number | undefined>(undefined);
+    const prevStateId = useRef<number | undefined>(undefined);
+
     useEffect(() => {
         form.setFieldsValue({
             name: client?.name || '',
             email: client?.email || '',
             country_id: client?.country?.id,
+            state_id: client?.state?.id,
             city_id: client?.city?.id,
             currency_id: client?.currency?.id,
             address: client?.address || '',
@@ -29,7 +38,26 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
             website: client?.website || '',
             notes: client?.notes || '',
         });
+        // Initialize refs with client values
+        prevCountryId.current = client?.country?.id;
+        prevStateId.current = client?.state?.id;
     }, [client, form]);
+
+    // Reset state and city when country changes
+    useEffect(() => {
+        if (prevCountryId.current !== undefined && prevCountryId.current !== countryId) {
+            form.setFieldsValue({ state_id: undefined, city_id: undefined });
+        }
+        prevCountryId.current = countryId;
+    }, [countryId, form]);
+
+    // Reset city when state changes
+    useEffect(() => {
+        if (prevStateId.current !== undefined && prevStateId.current !== stateId) {
+            form.setFieldsValue({ city_id: undefined });
+        }
+        prevStateId.current = stateId;
+    }, [stateId, form]);
 
     const onFinish = async (values: Record<string, unknown>) => {
         setLoading(true);
@@ -96,17 +124,34 @@ export default function ClientForm({ client, isEdit = false }: ClientFormProps) 
             </Row>
 
             <Row gutter={16}>
-                <Col span={8}>
+                <Col span={6}>
                     <Form.Item label="Country" name="country_id" rules={[{ required: true, message: 'Please select a country!' }]}>
                         <AdvancedSelect type="countries" id={client?.country?.id} />
                     </Form.Item>
                 </Col>
-                <Col span={8}>
-                    <Form.Item label="City" name="city_id">
-                        <AdvancedSelect type="cities" id={client?.city?.id} />
+                <Col span={6}>
+                    <Form.Item label="State" name="state_id">
+                        <AdvancedSelect
+                            type="states"
+                            id={client?.state?.id}
+                            params={{ country_id: countryId }}
+                            disabled={!countryId}
+                            key={`state-${countryId}`}
+                        />
                     </Form.Item>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
+                    <Form.Item label="City" name="city_id">
+                        <AdvancedSelect
+                            type="cities"
+                            id={client?.city?.id}
+                            params={{ state_id: stateId }}
+                            disabled={!stateId}
+                            key={`city-${stateId}`}
+                        />
+                    </Form.Item>
+                </Col>
+                <Col span={6}>
                     <Form.Item label="Currency" name="currency_id" rules={[{ required: true, message: 'Please select a currency!' }]}>
                         <AdvancedSelect type="currencies" id={client?.currency?.id} />
                     </Form.Item>

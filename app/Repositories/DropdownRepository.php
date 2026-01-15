@@ -32,9 +32,24 @@ class DropdownRepository
         return $this->buildQuery('Nnjeim\World\Models\Timezone', $params, 'name');
     }
 
+    private function getStatesData(array $params): array
+    {
+        $countryId = $params['country_id'] ?? null;
+        if ($countryId === null) {
+            return [];
+        }
+
+        return $this->buildFilteredQuery('Nnjeim\World\Models\State', $params, 'name', 'country_id', (int) $countryId);
+    }
+
     private function getCitiesData(array $params): array
     {
-        return $this->buildQuery('Nnjeim\World\Models\City', $params, 'name');
+        $stateId = $params['state_id'] ?? null;
+        if ($stateId === null) {
+            return [];
+        }
+
+        return $this->buildFilteredQuery('Nnjeim\World\Models\City', $params, 'name', 'state_id', (int) $stateId);
     }
 
     private function getCountriesData(array $params): array
@@ -110,6 +125,60 @@ class DropdownRepository
         $results = $query->limit(25)->get()->toArray();
 
         return $this->appendTimezoneUtcIfNeeded($model, $results);
+    }
+
+    /**
+     * Build a filtered query that restricts results by a foreign key.
+     */
+    private function buildFilteredQuery(string $model, array $params, string $searchField, string $filterField, int $filterValue): array
+    {
+        $search = isset($params['search']) ? trim((string) $params['search']) : '';
+        $id = $params['id'] ?? null;
+
+        // If search is empty and ID is provided, return the ID record
+        // along with the first 24 results from the filtered query.
+        if ($search === '' && $id !== null) {
+            $baseQuery = App::make($model)->query()->where($filterField, $filterValue);
+
+            // Fetch the requested ID record (if it exists and matches filter)
+            $idRecord = App::make($model)->query()
+                ->where('id', $id)
+                ->where($filterField, $filterValue)
+                ->first();
+
+            // Fetch the first 24 base results
+            $baseResults = $baseQuery->limit(24)->get();
+
+            // Combine with de-duplication by id and cap at 25
+            $combined = collect([]);
+            if ($idRecord) {
+                $combined = $combined->push($idRecord);
+            }
+            foreach ($baseResults as $row) {
+                if ($idRecord && $row->id === $idRecord->id) {
+                    continue; // skip duplicate
+                }
+                $combined->push($row);
+                if ($combined->count() >= 25) {
+                    break;
+                }
+            }
+
+            return $combined->values()->toArray();
+        }
+
+        // Otherwise, apply filter and search (if any) and include the id record via OR.
+        $query = App::make($model)->query()->where($filterField, $filterValue);
+        if ($search !== '') {
+            $query->where($searchField, 'like', "%{$search}%");
+        }
+        if ($id !== null) {
+            $query->orWhere(function ($q) use ($id, $filterField, $filterValue) {
+                $q->where('id', $id)->where($filterField, $filterValue);
+            });
+        }
+
+        return $query->limit(25)->get()->toArray();
     }
 
     /**

@@ -1,19 +1,8 @@
 import AppLayout from '@/layouts/app-layout';
 import type { SharedData } from '@/types';
-import {
-    BankOutlined,
-    CalendarOutlined,
-    DollarOutlined,
-    DownloadOutlined,
-    FileTextOutlined,
-    FilterOutlined,
-    MoreOutlined,
-    PlusOutlined,
-    ReloadOutlined,
-    TeamOutlined,
-} from '@ant-design/icons';
-import { Head, router, usePage } from '@inertiajs/react';
-import { Button, Card, Col, Dropdown, Row, Space, Statistic, Tag, theme, Tooltip, Typography } from 'antd';
+import { BankOutlined, CalendarOutlined, DollarOutlined, FileTextOutlined, TeamOutlined } from '@ant-design/icons';
+import { Head, usePage } from '@inertiajs/react';
+import { Card, Col, Row, Space, Statistic, Tag, theme, Tooltip, Typography } from 'antd';
 import CashFlowChart from './dashboard/components/cash-flow-chart';
 import InvoiceStatusChart from './dashboard/components/invoice-status-chart';
 import RecentTransactionsList from './dashboard/components/recent-transactions-list';
@@ -121,44 +110,8 @@ export default function Dashboard() {
     } = usePage<PageProps>().props;
     const { token } = useToken();
 
-    // Action buttons for the header
-    const headerActions = (
-        <Space>
-            <Button icon={<ReloadOutlined />} onClick={() => router.reload()}>
-                Refresh
-            </Button>
-            <Button icon={<FilterOutlined />} type="default">
-                Filter
-            </Button>
-            <Button icon={<DownloadOutlined />} type="default">
-                Export
-            </Button>
-            <Dropdown
-                menu={{
-                    items: [
-                        {
-                            key: 'new-invoice',
-                            icon: <FileTextOutlined />,
-                            label: 'New Invoice',
-                        },
-                        {
-                            key: 'new-expense',
-                            icon: <DollarOutlined />,
-                            label: 'New Expense',
-                        },
-                    ],
-                }}
-                trigger={['click']}
-            >
-                <Button type="primary" icon={<PlusOutlined />}>
-                    New <MoreOutlined />
-                </Button>
-            </Dropdown>
-        </Space>
-    );
-
     return (
-        <AppLayout pageTitle="Dashboard" actions={headerActions}>
+        <AppLayout pageTitle="Dashboard">
             <Head title="Dashboard" />
 
             <Space direction="vertical" size="large" style={{ width: '100%' }}>

@@ -111,9 +111,9 @@ export default function ContactsIndex() {
             width: 180,
             render: (_: unknown, record: Contact) => {
                 const parts = [];
-                if (record.city) parts.push(record.city);
-                if (record.state) parts.push(record.state);
-                if (record.country) parts.push(record.country.name);
+                if (record.city?.name) parts.push(record.city.name);
+                if (record.state?.name) parts.push(record.state.name);
+                if (record.country?.name) parts.push(record.country.name);
 
                 return parts.length > 0 ? (
                     <span style={{ fontSize: '13px' }}>{parts.join(', ')}</span>

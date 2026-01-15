@@ -31,6 +31,7 @@ class ClientStoreRequest extends FormRequest
                 'unique:'.Client::class,
             ],
             'country_id' => ['required', 'integer', 'exists:countries,id'],
+            'state_id' => ['nullable', 'integer', 'exists:states,id'],
             'city_id' => ['nullable', 'integer', 'exists:cities,id'],
             'currency_id' => ['required', 'integer', 'exists:currencies,id'],
             'address' => ['nullable', 'string', 'max:1000'],

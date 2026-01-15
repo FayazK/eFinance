@@ -25,9 +25,9 @@ class ContactStoreRequest extends FormRequest
             'last_name' => ['required', 'string', 'max:255'],
             'client_id' => ['required', 'integer', 'exists:clients,id'],
             'address' => ['nullable', 'string', 'max:1000'],
-            'city' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
             'country_id' => ['nullable', 'integer', 'exists:countries,id'],
+            'state_id' => ['nullable', 'integer', 'exists:states,id'],
+            'city_id' => ['nullable', 'integer', 'exists:cities,id'],
             'primary_phone' => ['nullable', 'string', 'max:50'],
             'primary_email' => [
                 'required',

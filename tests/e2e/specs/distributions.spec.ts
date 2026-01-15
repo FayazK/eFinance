@@ -282,7 +282,7 @@ test.describe('Distribution Management', () => {
             );
 
             // Verify draft status
-            let isDraft = await showPage.isDraft();
+            const isDraft = await showPage.isDraft();
             expect(isDraft).toBe(true);
 
             // STEP 2: Adjust profit

@@ -27,7 +27,7 @@ export default function ForgotPassword({ status }: { status?: string }) {
             message.success('Password reset link sent to your email!');
             form.resetFields();
         } catch (error: any) {
-            // eslint-disable-line @typescript-eslint/no-explicit-any
+             
             if (error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;

@@ -1,10 +1,9 @@
-import GlobalSearch, { useGlobalSearch } from '@/components/global-search';
-import NotificationsCenter from '@/components/notifications-center';
+import QuickCreate from '@/components/quick-create';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useSidebarState } from '@/hooks/use-sidebar-state';
 import { dashboard } from '@/routes';
 import { type NavGroup, type NavItem, type SharedData } from '@/types';
-import { LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, SearchOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Avatar, Button, Drawer, Dropdown, Flex, Layout, Menu, theme, Typography } from 'antd';
 import { type ReactNode } from 'react';
@@ -27,7 +26,6 @@ export default function MasterLayout({ children, pageTitle, actions, mainNavItem
     const isMobile = useIsMobile();
     const { auth } = usePage<SharedData>().props;
     const { token } = useToken();
-    const { isOpen: isSearchOpen, openSearch, closeSearch } = useGlobalSearch();
 
     // Mobile drawer state uses sidebar collapsed state
     const isMobileMenuOpen = isMobile && !collapsed;
@@ -197,9 +195,6 @@ export default function MasterLayout({ children, pageTitle, actions, mainNavItem
                 Skip to main content
             </a>
 
-            {/* Global Search Modal */}
-            <GlobalSearch open={isSearchOpen} onClose={closeSearch} />
-
             <Layout style={{ minHeight: '100vh' }}>
                 {/* Desktop Sidebar */}
                 {!isMobile && (
@@ -288,27 +283,10 @@ export default function MasterLayout({ children, pageTitle, actions, mainNavItem
                                 )}
                             </Flex>
 
-                            {/* Right Section: Search, Notifications, Action Buttons */}
+                            {/* Right Section: Quick Create and Action Buttons */}
                             <Flex align="center" gap="small">
-                                {/* Search Button */}
-                                {!isMobile && (
-                                    <Button
-                                        type="text"
-                                        icon={<SearchOutlined style={{ fontSize: '18px' }} />}
-                                        onClick={openSearch}
-                                        style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            height: '40px',
-                                            width: '40px',
-                                        }}
-                                        aria-label="Open search (Ctrl+K)"
-                                    />
-                                )}
-
-                                {/* Notifications */}
-                                <NotificationsCenter />
+                                {/* Quick Create Menu */}
+                                <QuickCreate />
 
                                 {/* Page-specific Actions */}
                                 {actions}

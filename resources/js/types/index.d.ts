@@ -65,6 +65,11 @@ export interface City {
     name: string;
 }
 
+export interface State {
+    id: number;
+    name: string;
+}
+
 export interface Currency {
     id: number;
     name: string;
@@ -77,6 +82,7 @@ export interface Client {
     name: string;
     email: string;
     country?: Country;
+    state?: State;
     city?: City;
     currency?: Currency;
     address?: string;
@@ -87,7 +93,7 @@ export interface Client {
     notes?: string;
     created_at: string;
     updated_at: string;
-    [key: string]: string | number | boolean | Country | City | Currency | null | undefined;
+    [key: string]: string | number | boolean | Country | State | City | Currency | null | undefined;
 }
 
 export interface Contact {
@@ -100,16 +106,16 @@ export interface Contact {
         name: string;
     };
     address?: string;
-    city?: string;
-    state?: string;
     country?: Country;
+    state?: State;
+    city?: City;
     primary_phone?: string;
     primary_email: string;
     additional_phones: string[];
     additional_emails: string[];
     created_at: string;
     updated_at: string;
-    [key: string]: string | number | boolean | Country | { id: number; name: string } | string[] | null | undefined;
+    [key: string]: string | number | boolean | Country | State | City | { id: number; name: string } | string[] | null | undefined;
 }
 
 export interface Media {
