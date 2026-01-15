@@ -1,6 +1,6 @@
 import { dashboard } from '@/routes';
 import { index as expenses } from '@/routes/expenses';
-import { type NavItem } from '@/types';
+import { type NavGroup, type NavItem } from '@/types';
 import {
     BankOutlined,
     CreditCardOutlined,
@@ -10,78 +10,119 @@ import {
     IdcardOutlined,
     PieChartOutlined,
     ProjectOutlined,
+    SettingOutlined,
+    ShopOutlined,
     SwapOutlined,
     TeamOutlined,
-    UsergroupAddOutlined,
     UserOutlined,
     WalletOutlined,
 } from '@ant-design/icons';
 
+// Dashboard - standalone at top
 export const appMainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
         icon: DashboardOutlined,
     },
+];
+
+// Grouped navigation items
+export const appNavGroups: NavGroup[] = [
     {
-        title: 'Clients',
-        href: '/dashboard/clients',
-        icon: TeamOutlined,
+        title: 'CRM',
+        items: [
+            {
+                title: 'Clients',
+                href: '/dashboard/clients',
+                icon: TeamOutlined,
+            },
+            {
+                title: 'Contacts',
+                href: '/dashboard/contacts',
+                icon: UserOutlined,
+            },
+            {
+                title: 'Projects',
+                href: '/dashboard/projects',
+                icon: ProjectOutlined,
+            },
+        ],
     },
     {
-        title: 'Contacts',
-        href: '/dashboard/contacts',
-        icon: UserOutlined,
+        title: 'Billing',
+        items: [
+            {
+                title: 'Invoices',
+                href: '/dashboard/invoices',
+                icon: FileTextOutlined,
+            },
+            {
+                title: 'Companies',
+                href: '/dashboard/companies',
+                icon: ShopOutlined,
+            },
+        ],
     },
     {
-        title: 'Projects',
-        href: '/dashboard/projects',
-        icon: ProjectOutlined,
+        title: 'Finance',
+        items: [
+            {
+                title: 'Accounts',
+                href: '/dashboard/accounts',
+                icon: WalletOutlined,
+            },
+            {
+                title: 'Transfers',
+                href: '/dashboard/transfers',
+                icon: SwapOutlined,
+            },
+            {
+                title: 'Expenses',
+                href: expenses.url(),
+                icon: CreditCardOutlined,
+            },
+        ],
     },
     {
-        title: 'Invoices',
-        href: '/dashboard/invoices',
-        icon: FileTextOutlined,
+        title: 'HR',
+        items: [
+            {
+                title: 'Employees',
+                href: '/dashboard/employees',
+                icon: IdcardOutlined,
+            },
+            {
+                title: 'Payroll',
+                href: '/dashboard/payroll',
+                icon: DollarOutlined,
+            },
+        ],
     },
     {
-        title: 'Accounts',
-        href: '/dashboard/accounts',
-        icon: WalletOutlined,
+        title: 'Equity',
+        items: [
+            {
+                title: 'Shareholders',
+                href: '/dashboard/shareholders',
+                icon: BankOutlined,
+            },
+            {
+                title: 'Distributions',
+                href: '/dashboard/distributions',
+                icon: PieChartOutlined,
+            },
+        ],
     },
     {
-        title: 'Transfers',
-        href: '/dashboard/transfers',
-        icon: SwapOutlined,
-    },
-    {
-        title: 'Expenses',
-        href: expenses.url(),
-        icon: CreditCardOutlined,
-    },
-    {
-        title: 'Employees',
-        href: '/dashboard/employees',
-        icon: IdcardOutlined,
-    },
-    {
-        title: 'Payroll',
-        href: '/dashboard/payroll',
-        icon: DollarOutlined,
-    },
-    {
-        title: 'Shareholders',
-        href: '/dashboard/shareholders',
-        icon: BankOutlined,
-    },
-    {
-        title: 'Distributions',
-        href: '/dashboard/distributions',
-        icon: PieChartOutlined,
-    },
-    {
-        title: 'User Management',
-        href: '/dashboard/users',
-        icon: UsergroupAddOutlined,
+        title: 'Administration',
+        items: [
+            {
+                title: 'User Management',
+                href: '/dashboard/users',
+                icon: SettingOutlined,
+            },
+        ],
     },
 ];
 

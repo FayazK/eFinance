@@ -20,8 +20,8 @@ import {
     WalletOutlined,
 } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
-import { Button, Dropdown } from 'antd';
 import type { MenuProps } from 'antd';
+import { Button, Dropdown } from 'antd';
 
 export default function QuickCreate() {
     const handleClick = (url: string) => {

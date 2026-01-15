@@ -1,7 +1,7 @@
 import api from '@/lib/axios';
 import { index } from '@/routes/invoices';
 import { useInvoiceBuilderStore } from '@/stores/invoice-builder-store';
-import type { Invoice, InvoiceItem } from '@/types';
+import type { Invoice, InvoiceItem, InvoiceTemplateOption } from '@/types';
 import { router } from '@inertiajs/react';
 import { Alert, Button, Card, Col, DatePicker, Form, Input, InputNumber, notification, Row, Select, Space } from 'antd';
 import dayjs from 'dayjs';
@@ -14,14 +14,21 @@ interface Project {
     client_id: number;
 }
 
+interface Company {
+    id: number;
+    name: string;
+}
+
 interface InvoiceFormProps {
+    companies: Company[];
     clients: { id: number; name: string; currency_code: string }[];
     projects: Project[];
+    templates: InvoiceTemplateOption[];
     invoice?: Invoice;
     isEditing?: boolean;
 }
 
-export default function InvoiceForm({ clients, projects, invoice, isEditing = false }: InvoiceFormProps) {
+export default function InvoiceForm({ companies, clients, projects, templates, invoice, isEditing = false }: InvoiceFormProps) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [clientId, setClientId] = useState<number | undefined>(invoice?.client_id);
@@ -48,6 +55,8 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
             const draft = getDraft(draftId);
             if (draft) {
                 form.setFieldsValue({
+                    company_id: draft.company_id,
+                    template: draft.template,
                     client_id: draft.client_id,
                     project_id: draft.project_id,
                     issue_date: draft.issue_date ? dayjs(draft.issue_date) : undefined,
@@ -79,6 +88,8 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
             const values = form.getFieldsValue();
             if (values.client_id || items.length > 0) {
                 saveDraft(draftId, {
+                    company_id: values.company_id,
+                    template: values.template,
                     client_id: values.client_id,
                     project_id: values.project_id,
                     currency_code: selectedClient?.currency_code || 'USD',
@@ -172,9 +183,45 @@ export default function InvoiceForm({ clients, projects, invoice, isEditing = fa
         }
     };
 
+    // Convert invoice dates to dayjs objects for the form
+    const initialValues = invoice
+        ? {
+              ...invoice,
+              issue_date: invoice.issue_date ? dayjs(invoice.issue_date) : undefined,
+              due_date: invoice.due_date ? dayjs(invoice.due_date) : undefined,
+          }
+        : { template: 'modern' };
+
     return (
-        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={invoice}>
+        <Form form={form} layout="vertical" onFinish={onFinish} initialValues={initialValues}>
             <Card title="Invoice Details" style={{ marginBottom: 16 }}>
+                <Row gutter={16}>
+                    <Col span={12}>
+                        <Form.Item label="From Company" name="company_id" rules={[{ required: true, message: 'Please select a company!' }]}>
+                            <Select
+                                placeholder="Select company"
+                                showSearch
+                                filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
+                                options={companies.map((company) => ({
+                                    label: company.name,
+                                    value: company.id,
+                                }))}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item label="Invoice Template" name="template">
+                            <Select
+                                placeholder="Select template"
+                                options={templates.map((template) => ({
+                                    label: template.label,
+                                    value: template.value,
+                                }))}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item label="Client" name="client_id" rules={[{ required: true, message: 'Please select a client!' }]}>

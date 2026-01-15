@@ -77,6 +77,11 @@ class DropdownRepository
         return $this->buildQuery('App\\Models\\Contact', $params, 'first_name');
     }
 
+    private function getCompaniesData(array $params): array
+    {
+        return $this->buildQuery('App\\Models\\Company', $params, 'name');
+    }
+
     private function buildQuery(string $model, array $params, string $searchField): array
     {
         $search = isset($params['search']) ? trim((string) $params['search']) : '';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InvoiceTemplate;
 use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +20,8 @@ class Invoice extends Model
     protected $fillable = [
         'invoice_number',
         'status',
+        'template',
+        'company_id',
         'client_id',
         'project_id',
         'currency_code',
@@ -40,6 +43,7 @@ class Invoice extends Model
     protected function casts(): array
     {
         return [
+            'template' => InvoiceTemplate::class,
             'subtotal' => 'integer',
             'tax_amount' => 'integer',
             'total_amount' => 'integer',
@@ -54,6 +58,11 @@ class Invoice extends Model
     }
 
     // === RELATIONSHIPS ===
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function client(): BelongsTo
     {

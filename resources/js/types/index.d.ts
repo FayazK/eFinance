@@ -77,6 +77,20 @@ export interface Currency {
     symbol: string;
 }
 
+export interface Company {
+    id: number;
+    name: string;
+    logo_url: string | null;
+    address: string | null;
+    phone: string | null;
+    email: string | null;
+    tax_id: string | null;
+    vat_number: string | null;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | null | undefined;
+}
+
 export interface Client {
     id: number;
     name: string;
@@ -230,6 +244,14 @@ export interface Transfer {
 
 export type InvoiceStatus = 'draft' | 'sent' | 'partial' | 'paid' | 'void' | 'overdue';
 
+export type InvoiceTemplate = 'modern' | 'classic' | 'minimal' | 'corporate' | 'creative';
+
+export interface InvoiceTemplateOption {
+    value: InvoiceTemplate;
+    label: string;
+    description: string;
+}
+
 export interface InvoiceItem {
     id: number;
     description: string;
@@ -266,6 +288,13 @@ export interface Invoice {
     id: number;
     invoice_number: string;
     status: InvoiceStatus;
+    template: InvoiceTemplate;
+    company_id?: number;
+    company?: {
+        id: number;
+        name: string;
+        logo_url?: string;
+    };
     client_id: number;
     client?: Client;
     project_id?: number;

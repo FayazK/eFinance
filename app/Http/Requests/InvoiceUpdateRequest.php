@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Enums\InvoiceTemplate;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class InvoiceUpdateRequest extends FormRequest
 {
@@ -26,6 +28,8 @@ class InvoiceUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'company_id' => ['sometimes', 'integer', 'exists:companies,id'],
+            'template' => ['nullable', 'string', Rule::enum(InvoiceTemplate::class)],
             'client_id' => ['sometimes', 'integer', 'exists:clients,id'],
             'project_id' => ['nullable', 'integer', 'exists:projects,id'],
             'issue_date' => ['sometimes', 'date'],

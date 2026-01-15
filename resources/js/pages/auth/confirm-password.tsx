@@ -25,7 +25,6 @@ export default function ConfirmPassword() {
             // Redirect back to the intended page
             window.history.back();
         } catch (error: any) {
-             
             if (error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;

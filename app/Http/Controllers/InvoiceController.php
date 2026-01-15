@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Enums\InvoiceTemplate;
 use App\Helpers\CurrencyHelper;
 use App\Http\Requests\InvoicePaymentStoreRequest;
 use App\Http\Requests\InvoiceStoreRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\InvoiceUpdateRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Services\AccountService;
 use App\Services\ClientService;
+use App\Services\CompanyService;
 use App\Services\InvoiceService;
 use App\Services\ProjectService;
 use Illuminate\Http\JsonResponse;
@@ -20,6 +22,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 use LaravelDaily\Invoices\Classes\Buyer;
 use LaravelDaily\Invoices\Classes\InvoiceItem as PdfInvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
 use LaravelDaily\Invoices\Invoice as PdfInvoice;
 
 class InvoiceController extends Controller
@@ -28,7 +31,8 @@ class InvoiceController extends Controller
         private readonly InvoiceService $invoiceService,
         private readonly ClientService $clientService,
         private readonly ProjectService $projectService,
-        private readonly AccountService $accountService
+        private readonly AccountService $accountService,
+        private readonly CompanyService $companyService
     ) {}
 
     /**
@@ -60,6 +64,11 @@ class InvoiceController extends Controller
      */
     public function create(): Response
     {
+        $companies = $this->companyService->getAllCompanies()->map(fn ($company) => [
+            'id' => $company->id,
+            'name' => $company->name,
+        ]);
+
         $clients = $this->clientService->getAllClients()->map(fn ($client) => [
             'id' => $client->id,
             'name' => $client->name,
@@ -73,8 +82,10 @@ class InvoiceController extends Controller
         ]);
 
         return Inertia::render('dashboard/invoices/create', [
+            'companies' => $companies,
             'clients' => $clients,
             'projects' => $projects,
+            'templates' => InvoiceTemplate::toArray(),
         ]);
     }
 
@@ -132,6 +143,11 @@ class InvoiceController extends Controller
             abort(403, 'Only draft invoices can be edited');
         }
 
+        $companies = $this->companyService->getAllCompanies()->map(fn ($company) => [
+            'id' => $company->id,
+            'name' => $company->name,
+        ]);
+
         $clients = $this->clientService->getAllClients()->map(fn ($client) => [
             'id' => $client->id,
             'name' => $client->name,
@@ -146,8 +162,10 @@ class InvoiceController extends Controller
 
         return Inertia::render('dashboard/invoices/edit', [
             'invoice' => (new InvoiceResource($invoice))->resolve(),
+            'companies' => $companies,
             'clients' => $clients,
             'projects' => $projects,
+            'templates' => InvoiceTemplate::toArray(),
         ]);
     }
 
@@ -245,6 +263,34 @@ class InvoiceController extends Controller
             abort(404, 'Invoice not found');
         }
 
+        // Create seller (company) if exists
+        $seller = null;
+        if ($invoice->company) {
+            $sellerData = [
+                'name' => $invoice->company->name,
+            ];
+            if ($invoice->company->address) {
+                $sellerData['address'] = $invoice->company->address;
+            }
+            if ($invoice->company->phone) {
+                $sellerData['phone'] = $invoice->company->phone;
+            }
+            if ($invoice->company->vat_number) {
+                $sellerData['vat'] = $invoice->company->vat_number;
+            }
+            $customFields = [];
+            if ($invoice->company->email) {
+                $customFields['email'] = $invoice->company->email;
+            }
+            if ($invoice->company->tax_id) {
+                $customFields['Tax ID'] = $invoice->company->tax_id;
+            }
+            if (! empty($customFields)) {
+                $sellerData['custom_fields'] = $customFields;
+            }
+            $seller = new Party($sellerData);
+        }
+
         // Create buyer
         $buyer = new Buyer([
             'name' => $invoice->client->name,
@@ -257,15 +303,19 @@ class InvoiceController extends Controller
         // Create invoice items
         $items = [];
         foreach ($invoice->items as $item) {
-            $items[] = (new PdfInvoiceItem())
+            $items[] = (new PdfInvoiceItem)
                 ->title($item->description)
                 ->quantity($item->quantity)
                 ->pricePerUnit($item->unit_price / 100)
                 ->units($item->unit);
         }
 
+        // Determine template - default to 'modern' if not set
+        $template = $invoice->template?->value ?? 'modern';
+
         // Generate PDF
         $pdf = PdfInvoice::make()
+            ->template($template)
             ->buyer($buyer)
             ->addItems($items)
             ->name($invoice->invoice_number)
@@ -276,6 +326,16 @@ class InvoiceController extends Controller
             ->currencyCode($invoice->currency_code)
             ->notes($invoice->client_notes ?? '')
             ->filename($invoice->invoice_number);
+
+        // Add seller if exists
+        if ($seller) {
+            $pdf->seller($seller);
+
+            // Add logo if company has one (use file path for PDF generation)
+            if ($invoice->company->logo_path) {
+                $pdf->logo($invoice->company->logo_path);
+            }
+        }
 
         return $pdf->stream();
     }

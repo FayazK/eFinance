@@ -7,13 +7,21 @@ import { Button, Card } from 'antd';
 import React from 'react';
 import InvoiceForm from './partials/invoice-form';
 
+interface TemplateOption {
+    value: string;
+    label: string;
+    description: string;
+}
+
 interface InvoiceEditProps {
+    companies: { id: number; name: string }[];
     invoice: Invoice;
     clients: { id: number; name: string; currency_code: string }[];
     projects: { id: number; name: string; client_id: number }[];
+    templates: TemplateOption[];
 }
 
-export default function InvoiceEdit({ invoice, clients, projects }: InvoiceEditProps) {
+export default function InvoiceEdit({ companies, invoice, clients, projects, templates }: InvoiceEditProps) {
     return (
         <AppLayout
             pageTitle={`Edit Invoice ${invoice.invoice_number}`}
@@ -29,7 +37,7 @@ export default function InvoiceEdit({ invoice, clients, projects }: InvoiceEditP
             }
         >
             <Card>
-                <InvoiceForm clients={clients} projects={projects} invoice={invoice} isEditing={true} />
+                <InvoiceForm companies={companies} clients={clients} projects={projects} templates={templates} invoice={invoice} isEditing={true} />
             </Card>
         </AppLayout>
     );

@@ -206,22 +206,12 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
                     </Col>
                     <Col span={8}>
                         <Form.Item label="State" name="state_id">
-                            <AdvancedSelect
-                                type="states"
-                                id={contact?.state?.id}
-                                params={{ country_id: countryId }}
-                                disabled={!countryId}
-                            />
+                            <AdvancedSelect type="states" id={contact?.state?.id} params={{ country_id: countryId }} disabled={!countryId} />
                         </Form.Item>
                     </Col>
                     <Col span={8}>
                         <Form.Item label="City" name="city_id">
-                            <AdvancedSelect
-                                type="cities"
-                                id={contact?.city?.id}
-                                params={{ state_id: stateId }}
-                                disabled={!stateId}
-                            />
+                            <AdvancedSelect type="cities" id={contact?.city?.id} params={{ state_id: stateId }} disabled={!stateId} />
                         </Form.Item>
                     </Col>
                 </Row>

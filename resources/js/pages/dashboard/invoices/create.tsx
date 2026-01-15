@@ -6,12 +6,20 @@ import { Button, Card } from 'antd';
 import React from 'react';
 import InvoiceForm from './partials/invoice-form';
 
-interface InvoiceCreateProps {
-    clients: { id: number; name: string; currency_code: string }[];
-    projects: { id: number; name: string; client_id: number }[];
+interface TemplateOption {
+    value: string;
+    label: string;
+    description: string;
 }
 
-export default function InvoiceCreate({ clients, projects }: InvoiceCreateProps) {
+interface InvoiceCreateProps {
+    companies: { id: number; name: string }[];
+    clients: { id: number; name: string; currency_code: string }[];
+    projects: { id: number; name: string; client_id: number }[];
+    templates: TemplateOption[];
+}
+
+export default function InvoiceCreate({ companies, clients, projects, templates }: InvoiceCreateProps) {
     return (
         <AppLayout
             pageTitle="Create Invoice"
@@ -26,7 +34,7 @@ export default function InvoiceCreate({ clients, projects }: InvoiceCreateProps)
             }
         >
             <Card>
-                <InvoiceForm clients={clients} projects={projects} />
+                <InvoiceForm companies={companies} clients={clients} projects={projects} templates={templates} />
             </Card>
         </AppLayout>
     );

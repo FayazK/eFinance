@@ -3,6 +3,7 @@ import DropdownController from './DropdownController'
 import UserController from './UserController'
 import ClientController from './ClientController'
 import ContactController from './ContactController'
+import CompanyController from './CompanyController'
 import ProjectController from './ProjectController'
 import ProjectDocumentController from './ProjectDocumentController'
 import ProjectLinkController from './ProjectLinkController'
@@ -25,6 +26,7 @@ const Controllers = {
     UserController,
     ClientController,
     ContactController,
+    CompanyController,
     ProjectController,
     ProjectDocumentController,
     ProjectLinkController,

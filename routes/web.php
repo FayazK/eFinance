@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DistributionController;
@@ -61,6 +62,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [ContactController::class, 'store'])->name('store');
         Route::put('/{contact}', [ContactController::class, 'update'])->name('update');
         Route::delete('/{contact}', [ContactController::class, 'destroy'])->name('destroy');
+    });
+
+    // Companies
+    Route::prefix('dashboard/companies')->name('companies.')->group(function () {
+        Route::get('/', [CompanyController::class, 'index'])->name('index');
+        Route::get('/data', [CompanyController::class, 'data'])->name('data');
+        Route::get('/create', [CompanyController::class, 'create'])->name('create');
+        Route::get('/{company}', [CompanyController::class, 'show'])->name('show');
+        Route::get('/{company}/edit', [CompanyController::class, 'edit'])->name('edit');
+        Route::post('/', [CompanyController::class, 'store'])->name('store');
+        Route::put('/{company}', [CompanyController::class, 'update'])->name('update');
+        Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('dashboard/projects')->name('projects.')->group(function () {

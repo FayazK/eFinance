@@ -36,7 +36,6 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             // Redirect to login page
             router.visit('/login');
         } catch (error: any) {
-             
             if (error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;

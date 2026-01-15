@@ -15,6 +15,15 @@ class InvoiceResource extends JsonResource
             'id' => $this->id,
             'invoice_number' => $this->invoice_number,
             'status' => $this->status,
+            'template' => $this->template?->value ?? 'modern',
+
+            // Company info
+            'company_id' => $this->company_id,
+            'company' => $this->whenLoaded('company', fn () => $this->company ? [
+                'id' => $this->company->id,
+                'name' => $this->company->name,
+                'logo_url' => $this->company->logo_url,
+            ] : null),
 
             // Client info
             'client_id' => $this->client_id,
@@ -55,13 +64,11 @@ class InvoiceResource extends JsonResource
             'voided_at' => $this->voided_at?->format('Y-m-d'),
 
             // Line items
-            'items' => $this->whenLoaded('items', fn () =>
-                InvoiceItemResource::collection($this->items)->resolve()
+            'items' => $this->whenLoaded('items', fn () => InvoiceItemResource::collection($this->items)->resolve()
             ),
 
             // Payments
-            'payments' => $this->whenLoaded('payments', fn () =>
-                InvoicePaymentResource::collection($this->payments)->resolve()
+            'payments' => $this->whenLoaded('payments', fn () => InvoicePaymentResource::collection($this->payments)->resolve()
             ),
 
             // Computed attributes
