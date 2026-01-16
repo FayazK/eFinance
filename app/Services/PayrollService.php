@@ -49,10 +49,11 @@ class PayrollService
                     'employee_id' => $employee->id,
                     'month' => $month,
                     'year' => $year,
-                    'base_salary' => $employee->base_salary_pkr, // Snapshot
+                    'base_salary' => $employee->base_salary, // Snapshot
+                    'deposit_currency' => $employee->deposit_currency->value, // Snapshot deposit method
                     'bonus' => 0,
                     'deductions' => 0,
-                    'net_payable' => $employee->base_salary_pkr,
+                    'net_payable' => $employee->base_salary,
                     'status' => 'pending',
                 ]);
 
@@ -135,9 +136,9 @@ class PayrollService
                 throw new InvalidArgumentException('Account not found');
             }
 
-            // Validate account is PKR
+            // All salaries are in PKR, so must pay from PKR account
             if ($account->currency_code !== 'PKR') {
-                throw new InvalidArgumentException('Payroll can only be paid from PKR accounts');
+                throw new InvalidArgumentException('Payroll must be paid from a PKR account (salaries are in PKR)');
             }
 
             // Calculate total needed

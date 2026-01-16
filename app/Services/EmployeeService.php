@@ -18,10 +18,9 @@ class EmployeeService
 
     public function createEmployee(array $data): Employee
     {
-        // Convert salary from major units to minor units (paisa)
+        // Convert salary from major units to minor units (paisa/cents)
         if (isset($data['base_salary'])) {
-            $data['base_salary_pkr'] = (int) ($data['base_salary'] * 100);
-            unset($data['base_salary']);
+            $data['base_salary'] = (int) ($data['base_salary'] * 100);
         } else {
             throw new InvalidArgumentException('Base salary is required');
         }
@@ -33,8 +32,7 @@ class EmployeeService
     {
         // Convert salary from major units to minor units if present
         if (isset($data['base_salary'])) {
-            $data['base_salary_pkr'] = (int) ($data['base_salary'] * 100);
-            unset($data['base_salary']);
+            $data['base_salary'] = (int) ($data['base_salary'] * 100);
         }
 
         return $this->employeeRepository->update($employeeId, $data);

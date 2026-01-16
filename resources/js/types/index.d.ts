@@ -336,7 +336,8 @@ export interface Employee {
     designation: string;
     email: string;
     joining_date: string;
-    base_salary_pkr: number; // In major units (PKR)
+    base_salary: number; // In major units (always PKR)
+    deposit_currency: 'PKR' | 'USD'; // How salary is deposited
     formatted_salary: string;
     iban?: string;
     bank_name?: string;
@@ -356,7 +357,8 @@ export interface Payroll {
     month: number;
     year: number;
     period_label: string;
-    base_salary: number; // In major units (PKR)
+    base_salary: number; // In major units (always PKR)
+    deposit_currency: 'PKR' | 'USD'; // How salary is deposited
     bonus: number;
     deductions: number;
     net_payable: number;

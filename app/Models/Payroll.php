@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\DepositCurrency;
 use App\Helpers\CurrencyHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +21,7 @@ class Payroll extends Model
         'month',
         'year',
         'base_salary',
+        'deposit_currency',
         'bonus',
         'deductions',
         'net_payable',
@@ -35,6 +37,7 @@ class Payroll extends Model
             'paid_at' => 'date',
             'month' => 'integer',
             'year' => 'integer',
+            'deposit_currency' => DepositCurrency::class,
         ];
     }
 
@@ -63,7 +66,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted net payable for display
+     * Get formatted net payable for display (always in PKR)
      */
     public function getFormattedNetPayableAttribute(): string
     {
@@ -71,7 +74,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted base salary
+     * Get formatted base salary (always in PKR)
      */
     public function getFormattedBaseSalaryAttribute(): string
     {
@@ -79,7 +82,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted bonus
+     * Get formatted bonus (always in PKR)
      */
     public function getFormattedBonusAttribute(): string
     {
@@ -87,7 +90,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted deductions
+     * Get formatted deductions (always in PKR)
      */
     public function getFormattedDeductionsAttribute(): string
     {

@@ -22,7 +22,8 @@ class EmployeeResource extends JsonResource
             'designation' => $this->designation,
             'email' => $this->email,
             'joining_date' => $this->joining_date?->format('Y-m-d'),
-            'base_salary_pkr' => $this->salary_in_major_units, // For editing
+            'base_salary' => $this->salary_in_major_units, // For editing (always PKR)
+            'deposit_currency' => $this->deposit_currency->value,
             'formatted_salary' => $this->formatted_salary, // For display
             'iban' => $this->iban,
             'bank_name' => $this->bank_name,

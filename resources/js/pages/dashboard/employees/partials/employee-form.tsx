@@ -2,7 +2,7 @@ import api from '@/lib/axios';
 import { index } from '@/routes/employees';
 import { Employee } from '@/types';
 import { router } from '@inertiajs/react';
-import { Button, Col, DatePicker, Form, Input, InputNumber, notification, Row } from 'antd';
+import { Button, Col, DatePicker, Form, Input, InputNumber, notification, Radio, Row } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
@@ -21,7 +21,8 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
             email: employee?.email || '',
             designation: employee?.designation || '',
             joining_date: employee?.joining_date ? dayjs(employee.joining_date) : undefined,
-            base_salary: employee?.base_salary_pkr || 0,
+            base_salary: employee?.base_salary || 0,
+            deposit_currency: employee?.deposit_currency || 'PKR',
             iban: employee?.iban || '',
             bank_name: employee?.bank_name || '',
         });
@@ -99,13 +100,30 @@ export default function EmployeeForm({ employee, isEdit = false }: EmployeeFormP
 
             <Row gutter={16}>
                 <Col span={12}>
-                    <Form.Item label="Base Salary (PKR)" name="base_salary" rules={[{ required: true, message: 'Please input the base salary!' }]}>
+                    <Form.Item
+                        label="Base Salary (PKR)"
+                        name="base_salary"
+                        rules={[{ required: true, message: 'Please input the base salary!' }]}
+                    >
                         <InputNumber
                             style={{ width: '100%' }}
                             min={0}
                             precision={2}
                             formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
                         />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        label="Payment Method"
+                        name="deposit_currency"
+                        rules={[{ required: true, message: 'Please select payment method!' }]}
+                        tooltip="How the employee receives their salary"
+                    >
+                        <Radio.Group>
+                            <Radio value="PKR">PKR - Local Bank Transfer</Radio>
+                            <Radio value="USD">USD - Payoneer</Radio>
+                        </Radio.Group>
                     </Form.Item>
                 </Col>
             </Row>

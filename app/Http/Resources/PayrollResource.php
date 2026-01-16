@@ -23,7 +23,8 @@ class PayrollResource extends JsonResource
             'month' => $this->month,
             'year' => $this->year,
             'period_label' => $this->period_label,
-            'base_salary' => $this->base_salary / 100, // Major units
+            'base_salary' => $this->base_salary / 100, // Major units (always PKR)
+            'deposit_currency' => $this->deposit_currency->value,
             'bonus' => $this->bonus / 100,
             'deductions' => $this->deductions / 100,
             'net_payable' => $this->net_payable / 100,

@@ -21,6 +21,7 @@ class EmployeeStoreRequest extends FormRequest
             'email' => ['required', 'email', 'unique:employees,email'],
             'joining_date' => ['required', 'date'],
             'base_salary' => ['required', 'numeric', 'min:0.01'],
+            'deposit_currency' => ['required', 'in:PKR,USD'],
             'iban' => ['nullable', 'string', 'max:255'],
             'bank_name' => ['nullable', 'string', 'max:255'],
         ];
