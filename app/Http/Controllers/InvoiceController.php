@@ -215,7 +215,13 @@ class InvoiceController extends Controller
             'status' => ['required', 'string', 'in:draft,sent,partial,paid,void,overdue'],
         ]);
 
-        $invoice = $this->invoiceService->changeStatus($id, $request->input('status'));
+        try {
+            $invoice = $this->invoiceService->changeStatus($id, $request->input('status'));
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 422);
+        }
 
         return response()->json([
             'message' => 'Invoice status updated successfully',
@@ -244,7 +250,13 @@ class InvoiceController extends Controller
      */
     public function void(int $id): JsonResponse
     {
-        $invoice = $this->invoiceService->voidInvoice($id);
+        try {
+            $invoice = $this->invoiceService->voidInvoice($id);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 403);
+        }
 
         return response()->json([
             'message' => 'Invoice voided successfully',

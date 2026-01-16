@@ -150,7 +150,7 @@ class Invoice extends Model
 
     public function getIsPayableAttribute(): bool
     {
-        return in_array($this->status, ['sent', 'partial', 'overdue'])
+        return in_array($this->status, ['draft', 'sent', 'partial', 'overdue'])
             && $this->balance_due > 0;
     }
 }

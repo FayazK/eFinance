@@ -27,6 +27,7 @@ class InvoiceFactory extends Factory
         return [
             'invoice_number' => 'INV-' . now()->format('Y') . '-' . str_pad((string) $this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
             'status' => 'draft',
+            'company_id' => \App\Models\Company::factory(),
             'client_id' => \App\Models\Client::factory(),
             'project_id' => null,
             'currency_code' => $this->faker->randomElement(['USD', 'PKR']),
