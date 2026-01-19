@@ -128,59 +128,75 @@ class DashboardService
     }
 
     /**
-     * Get cash flow trend for specified months
+     * Get cash flow trend for specified months, grouped by currency
      */
     public function getCashFlowTrend(int $months = 6): array
     {
         $startDate = now()->subMonths($months)->startOfMonth();
 
-        // Get transaction data grouped by month and type
+        // Get transaction data grouped by month, type, and currency
         $transactionData = Transaction::select(
-            DB::raw('YEAR(date) as year'),
-            DB::raw('MONTH(date) as month'),
-            'type',
-            DB::raw('SUM(reporting_amount_pkr) as total')
+            DB::raw('YEAR(transactions.date) as year'),
+            DB::raw('MONTH(transactions.date) as month'),
+            'transactions.type',
+            'accounts.currency_code',
+            DB::raw('SUM(transactions.amount) as total')
         )
-            ->where('date', '>=', $startDate)
-            ->groupBy('year', 'month', 'type')
+            ->join('accounts', 'transactions.account_id', '=', 'accounts.id')
+            ->where('transactions.date', '>=', $startDate)
+            ->groupBy('year', 'month', 'transactions.type', 'accounts.currency_code')
             ->orderBy('year')
             ->orderBy('month')
             ->get();
 
-        // Initialize months array
-        $monthsData = [];
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $date = now()->subMonths($i);
-            $key = $date->year.'-'.$date->month;
-            $monthsData[$key] = [
-                'label' => $date->format('M Y'),
-                'year' => $date->year,
-                'month' => $date->month,
-                'income' => 0,
-                'expenses' => 0,
-                'net' => 0,
+        // Initialize months array for each currency
+        $currencies = ['PKR', 'USD'];
+        $result = [];
+
+        foreach ($currencies as $currency) {
+            $monthsData = [];
+            for ($i = $months - 1; $i >= 0; $i--) {
+                $date = now()->subMonths($i);
+                $key = $date->year.'-'.$date->month;
+                $monthsData[$key] = [
+                    'label' => $date->format('M Y'),
+                    'year' => $date->year,
+                    'month' => $date->month,
+                    'income' => 0,
+                    'expenses' => 0,
+                    'net' => 0,
+                ];
+            }
+
+            // Fill in transaction data for this currency
+            foreach ($transactionData as $transaction) {
+                if ($transaction->currency_code !== $currency) {
+                    continue;
+                }
+
+                $key = $transaction->year.'-'.$transaction->month;
+                if (isset($monthsData[$key])) {
+                    if ($transaction->type === 'credit') {
+                        $monthsData[$key]['income'] = (int) $transaction->total;
+                    } else {
+                        $monthsData[$key]['expenses'] = (int) $transaction->total;
+                    }
+                }
+            }
+
+            // Calculate net for each month
+            foreach ($monthsData as &$month) {
+                $month['net'] = $month['income'] - $month['expenses'];
+            }
+
+            $result[$currency] = [
+                'currency_code' => $currency,
+                'months' => array_values($monthsData),
             ];
         }
 
-        // Fill in transaction data
-        foreach ($transactionData as $transaction) {
-            $key = $transaction->year.'-'.$transaction->month;
-            if (isset($monthsData[$key])) {
-                if ($transaction->type === 'credit') {
-                    $monthsData[$key]['income'] = (int) $transaction->total;
-                } else {
-                    $monthsData[$key]['expenses'] = (int) $transaction->total;
-                }
-            }
-        }
-
-        // Calculate net for each month
-        foreach ($monthsData as &$month) {
-            $month['net'] = $month['income'] - $month['expenses'];
-        }
-
         return [
-            'months' => array_values($monthsData),
+            'currencies' => array_values($result),
         ];
     }
 

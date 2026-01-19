@@ -39,15 +39,22 @@ interface PayrollSummary {
     pending_payrolls: number;
 }
 
+interface CashFlowMonth {
+    label: string;
+    year: number;
+    month: number;
+    income: number;
+    expenses: number;
+    net: number;
+}
+
+interface CashFlowCurrency {
+    currency_code: string;
+    months: CashFlowMonth[];
+}
+
 interface CashFlowTrend {
-    months: Array<{
-        label: string;
-        year: number;
-        month: number;
-        income: number;
-        expenses: number;
-        net: number;
-    }>;
+    currencies: CashFlowCurrency[];
 }
 
 interface InvoiceStatusBreakdown {
