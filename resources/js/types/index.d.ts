@@ -357,7 +357,7 @@ export interface Payroll {
     month: number;
     year: number;
     period_label: string;
-    base_salary: number; // In major units (always PKR)
+    base_salary: number; // In major units (PKR for PKR employees, USD for USD employees)
     deposit_currency: 'PKR' | 'USD'; // How salary is deposited
     bonus: number;
     deductions: number;
@@ -372,6 +372,8 @@ export interface Payroll {
     paid_at?: string;
     transaction_id?: number;
     transaction?: Transaction;
+    exchange_rate?: number;
+    formatted_exchange_rate?: string;
     notes?: string;
     created_at: string;
     updated_at: string;

@@ -28,6 +28,7 @@ class Payroll extends Model
         'status',
         'paid_at',
         'transaction_id',
+        'exchange_rate',
         'notes',
     ];
 
@@ -38,6 +39,7 @@ class Payroll extends Model
             'month' => 'integer',
             'year' => 'integer',
             'deposit_currency' => DepositCurrency::class,
+            'exchange_rate' => 'decimal:4',
         ];
     }
 
@@ -95,6 +97,18 @@ class Payroll extends Model
     public function getFormattedDeductionsAttribute(): string
     {
         return CurrencyHelper::format($this->deductions / 100, 'PKR');
+    }
+
+    /**
+     * Get formatted exchange rate for display
+     */
+    public function getFormattedExchangeRateAttribute(): ?string
+    {
+        if ($this->exchange_rate === null) {
+            return null;
+        }
+
+        return number_format((float) $this->exchange_rate, 2);
     }
 
     /**

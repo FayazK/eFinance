@@ -114,7 +114,7 @@ class DashboardService
 
         // Average salary (from active employees)
         $averageSalary = $activeEmployees > 0
-            ? Employee::where('status', 'active')->avg('base_salary_pkr')
+            ? Employee::where('status', 'active')->avg('base_salary')
             : 0;
 
         return [

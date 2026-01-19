@@ -23,6 +23,10 @@ class Account extends Model
         'is_active',
     ];
 
+    protected $appends = [
+        'formatted_balance',
+    ];
+
     protected function casts(): array
     {
         return [

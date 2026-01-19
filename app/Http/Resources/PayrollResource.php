@@ -24,7 +24,7 @@ class PayrollResource extends JsonResource
             'year' => $this->year,
             'period_label' => $this->period_label,
             'base_salary' => $this->base_salary / 100, // Major units (always PKR)
-            'deposit_currency' => $this->deposit_currency->value,
+            'deposit_currency' => $this->deposit_currency?->value ?? 'PKR',
             'bonus' => $this->bonus / 100,
             'deductions' => $this->deductions / 100,
             'net_payable' => $this->net_payable / 100,
@@ -38,6 +38,8 @@ class PayrollResource extends JsonResource
             'paid_at' => $this->paid_at?->format('Y-m-d'),
             'transaction_id' => $this->transaction_id,
             'transaction' => new TransactionResource($this->whenLoaded('transaction')),
+            'exchange_rate' => $this->exchange_rate ? (float) $this->exchange_rate : null,
+            'formatted_exchange_rate' => $this->formatted_exchange_rate,
             'notes' => $this->notes,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
