@@ -59,7 +59,7 @@ export default function ExpensesIndex() {
             title: 'Date',
             dataIndex: 'expense_date',
             key: 'expense_date',
-            width: 120,
+            width: 100,
             sorter: true,
             filterable: true,
             render: (date: unknown) => new Date(date as string).toLocaleDateString(),
@@ -68,7 +68,7 @@ export default function ExpensesIndex() {
             title: 'Vendor',
             dataIndex: 'vendor',
             key: 'vendor',
-            width: 180,
+            width: 150,
             searchable: true,
             render: (vendor: unknown) => (vendor as string) || <span style={{ color: token.colorTextDisabled }}>—</span>,
         },
@@ -76,29 +76,35 @@ export default function ExpensesIndex() {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
-            width: 200,
+            width: 300,
             searchable: true,
-            ellipsis: true,
             render: (description: unknown, record: Expense) => {
                 const text = (description as string) || '—';
+                const textStyle: React.CSSProperties = {
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                };
+
                 if (record.is_recurring) {
                     return (
                         <div>
                             <Tag color="blue" style={{ marginBottom: 4 }}>
                                 Recurring
                             </Tag>
-                            <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{text}</div>
+                            <div style={textStyle}>{text}</div>
                         </div>
                     );
                 }
-                return text;
+                return <div style={textStyle}>{text}</div>;
             },
         },
         {
             title: 'Account',
             dataIndex: 'account',
             key: 'account',
-            width: 160,
+            width: 140,
             filterable: true,
             render: (_: unknown, record: Expense) => (
                 <div>
@@ -113,7 +119,7 @@ export default function ExpensesIndex() {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
-            width: 140,
+            width: 120,
             filterable: true,
             render: (_: unknown, record: Expense) =>
                 record.category ? (
@@ -126,7 +132,7 @@ export default function ExpensesIndex() {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            width: 140,
+            width: 120,
             sorter: true,
             render: (_: unknown, record: Expense) => (
                 <div>
@@ -141,7 +147,7 @@ export default function ExpensesIndex() {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 110,
+            width: 100,
             filterable: true,
             render: (status: unknown) => {
                 const statusValue = status as string;
