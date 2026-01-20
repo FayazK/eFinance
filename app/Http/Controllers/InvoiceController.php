@@ -9,6 +9,7 @@ use App\Helpers\CurrencyHelper;
 use App\Http\Requests\InvoicePaymentStoreRequest;
 use App\Http\Requests\InvoiceStoreRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
+use App\Http\Requests\InvoiceVoidRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Services\AccountService;
 use App\Services\ClientService;
@@ -248,10 +249,10 @@ class InvoiceController extends Controller
     /**
      * Void invoice
      */
-    public function void(int $id): JsonResponse
+    public function void(int $id, InvoiceVoidRequest $request): JsonResponse
     {
         try {
-            $invoice = $this->invoiceService->voidInvoice($id);
+            $invoice = $this->invoiceService->voidInvoice($id, $request->validated()['void_reason']);
         } catch (\InvalidArgumentException $e) {
             return response()->json([
                 'message' => $e->getMessage(),

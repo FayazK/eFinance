@@ -281,6 +281,8 @@ export interface InvoicePayment {
     has_fee: boolean;
     payment_date: string;
     notes?: string;
+    voided_at?: string;
+    is_voided: boolean;
     created_at: string;
 }
 
@@ -321,6 +323,7 @@ export interface Invoice {
     notes?: string;
     terms?: string;
     client_notes?: string;
+    void_reason?: string;
     created_at: string;
     updated_at: string;
     items?: InvoiceItem[];

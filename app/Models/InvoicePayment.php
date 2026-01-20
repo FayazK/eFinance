@@ -23,6 +23,7 @@ class InvoicePayment extends Model
         'fee_amount',
         'payment_date',
         'notes',
+        'voided_at',
     ];
 
     protected function casts(): array
@@ -32,6 +33,7 @@ class InvoicePayment extends Model
             'amount_received' => 'integer',
             'fee_amount' => 'integer',
             'payment_date' => 'date',
+            'voided_at' => 'datetime',
         ];
     }
 
@@ -98,5 +100,10 @@ class InvoicePayment extends Model
     public function getFeeAmountInMajorUnitsAttribute(): float
     {
         return $this->fee_amount / 100;
+    }
+
+    public function getIsVoidedAttribute(): bool
+    {
+        return $this->voided_at !== null;
     }
 }

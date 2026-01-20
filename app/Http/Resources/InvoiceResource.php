@@ -79,6 +79,7 @@ class InvoiceResource extends JsonResource
             'notes' => $this->notes,
             'terms' => $this->terms,
             'client_notes' => $this->client_notes,
+            'void_reason' => $this->void_reason,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

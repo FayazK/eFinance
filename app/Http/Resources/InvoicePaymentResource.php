@@ -28,6 +28,8 @@ class InvoicePaymentResource extends JsonResource
             'has_fee' => $this->has_fee,
             'payment_date' => $this->payment_date?->format('Y-m-d'),
             'notes' => $this->notes,
+            'voided_at' => $this->voided_at?->format('Y-m-d H:i:s'),
+            'is_voided' => $this->is_voided,
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
         ];
     }

@@ -38,6 +38,7 @@ class Invoice extends Model
         'notes',
         'terms',
         'client_notes',
+        'void_reason',
     ];
 
     protected function casts(): array

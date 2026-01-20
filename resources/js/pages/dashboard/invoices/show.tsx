@@ -4,9 +4,10 @@ import { edit, index, pdf } from '@/routes/invoices';
 import type { Account, Invoice, InvoicePayment, InvoiceStatus } from '@/types';
 import { ArrowLeftOutlined, DollarOutlined, EditOutlined, FileTextOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
-import { Button, Card, Descriptions, Modal, notification, Space, Table, Tabs, Tag, theme } from 'antd';
+import { Alert, Button, Card, Descriptions, notification, Space, Table, Tabs, Tag, theme } from 'antd';
 import React, { useState } from 'react';
 import InvoicePaymentModal from './partials/invoice-payment-modal';
+import InvoiceVoidModal from './partials/invoice-void-modal';
 
 const { useToken } = theme;
 
@@ -27,29 +28,7 @@ interface InvoiceShowProps {
 export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
     const { token } = useToken();
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-
-    const handleVoidInvoice = () => {
-        Modal.confirm({
-            title: 'Void Invoice',
-            content: 'Are you sure you want to void this invoice? This action cannot be undone.',
-            okText: 'Void Invoice',
-            okType: 'danger',
-            cancelText: 'Cancel',
-            onOk: async () => {
-                try {
-                    await api.post(`/dashboard/invoices/${invoice.id}/void`);
-                    notification.success({ message: 'Invoice voided successfully' });
-                    router.reload();
-                } catch (error: unknown) {
-                    const err = error as { response?: { data: { message: string } } };
-                    notification.error({
-                        message: 'Error',
-                        description: err.response?.data.message || 'Failed to void invoice',
-                    });
-                }
-            },
-        });
-    };
+    const [voidModalOpen, setVoidModalOpen] = useState(false);
 
     const handleSendInvoice = async () => {
         try {
@@ -67,39 +46,72 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
 
     const paymentColumns = [
         {
+            title: 'Status',
+            key: 'status',
+            width: 100,
+            render: (_: unknown, record: InvoicePayment) =>
+                record.is_voided ? <Tag color="red">Voided</Tag> : <Tag color="green">Active</Tag>,
+        },
+        {
             title: 'Date',
             dataIndex: 'payment_date',
             key: 'payment_date',
-            render: (date: string) => new Date(date).toLocaleDateString(),
+            render: (date: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {new Date(date).toLocaleDateString()}
+                </span>
+            ),
         },
         {
             title: 'Account',
             dataIndex: 'account',
             key: 'account',
-            render: (account: { name: string; currency_code: string }) => `${account.name} (${account.currency_code})`,
+            render: (account: { name: string; currency_code: string }, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {account.name} ({account.currency_code})
+                </span>
+            ),
         },
         {
             title: 'Payment Amount',
             dataIndex: 'formatted_payment_amount',
             key: 'payment_amount',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>{text}</span>
+            ),
         },
         {
             title: 'Amount Received',
             dataIndex: 'formatted_amount_received',
             key: 'amount_received',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>{text}</span>
+            ),
         },
         {
             title: 'Fee',
             dataIndex: 'formatted_fee',
             key: 'fee',
-            render: (text: string, record: InvoicePayment) =>
-                record.has_fee ? <span style={{ color: token.colorError }}>{text}</span> : <span>—</span>,
+            render: (text: string, record: InvoicePayment) => {
+                if (record.is_voided) {
+                    return record.has_fee ? (
+                        <span style={{ textDecoration: 'line-through', color: token.colorTextDisabled }}>{text}</span>
+                    ) : (
+                        <span style={{ color: token.colorTextDisabled }}>—</span>
+                    );
+                }
+                return record.has_fee ? <span style={{ color: token.colorError }}>{text}</span> : <span>—</span>;
+            },
         },
         {
             title: 'Notes',
             dataIndex: 'notes',
             key: 'notes',
-            render: (text: string) => text || '—',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {text || '—'}
+                </span>
+            ),
         },
     ];
 
@@ -289,7 +301,21 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                                 {invoice.notes}
                             </Descriptions.Item>
                         )}
+                        {invoice.void_reason && (
+                            <Descriptions.Item label="Void Reason" span={2}>
+                                <span style={{ color: token.colorError }}>{invoice.void_reason}</span>
+                            </Descriptions.Item>
+                        )}
                     </Descriptions>
+                    {invoice.status === 'void' && invoice.void_reason && (
+                        <Alert
+                            message="Invoice Voided"
+                            description={invoice.void_reason}
+                            type="error"
+                            showIcon
+                            style={{ marginTop: 16 }}
+                        />
+                    )}
                 </Card>
             ),
         },
@@ -347,8 +373,8 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                         </Button>
                     )}
 
-                    {invoice.status !== 'void' && invoice.status !== 'paid' && (
-                        <Button danger icon={<StopOutlined />} onClick={handleVoidInvoice}>
+                    {invoice.status !== 'void' && (
+                        <Button danger icon={<StopOutlined />} onClick={() => setVoidModalOpen(true)}>
                             Void Invoice
                         </Button>
                     )}
@@ -358,6 +384,7 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
             <Tabs defaultActiveKey="preview" items={tabItems} />
 
             <InvoicePaymentModal open={paymentModalOpen} onCancel={() => setPaymentModalOpen(false)} invoice={invoice} accounts={accounts} />
+            <InvoiceVoidModal open={voidModalOpen} onCancel={() => setVoidModalOpen(false)} invoice={invoice} accounts={accounts} />
         </AppLayout>
     );
 }

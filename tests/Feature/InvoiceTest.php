@@ -12,7 +12,6 @@ use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nnjeim\World\Models\Country;
 use Nnjeim\World\Models\Currency;
 
 uses(RefreshDatabase::class);
@@ -65,7 +64,7 @@ describe('Invoice Creation', function () {
 
         $invoice = Invoice::first();
         expect($invoice->items)->toHaveCount(2);
-        expect($invoice->invoice_number)->toStartWith('INV-' . now()->format('Y') . '-');
+        expect($invoice->invoice_number)->toStartWith('INV-'.now()->format('Y').'-');
     });
 
     test('invoice requires at least one line item', function () {
@@ -399,25 +398,31 @@ describe('Status Transitions', function () {
 });
 
 describe('Void Invoice', function () {
-    test('user can void unpaid invoice', function () {
+    test('user can void unpaid invoice with valid reason', function () {
         $invoice = Invoice::factory()->sent()->create();
 
-        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void");
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void", [
+            'void_reason' => 'Client cancelled the project',
+        ]);
 
         $response->assertOk();
         $this->assertDatabaseHas('invoices', [
             'id' => $invoice->id,
             'status' => 'void',
+            'void_reason' => 'Client cancelled the project',
         ]);
         expect($invoice->fresh()->voided_at)->not->toBeNull();
     });
 
-    test('cannot void paid invoice', function () {
-        $invoice = Invoice::factory()->paid()->create();
+    test('void reason is required', function () {
+        $invoice = Invoice::factory()->sent()->create();
 
-        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void");
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void", [
+            'void_reason' => '',
+        ]);
 
-        $response->assertForbidden();
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['void_reason']);
     });
 });
 
