@@ -250,3 +250,132 @@ describe('Expense Foreign Currency', function () {
         expect($expense->reporting_amount_pkr)->toBe(2850000); // 100 * 285 * 100
     });
 });
+
+describe('Expense Voiding', function () {
+    it('voids a processed expense and creates reversal transaction', function () {
+        // Create and process an expense first
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 5000, // 50.00
+            'currency_code' => 'PKR',
+            'reporting_amount_pkr' => 5000,
+            'status' => 'processed',
+            'transaction_id' => null,
+            'expense_date' => now(),
+        ]);
+
+        // Create initial transaction (simulating processed state)
+        $transaction = Transaction::factory()->create([
+            'account_id' => $this->account->id,
+            'type' => 'debit',
+            'amount' => 5000,
+            'date' => now(),
+        ]);
+        $expense->update(['transaction_id' => $transaction->id]);
+
+        // Update account balance to reflect the expense debit
+        $this->account->update(['current_balance' => 95000]); // 1000.00 - 50.00 = 950.00
+
+        $initialBalance = $this->account->current_balance;
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => 'Testing void functionality',
+        ]);
+
+        $response->assertOk()
+            ->assertJson(['message' => 'Expense voided successfully. Reversal transaction created.']);
+
+        $expense->refresh();
+        expect($expense->status)->toBe('voided')
+            ->and($expense->void_reason)->toBe('Testing void functionality')
+            ->and($expense->voided_at)->not->toBeNull();
+
+        // Reversal transaction should be created (credit)
+        $reversalTransaction = Transaction::where('reference_type', Expense::class)
+            ->where('reference_id', $expense->id)
+            ->where('type', 'credit')
+            ->latest()
+            ->first();
+
+        expect($reversalTransaction)->not->toBeNull()
+            ->and($reversalTransaction->amount)->toBe(5000)
+            ->and($reversalTransaction->type)->toBe('credit');
+
+        // Account balance should be restored
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe($initialBalance + 5000);
+    });
+
+    it('requires a void reason', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'status' => 'processed',
+        ]);
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => '',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('void_reason');
+    });
+
+    it('prevents voiding draft expenses', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'status' => 'draft',
+        ]);
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => 'Testing void validation',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('void_reason');
+    });
+
+    it('prevents voiding already voided expenses', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'status' => 'voided',
+            'void_reason' => 'Previously voided',
+            'voided_at' => now(),
+        ]);
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => 'Testing double void',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('void_reason');
+    });
+
+    it('prevents voiding cancelled expenses', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'status' => 'cancelled',
+        ]);
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => 'Testing cancelled void',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('void_reason');
+    });
+
+    it('validates void reason max length', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'status' => 'processed',
+        ]);
+
+        $response = $this->postJson("/dashboard/expenses/{$expense->id}/void", [
+            'void_reason' => str_repeat('a', 1001),
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors('void_reason');
+    });
+});

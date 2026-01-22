@@ -21,7 +21,7 @@ class Expense extends Model implements HasMedia
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['amount', 'status', 'expense_date', 'vendor', 'description'])
+            ->logOnly(['amount', 'status', 'expense_date', 'vendor', 'description', 'void_reason', 'voided_at'])
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs()
             ->setDescriptionForEvent(fn (string $event) => "Expense {$event}");
@@ -47,6 +47,8 @@ class Expense extends Model implements HasMedia
         'exchange_rate',
         'reporting_amount_pkr',
         'status',
+        'void_reason',
+        'voided_at',
     ];
 
     protected function casts(): array
@@ -62,6 +64,7 @@ class Expense extends Model implements HasMedia
             'last_processed_date' => 'date',
             'is_recurring' => 'boolean',
             'is_active' => 'boolean',
+            'voided_at' => 'datetime',
         ];
     }
 
@@ -127,6 +130,11 @@ class Expense extends Model implements HasMedia
         return $this->is_recurring && $this->is_active;
     }
 
+    public function getIsVoidedAttribute(): bool
+    {
+        return $this->status === 'voided';
+    }
+
     /**
      * Scopes
      */
@@ -138,6 +146,11 @@ class Expense extends Model implements HasMedia
     public function scopeProcessed($query)
     {
         return $query->where('status', 'processed');
+    }
+
+    public function scopeVoided($query)
+    {
+        return $query->where('status', 'voided');
     }
 
     public function scopeRecurringTemplates($query)

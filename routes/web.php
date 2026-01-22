@@ -146,6 +146,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [ExpenseController::class, 'store'])->name('store');
         Route::put('/{id}', [ExpenseController::class, 'update'])->name('update')->whereNumber('id');
         Route::post('/{id}/process', [ExpenseController::class, 'process'])->name('process')->whereNumber('id');
+        Route::post('/{id}/void', [ExpenseController::class, 'void'])->name('void')->whereNumber('id');
         Route::delete('/{id}', [ExpenseController::class, 'destroy'])->name('destroy');
 
         // Helper route for exchange rates

@@ -2,7 +2,8 @@ import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
 import { create, data, edit, process } from '@/routes/expenses';
 import type { Account, Expense, FilterConfig, TransactionCategory } from '@/types';
-import { CheckCircleOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { CheckCircleOutlined, EditOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons';
+import ExpenseVoidModal from './partials/expense-void-modal';
 import { Link, router, usePage } from '@inertiajs/react';
 import { Button, Modal, notification, Space, Tag, theme, Tooltip } from 'antd';
 import React, { useState } from 'react';
@@ -20,6 +21,8 @@ export default function ExpensesIndex() {
     const [processModalOpen, setProcessModalOpen] = useState(false);
     const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
     const [processing, setProcessing] = useState(false);
+    const [voidModalOpen, setVoidModalOpen] = useState(false);
+    const [expenseToVoid, setExpenseToVoid] = useState<Expense | null>(null);
 
     const handleProcessClick = (expense: Expense) => {
         setSelectedExpense(expense);
@@ -55,6 +58,11 @@ export default function ExpensesIndex() {
         );
     };
 
+    const handleVoidClick = (expense: Expense) => {
+        setExpenseToVoid(expense);
+        setVoidModalOpen(true);
+    };
+
     const filters: FilterConfig[] = [
         {
             type: 'select',
@@ -81,6 +89,7 @@ export default function ExpensesIndex() {
             options: [
                 { label: 'Draft', value: 'draft' },
                 { label: 'Processed', value: 'processed' },
+                { label: 'Voided', value: 'voided' },
                 { label: 'Cancelled', value: 'cancelled' },
             ],
         },
@@ -191,6 +200,7 @@ export default function ExpensesIndex() {
                 const colorMap = {
                     draft: 'default',
                     processed: 'green',
+                    voided: 'orange',
                     cancelled: 'red',
                 };
                 return <Tag color={colorMap[statusValue as keyof typeof colorMap]}>{statusValue}</Tag>;
@@ -201,30 +211,42 @@ export default function ExpensesIndex() {
             key: 'actions',
             width: 120,
             render: (_: unknown, record: Expense) => {
-                const isDraft = record.status === 'draft';
-
-                if (!isDraft) {
-                    return <span style={{ color: token.colorTextDisabled }}>—</span>;
+                if (record.status === 'draft') {
+                    return (
+                        <Space size="small">
+                            <Tooltip title="Edit">
+                                <Link href={edit.url(record.id)}>
+                                    <Button type="text" size="small" icon={<EditOutlined />} />
+                                </Link>
+                            </Tooltip>
+                            <Tooltip title="Process">
+                                <Button
+                                    type="text"
+                                    size="small"
+                                    icon={<CheckCircleOutlined />}
+                                    style={{ color: token.colorSuccess }}
+                                    onClick={() => handleProcessClick(record)}
+                                />
+                            </Tooltip>
+                        </Space>
+                    );
                 }
 
-                return (
-                    <Space size="small">
-                        <Tooltip title="Edit">
-                            <Link href={edit.url(record.id)}>
-                                <Button type="text" size="small" icon={<EditOutlined />} />
-                            </Link>
-                        </Tooltip>
-                        <Tooltip title="Process">
+                if (record.status === 'processed') {
+                    return (
+                        <Tooltip title="Void">
                             <Button
                                 type="text"
                                 size="small"
-                                icon={<CheckCircleOutlined />}
-                                style={{ color: token.colorSuccess }}
-                                onClick={() => handleProcessClick(record)}
+                                icon={<StopOutlined />}
+                                style={{ color: token.colorError }}
+                                onClick={() => handleVoidClick(record)}
                             />
                         </Tooltip>
-                    </Space>
-                );
+                    );
+                }
+
+                return <span style={{ color: token.colorTextDisabled }}>—</span>;
             },
         },
     ];
@@ -268,6 +290,17 @@ export default function ExpensesIndex() {
                 </p>
                 <p style={{ color: token.colorWarning, marginTop: 8 }}>This action cannot be undone. Continue?</p>
             </Modal>
+
+            {expenseToVoid && (
+                <ExpenseVoidModal
+                    open={voidModalOpen}
+                    onCancel={() => {
+                        setVoidModalOpen(false);
+                        setExpenseToVoid(null);
+                    }}
+                    expense={expenseToVoid}
+                />
+            )}
         </AppLayout>
     );
 }

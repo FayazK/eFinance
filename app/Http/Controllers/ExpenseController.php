@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpenseStoreRequest;
 use App\Http\Requests\ExpenseUpdateRequest;
+use App\Http\Requests\ExpenseVoidRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Account;
 use App\Models\TransactionCategory;
@@ -154,6 +155,17 @@ class ExpenseController extends Controller
                 ->with('success', 'Expense processed successfully! Transaction has been created.');
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to process expense: '.$e->getMessage()]);
+        }
+    }
+
+    public function void(int $id, ExpenseVoidRequest $request): JsonResponse
+    {
+        try {
+            $this->expenseService->voidExpense($id, $request->validated()['void_reason']);
+
+            return response()->json(['message' => 'Expense voided successfully. Reversal transaction created.']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to void expense: '.$e->getMessage()], 500);
         }
     }
 

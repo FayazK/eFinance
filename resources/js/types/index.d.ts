@@ -443,7 +443,7 @@ export interface Distribution {
     [key: string]: string | number | boolean | DistributionLine[] | null | undefined;
 }
 
-export type ExpenseStatus = 'draft' | 'processed' | 'cancelled';
+export type ExpenseStatus = 'draft' | 'processed' | 'cancelled' | 'voided';
 
 export interface Expense {
     id: number;
@@ -480,7 +480,11 @@ export interface Expense {
     status: ExpenseStatus;
     is_pending?: boolean;
     is_processed?: boolean;
+    is_voided?: boolean;
     is_recurring_template?: boolean;
+    // Void fields
+    void_reason?: string;
+    voided_at?: string;
     // Media
     receipts?: Media[];
     receipts_count?: number;

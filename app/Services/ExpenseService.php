@@ -261,6 +261,68 @@ class ExpenseService
     }
 
     /**
+     * Void a processed expense
+     *
+     * Creates a credit reversal transaction to restore the money back to the account.
+     *
+     * @param  int  $expenseId  The expense to void
+     * @param  string|null  $voidReason  Required reason for voiding (for audit trail)
+     */
+    public function voidExpense(int $expenseId, ?string $voidReason = null): Expense
+    {
+        return DB::transaction(function () use ($expenseId, $voidReason) {
+            $expense = $this->expenseRepository->find($expenseId);
+
+            if (! $expense) {
+                throw new InvalidArgumentException("Expense {$expenseId} not found");
+            }
+
+            if ($expense->status === 'voided') {
+                throw new InvalidArgumentException('Expense is already voided');
+            }
+
+            if ($expense->status !== 'processed') {
+                throw new InvalidArgumentException('Only processed expenses can be voided');
+            }
+
+            // Create credit reversal transaction (restore money to account)
+            $reversalTransaction = $this->transactionService->createTransaction([
+                'account_id' => $expense->account_id,
+                'category_id' => $this->getExpenseCategoryId(),
+                'reference_type' => Expense::class,
+                'reference_id' => $expense->id,
+                'type' => 'credit',
+                'amount' => $expense->amount / 100, // Convert to major units for service
+                'description' => "Void reversal: Expense #{$expense->id} - {$expense->vendor}",
+                'date' => now()->format('Y-m-d'),
+            ]);
+
+            // Update expense: void status, store reason and timestamp
+            $expense = $this->expenseRepository->update($expenseId, [
+                'status' => 'voided',
+                'voided_at' => now(),
+                'void_reason' => $voidReason,
+            ]);
+
+            // Log the void action with business context
+            activity()
+                ->performedOn($expense)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'void_reason' => $voidReason,
+                    'amount' => $expense->amount / 100,
+                    'currency' => $expense->currency_code,
+                    'vendor' => $expense->vendor,
+                    'original_transaction_id' => $expense->transaction_id,
+                    'reversal_transaction_id' => $reversalTransaction->id,
+                ])
+                ->log('Expense voided');
+
+            return $expense;
+        });
+    }
+
+    /**
      * Delete a draft expense (hard delete)
      */
     public function deleteExpense(int $expenseId): bool
