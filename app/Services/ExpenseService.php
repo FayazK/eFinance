@@ -176,6 +176,18 @@ class ExpenseService
                 'status' => 'processed',
             ]);
 
+            // Log the expense processing
+            activity()
+                ->performedOn($expense)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'amount' => $expense->amount / 100,
+                    'currency' => $expense->currency_code,
+                    'vendor' => $expense->vendor,
+                    'transaction_id' => $transaction->id,
+                ])
+                ->log('Expense processed');
+
             return $expense;
         });
     }

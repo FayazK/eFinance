@@ -1,3 +1,4 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
 import { edit, index, pdf, updateDueDate } from '@/routes/invoices';
@@ -417,6 +418,15 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                             emptyText: 'No payments have been recorded yet.',
                         }}
                     />
+                </Card>
+            ),
+        },
+        {
+            key: 'activity',
+            label: 'Activity',
+            children: (
+                <Card>
+                    <ActivityTimeline subjectType="Invoice" subjectId={invoice.id} />
                 </Card>
             ),
         },

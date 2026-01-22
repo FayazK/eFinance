@@ -17,6 +17,7 @@ import EmployeeController from './EmployeeController'
 import PayrollController from './PayrollController'
 import ShareholderController from './ShareholderController'
 import DistributionController from './DistributionController'
+import ActivityController from './ActivityController'
 import Settings from './Settings'
 import Auth from './Auth'
 
@@ -40,6 +41,7 @@ const Controllers = {
     PayrollController,
     ShareholderController,
     DistributionController,
+    ActivityController,
     Settings,
     Auth,
 }

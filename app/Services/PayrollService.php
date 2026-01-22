@@ -217,6 +217,18 @@ class PayrollService
             'transaction_id' => $transaction->id,
         ]);
 
+        // Log the payroll payment
+        activity()
+            ->performedOn($payroll)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'net_payable' => $payroll->net_payable / 100,
+                'currency' => 'PKR',
+                'employee_name' => $payroll->employee->name,
+                'period' => $payroll->period_label,
+            ])
+            ->log('Payroll paid');
+
         // Fire event
         event(new PayrollPaid($payroll));
 
@@ -251,6 +263,19 @@ class PayrollService
             'transaction_id' => $transaction->id,
             'exchange_rate' => $exchangeRate,
         ]);
+
+        // Log the payroll payment (USD)
+        activity()
+            ->performedOn($payroll)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'net_payable_pkr' => $payroll->net_payable / 100,
+                'usd_amount' => $usdAmountMinor / 100,
+                'exchange_rate' => $exchangeRate,
+                'employee_name' => $payroll->employee->name,
+                'period' => $payroll->period_label,
+            ])
+            ->log('Payroll paid (USD)');
 
         // Fire event
         event(new PayrollPaid($payroll));

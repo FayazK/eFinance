@@ -499,6 +499,38 @@ export interface Expense {
         | undefined;
 }
 
+export interface ActivityChange {
+    field: string;
+    old: string | number | null;
+    new: string | number | null;
+}
+
+export interface ActivityProperties {
+    old?: Record<string, unknown>;
+    attributes?: Record<string, unknown>;
+    custom?: Record<string, unknown>;
+}
+
+export interface ActivityCauser {
+    id: number;
+    name: string;
+    avatar_url?: string;
+}
+
+export interface Activity {
+    id: number;
+    log_name: string;
+    description: string;
+    event: 'created' | 'updated' | 'deleted' | string;
+    subject_type: string;
+    subject_id: number;
+    causer?: ActivityCauser;
+    properties: ActivityProperties;
+    changes: ActivityChange[];
+    created_at: string;
+    created_at_human: string;
+}
+
 export interface PaginationLinks {
     first: string | null;
     last: string | null;

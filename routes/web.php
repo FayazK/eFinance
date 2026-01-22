@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactController;
@@ -216,6 +217,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/process', [DistributionController::class, 'process'])->name('process');
         Route::get('/{id}/statements/{shareholderId}', [DistributionController::class, 'downloadStatement'])->name('download-statement');
     });
+
+    // Activities (Activity Log API)
+    Route::get('dashboard/activities/{type}/{id}', [ActivityController::class, 'index'])->name('activities.index');
 });
 
 require __DIR__.'/settings.php';

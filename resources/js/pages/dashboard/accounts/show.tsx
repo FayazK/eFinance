@@ -1,3 +1,4 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
@@ -223,6 +224,11 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
                     emptyFilterMessage="No transactions match your search criteria."
                 />
             ),
+        },
+        {
+            key: 'activity',
+            label: 'Activity',
+            children: <ActivityTimeline subjectType="Account" subjectId={account.id} />,
         },
     ];
 

@@ -284,6 +284,19 @@ class InvoiceService
                 'paid_at' => $newStatus === 'paid' ? now() : null,
             ]);
 
+            // Log the payment action
+            activity()
+                ->performedOn($invoice)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'payment_amount' => $paymentAmount / 100,
+                    'amount_received' => $amountReceived / 100,
+                    'fee_amount' => $feeAmount / 100,
+                    'account_name' => $account->name,
+                    'invoice_number' => $invoice->invoice_number,
+                ])
+                ->log('Payment recorded');
+
             return $invoicePayment->load([
                 'invoice',
                 'account',
@@ -344,7 +357,7 @@ class InvoiceService
             }
 
             // Update invoice: void status, reset amounts, store reason
-            return $this->invoiceRepository->update($invoiceId, [
+            $invoice = $this->invoiceRepository->update($invoiceId, [
                 'status' => 'void',
                 'voided_at' => now(),
                 'void_reason' => $voidReason,
@@ -352,6 +365,19 @@ class InvoiceService
                 'balance_due' => $invoice->total_amount,
                 'paid_at' => null,
             ]);
+
+            // Log the void action with business context
+            activity()
+                ->performedOn($invoice)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'void_reason' => $voidReason,
+                    'amount_voided' => $invoice->amount_paid,
+                    'invoice_number' => $invoice->invoice_number,
+                ])
+                ->log('Invoice voided');
+
+            return $invoice;
         });
     }
 

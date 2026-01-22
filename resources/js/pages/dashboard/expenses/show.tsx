@@ -1,3 +1,4 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
 import { index } from '@/routes/expenses';
@@ -141,6 +142,12 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                         </Card>
                     </Col>
                 )}
+
+                <Col span={24}>
+                    <Card>
+                        <ActivityTimeline subjectType="Expense" subjectId={expense.id} />
+                    </Card>
+                </Col>
             </Row>
         </AppLayout>
     );
