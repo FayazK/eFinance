@@ -1,10 +1,11 @@
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
-import { edit, index, pdf } from '@/routes/invoices';
+import { edit, index, pdf, updateDueDate } from '@/routes/invoices';
 import type { Account, Invoice, InvoicePayment, InvoiceStatus } from '@/types';
-import { ArrowLeftOutlined, DollarOutlined, EditOutlined, FileTextOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, CheckOutlined, CloseOutlined, DollarOutlined, EditOutlined, FileTextOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
-import { Alert, Button, Card, Descriptions, notification, Space, Table, Tabs, Tag, theme } from 'antd';
+import { Alert, Button, Card, DatePicker, Descriptions, notification, Space, Table, Tabs, Tag, theme, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import InvoicePaymentModal from './partials/invoice-payment-modal';
 import InvoiceVoidModal from './partials/invoice-void-modal';
@@ -29,6 +30,89 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
     const { token } = useToken();
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
     const [voidModalOpen, setVoidModalOpen] = useState(false);
+    const [editingDueDate, setEditingDueDate] = useState(false);
+    const [newDueDate, setNewDueDate] = useState<dayjs.Dayjs | null>(dayjs(invoice.due_date));
+    const [savingDueDate, setSavingDueDate] = useState(false);
+
+    const canEditDueDate = !['paid', 'void'].includes(invoice.status);
+
+    const handleSaveDueDate = async () => {
+        if (!newDueDate) return;
+
+        setSavingDueDate(true);
+        try {
+            await api.put(updateDueDate.url(invoice.id), {
+                due_date: newDueDate.format('YYYY-MM-DD'),
+            });
+            notification.success({ message: 'Due date updated successfully' });
+            setEditingDueDate(false);
+            router.reload();
+        } catch (error: unknown) {
+            const err = error as { response?: { data: { message: string } } };
+            notification.error({
+                message: 'Error',
+                description: err.response?.data.message || 'Failed to update due date',
+            });
+        } finally {
+            setSavingDueDate(false);
+        }
+    };
+
+    const handleCancelEditDueDate = () => {
+        setEditingDueDate(false);
+        setNewDueDate(dayjs(invoice.due_date));
+    };
+
+    const renderDueDateField = () => {
+        if (editingDueDate) {
+            return (
+                <Space size="small">
+                    <DatePicker
+                        value={newDueDate}
+                        onChange={(date) => setNewDueDate(date)}
+                        format="YYYY-MM-DD"
+                        size="small"
+                        style={{ width: 140 }}
+                    />
+                    <Tooltip title="Save">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<CheckOutlined />}
+                            style={{ color: token.colorSuccess }}
+                            onClick={handleSaveDueDate}
+                            loading={savingDueDate}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Cancel">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<CloseOutlined />}
+                            onClick={handleCancelEditDueDate}
+                            disabled={savingDueDate}
+                        />
+                    </Tooltip>
+                </Space>
+            );
+        }
+
+        return (
+            <Space size="small">
+                <span>{new Date(invoice.due_date).toLocaleDateString()}</span>
+                {canEditDueDate && (
+                    <Tooltip title="Edit due date">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={() => setEditingDueDate(true)}
+                        />
+                    </Tooltip>
+                )}
+            </Space>
+        );
+    };
 
     const handleSendInvoice = async () => {
         try {
@@ -178,9 +262,9 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                                         <span>Issue Date:</span>
                                         <span>{new Date(invoice.issue_date).toLocaleDateString()}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                                         <span>Due Date:</span>
-                                        <span>{new Date(invoice.due_date).toLocaleDateString()}</span>
+                                        {renderDueDateField()}
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span>Currency:</span>
@@ -285,7 +369,7 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                         <Descriptions.Item label="Client">{invoice.client?.name}</Descriptions.Item>
                         <Descriptions.Item label="Project">{invoice.project?.name || '—'}</Descriptions.Item>
                         <Descriptions.Item label="Issue Date">{new Date(invoice.issue_date).toLocaleDateString()}</Descriptions.Item>
-                        <Descriptions.Item label="Due Date">{new Date(invoice.due_date).toLocaleDateString()}</Descriptions.Item>
+                        <Descriptions.Item label="Due Date">{renderDueDateField()}</Descriptions.Item>
                         <Descriptions.Item label="Currency">{invoice.currency_code}</Descriptions.Item>
                         <Descriptions.Item label="Subtotal">{invoice.formatted_subtotal}</Descriptions.Item>
                         <Descriptions.Item label="Tax">{invoice.formatted_tax}</Descriptions.Item>

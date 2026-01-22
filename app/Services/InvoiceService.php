@@ -356,6 +356,27 @@ class InvoiceService
     }
 
     /**
+     * Update invoice due date (allowed for draft, sent, partial, overdue statuses)
+     */
+    public function updateDueDate(int $invoiceId, string $dueDate): Invoice
+    {
+        $invoice = $this->invoiceRepository->find($invoiceId);
+
+        if (! $invoice) {
+            throw new InvalidArgumentException('Invoice not found');
+        }
+
+        // Only unpaid/non-void invoices can have their due date edited
+        if (in_array($invoice->status, ['paid', 'void'])) {
+            throw new InvalidArgumentException('Cannot edit due date of paid or voided invoices');
+        }
+
+        return $this->invoiceRepository->update($invoiceId, [
+            'due_date' => $dueDate,
+        ]);
+    }
+
+    /**
      * Mark overdue invoices automatically
      */
     public function markOverdueInvoices(): int

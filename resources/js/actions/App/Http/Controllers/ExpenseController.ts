@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::index
-* @see app/Http/Controllers/ExpenseController.php:25
+* @see app/Http/Controllers/ExpenseController.php:27
 * @route '/dashboard/expenses'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 data.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::data
-* @see app/Http/Controllers/ExpenseController.php:33
+* @see app/Http/Controllers/ExpenseController.php:35
 * @route '/dashboard/expenses/data'
 */
 dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -197,7 +197,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -207,7 +207,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -217,7 +217,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -227,7 +227,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::create
-* @see app/Http/Controllers/ExpenseController.php:52
+* @see app/Http/Controllers/ExpenseController.php:54
 * @route '/dashboard/expenses/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -244,7 +244,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 export const show = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +259,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 show.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -286,7 +286,7 @@ show.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 show.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ show.get = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 show.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -306,7 +306,7 @@ show.head = (args: { id: string | number } | [id: string | number ] | string | n
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 const showForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ const showForm = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 showForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -326,7 +326,7 @@ showForm.get = (args: { id: string | number } | [id: string | number ] | string 
 
 /**
 * @see \App\Http\Controllers\ExpenseController::show
-* @see app/Http/Controllers/ExpenseController.php:100
+* @see app/Http/Controllers/ExpenseController.php:160
 * @route '/dashboard/expenses/{id}'
 */
 showForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -342,8 +342,107 @@ showForm.head = (args: { id: string | number } | [id: string | number ] | string
 show.form = showForm
 
 /**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+export const edit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit.url(args, options),
+    method: 'get',
+})
+
+edit.definition = {
+    methods: ["get","head"],
+    url: '/dashboard/expenses/{id}/edit',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+edit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { id: args }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            id: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        id: args.id,
+    }
+
+    return edit.definition.url
+            .replace('{id}', parsedArgs.id.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+edit.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+edit.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: edit.url(args, options),
+    method: 'head',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+const editForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+editForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::edit
+* @see app/Http/Controllers/ExpenseController.php:103
+* @route '/dashboard/expenses/{id}/edit'
+*/
+editForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+    action: edit.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'HEAD',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'get',
+})
+
+edit.form = editForm
+
+/**
 * @see \App\Http\Controllers\ExpenseController::store
-* @see app/Http/Controllers/ExpenseController.php:73
+* @see app/Http/Controllers/ExpenseController.php:75
 * @route '/dashboard/expenses'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -358,7 +457,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::store
-* @see app/Http/Controllers/ExpenseController.php:73
+* @see app/Http/Controllers/ExpenseController.php:75
 * @route '/dashboard/expenses'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -367,7 +466,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::store
-* @see app/Http/Controllers/ExpenseController.php:73
+* @see app/Http/Controllers/ExpenseController.php:75
 * @route '/dashboard/expenses'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -377,7 +476,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\ExpenseController::store
-* @see app/Http/Controllers/ExpenseController.php:73
+* @see app/Http/Controllers/ExpenseController.php:75
 * @route '/dashboard/expenses'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -387,7 +486,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\ExpenseController::store
-* @see app/Http/Controllers/ExpenseController.php:73
+* @see app/Http/Controllers/ExpenseController.php:75
 * @route '/dashboard/expenses'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -398,8 +497,166 @@ storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => (
 store.form = storeForm
 
 /**
+* @see \App\Http\Controllers\ExpenseController::update
+* @see app/Http/Controllers/ExpenseController.php:136
+* @route '/dashboard/expenses/{id}'
+*/
+export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update.url(args, options),
+    method: 'put',
+})
+
+update.definition = {
+    methods: ["put"],
+    url: '/dashboard/expenses/{id}',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\ExpenseController::update
+* @see app/Http/Controllers/ExpenseController.php:136
+* @route '/dashboard/expenses/{id}'
+*/
+update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { id: args }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            id: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        id: args.id,
+    }
+
+    return update.definition.url
+            .replace('{id}', parsedArgs.id.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ExpenseController::update
+* @see app/Http/Controllers/ExpenseController.php:136
+* @route '/dashboard/expenses/{id}'
+*/
+update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: update.url(args, options),
+    method: 'put',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::update
+* @see app/Http/Controllers/ExpenseController.php:136
+* @route '/dashboard/expenses/{id}'
+*/
+const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::update
+* @see app/Http/Controllers/ExpenseController.php:136
+* @route '/dashboard/expenses/{id}'
+*/
+updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: update.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+update.form = updateForm
+
+/**
+* @see \App\Http\Controllers\ExpenseController::process
+* @see app/Http/Controllers/ExpenseController.php:148
+* @route '/dashboard/expenses/{id}/process'
+*/
+export const process = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: process.url(args, options),
+    method: 'post',
+})
+
+process.definition = {
+    methods: ["post"],
+    url: '/dashboard/expenses/{id}/process',
+} satisfies RouteDefinition<["post"]>
+
+/**
+* @see \App\Http\Controllers\ExpenseController::process
+* @see app/Http/Controllers/ExpenseController.php:148
+* @route '/dashboard/expenses/{id}/process'
+*/
+process.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { id: args }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            id: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        id: args.id,
+    }
+
+    return process.definition.url
+            .replace('{id}', parsedArgs.id.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\ExpenseController::process
+* @see app/Http/Controllers/ExpenseController.php:148
+* @route '/dashboard/expenses/{id}/process'
+*/
+process.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
+    url: process.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::process
+* @see app/Http/Controllers/ExpenseController.php:148
+* @route '/dashboard/expenses/{id}/process'
+*/
+const processForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\ExpenseController::process
+* @see app/Http/Controllers/ExpenseController.php:148
+* @route '/dashboard/expenses/{id}/process'
+*/
+processForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: process.url(args, options),
+    method: 'post',
+})
+
+process.form = processForm
+
+/**
 * @see \App\Http\Controllers\ExpenseController::destroy
-* @see app/Http/Controllers/ExpenseController.php:113
+* @see app/Http/Controllers/ExpenseController.php:173
 * @route '/dashboard/expenses/{id}'
 */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -414,7 +671,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::destroy
-* @see app/Http/Controllers/ExpenseController.php:113
+* @see app/Http/Controllers/ExpenseController.php:173
 * @route '/dashboard/expenses/{id}'
 */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -441,7 +698,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\ExpenseController::destroy
-* @see app/Http/Controllers/ExpenseController.php:113
+* @see app/Http/Controllers/ExpenseController.php:173
 * @route '/dashboard/expenses/{id}'
 */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -451,7 +708,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\ExpenseController::destroy
-* @see app/Http/Controllers/ExpenseController.php:113
+* @see app/Http/Controllers/ExpenseController.php:173
 * @route '/dashboard/expenses/{id}'
 */
 const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -466,7 +723,7 @@ const destroyForm = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\ExpenseController::destroy
-* @see app/Http/Controllers/ExpenseController.php:113
+* @see app/Http/Controllers/ExpenseController.php:173
 * @route '/dashboard/expenses/{id}'
 */
 destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -483,7 +740,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 export const lastExchangeRate = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -498,7 +755,7 @@ lastExchangeRate.definition = {
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 lastExchangeRate.url = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -525,7 +782,7 @@ lastExchangeRate.url = (args: { currency: string | number } | [currency: string 
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 lastExchangeRate.get = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -535,7 +792,7 @@ lastExchangeRate.get = (args: { currency: string | number } | [currency: string 
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 lastExchangeRate.head = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -545,7 +802,7 @@ lastExchangeRate.head = (args: { currency: string | number } | [currency: string
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 const lastExchangeRateForm = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -555,7 +812,7 @@ const lastExchangeRateForm = (args: { currency: string | number } | [currency: s
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 lastExchangeRateForm.get = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -565,7 +822,7 @@ lastExchangeRateForm.get = (args: { currency: string | number } | [currency: str
 
 /**
 * @see \App\Http\Controllers\ExpenseController::lastExchangeRate
-* @see app/Http/Controllers/ExpenseController.php:125
+* @see app/Http/Controllers/ExpenseController.php:194
 * @route '/dashboard/expenses/last-exchange-rate/{currency}'
 */
 lastExchangeRateForm.head = (args: { currency: string | number } | [currency: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -580,6 +837,6 @@ lastExchangeRateForm.head = (args: { currency: string | number } | [currency: st
 
 lastExchangeRate.form = lastExchangeRateForm
 
-const ExpenseController = { index, data, create, show, store, destroy, lastExchangeRate }
+const ExpenseController = { index, data, create, show, edit, store, update, process, destroy, lastExchangeRate }
 
 export default ExpenseController

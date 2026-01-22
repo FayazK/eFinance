@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ExpenseStoreRequest;
+use App\Http\Requests\ExpenseUpdateRequest;
 use App\Http\Resources\ExpenseResource;
 use App\Models\Account;
 use App\Models\TransactionCategory;
 use App\Services\ExpenseService;
 use App\Services\MediaService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Inertia\Inertia;
@@ -80,8 +82,9 @@ class ExpenseController extends Controller
                 $expense = $this->expenseService->createRecurringExpense($validated);
                 $message = 'Recurring expense template created successfully!';
             } else {
-                $expense = $this->expenseService->createAndProcessExpense($validated);
-                $message = 'Expense recorded successfully!';
+                // Create as draft (no transaction yet)
+                $expense = $this->expenseService->createDraftExpense($validated);
+                $message = 'Expense saved as draft. Process it to deduct from account.';
 
                 // Handle receipt uploads if provided
                 if ($request->hasFile('receipts')) {
@@ -94,6 +97,63 @@ class ExpenseController extends Controller
             return redirect()->route('expenses.index')->with('success', $message);
         } catch (\Exception $e) {
             return back()->withErrors(['error' => 'Failed to create expense: '.$e->getMessage()]);
+        }
+    }
+
+    public function edit(int $id): Response
+    {
+        $expense = $this->expenseService->findExpense($id);
+
+        if (! $expense) {
+            abort(404);
+        }
+
+        // Only draft expenses can be edited
+        if ($expense->status !== 'draft') {
+            abort(403, 'Only draft expenses can be edited');
+        }
+
+        return Inertia::render('dashboard/expenses/edit', [
+            'expense' => (new ExpenseResource($expense))->resolve(),
+            'accounts' => Account::where('is_active', true)
+                ->get()
+                ->map(fn ($account) => [
+                    'id' => $account->id,
+                    'name' => $account->name,
+                    'currency_code' => $account->currency_code,
+                    'formatted_balance' => $account->formatted_balance,
+                ]),
+            'categories' => TransactionCategory::where('type', 'expense')
+                ->get()
+                ->map(fn ($category) => [
+                    'id' => $category->id,
+                    'name' => $category->name,
+                    'color' => $category->color,
+                ]),
+        ]);
+    }
+
+    public function update(ExpenseUpdateRequest $request, int $id): RedirectResponse
+    {
+        try {
+            $this->expenseService->updateExpense($id, $request->validated());
+
+            return redirect()->route('expenses.index')
+                ->with('success', 'Expense updated successfully!');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to update expense: '.$e->getMessage()]);
+        }
+    }
+
+    public function process(int $id): RedirectResponse
+    {
+        try {
+            $this->expenseService->processExpense($id);
+
+            return redirect()->route('expenses.index')
+                ->with('success', 'Expense processed successfully! Transaction has been created.');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Failed to process expense: '.$e->getMessage()]);
         }
     }
 
@@ -110,15 +170,24 @@ class ExpenseController extends Controller
         ]);
     }
 
-    public function destroy(int $id): RedirectResponse
+    public function destroy(int $id): JsonResponse
     {
-        try {
-            $this->expenseService->cancelExpense($id);
+        $expense = $this->expenseService->findExpense($id);
 
-            return redirect()->route('expenses.index')
-                ->with('success', 'Expense cancelled successfully!');
+        if (! $expense) {
+            return response()->json(['message' => 'Expense not found'], 404);
+        }
+
+        if ($expense->status !== 'draft') {
+            return response()->json(['message' => 'Only draft expenses can be discarded'], 403);
+        }
+
+        try {
+            $this->expenseService->deleteExpense($id);
+
+            return response()->json(['message' => 'Draft expense discarded successfully']);
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => 'Failed to cancel expense: '.$e->getMessage()]);
+            return response()->json(['message' => 'Failed to discard expense: '.$e->getMessage()], 500);
         }
     }
 

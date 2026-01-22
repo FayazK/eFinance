@@ -41,6 +41,13 @@ class ExpenseResource extends JsonResource
             'transaction' => $this->whenLoaded('transaction', fn () => [
                 'id' => $this->transaction->id,
             ]),
+            'receipts' => $this->whenLoaded('media', fn () => $this->getMedia('receipts')->map(fn ($media) => [
+                'id' => $media->id,
+                'name' => $media->file_name,
+                'url' => $media->getUrl(),
+                'mime_type' => $media->mime_type,
+                'size' => $media->size,
+            ])),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

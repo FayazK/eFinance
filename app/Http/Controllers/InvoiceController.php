@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\InvoiceTemplate;
 use App\Helpers\CurrencyHelper;
+use App\Http\Requests\InvoiceDueDateRequest;
 use App\Http\Requests\InvoicePaymentStoreRequest;
 use App\Http\Requests\InvoiceStoreRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
@@ -261,6 +262,25 @@ class InvoiceController extends Controller
 
         return response()->json([
             'message' => 'Invoice voided successfully',
+            'data' => new InvoiceResource($invoice),
+        ]);
+    }
+
+    /**
+     * Update invoice due date
+     */
+    public function updateDueDate(int $id, InvoiceDueDateRequest $request): JsonResponse
+    {
+        try {
+            $invoice = $this->invoiceService->updateDueDate($id, $request->validated()['due_date']);
+        } catch (\InvalidArgumentException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ], 403);
+        }
+
+        return response()->json([
+            'message' => 'Due date updated successfully',
             'data' => new InvoiceResource($invoice),
         ]);
     }

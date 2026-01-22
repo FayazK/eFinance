@@ -22,40 +22,84 @@ class ExpenseService
     ) {}
 
     /**
+     * Create a draft expense (no transaction created yet)
+     */
+    public function createDraftExpense(array $data): Expense
+    {
+        // Convert amount to minor units and calculate PKR reporting amount
+        $amountInMinor = (int) ($data['amount'] * 100);
+        $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
+        $reportingAmountPkr = $this->calculateReportingAmountPkr(
+            $amountInMinor,
+            $data['currency_code'],
+            $exchangeRate
+        );
+
+        // Create expense record as draft
+        return $this->expenseRepository->create([
+            'account_id' => $data['account_id'],
+            'category_id' => $data['category_id'] ?? null,
+            'amount' => $amountInMinor,
+            'currency_code' => $data['currency_code'],
+            'vendor' => $data['vendor'] ?? null,
+            'description' => $data['description'] ?? null,
+            'expense_date' => $data['expense_date'] ?? now()->format('Y-m-d'),
+            'exchange_rate' => $data['exchange_rate'] ?? null,
+            'reporting_amount_pkr' => $reportingAmountPkr,
+            'status' => 'draft',
+            'is_recurring' => false,
+        ]);
+    }
+
+    /**
      * Create and process a one-time expense (Quick Entry or International)
      */
     public function createAndProcessExpense(array $data): Expense
     {
         return DB::transaction(function () use ($data) {
-            // Convert amount to minor units and calculate PKR reporting amount
-            $amountInMinor = (int) ($data['amount'] * 100);
-            $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
-            $reportingAmountPkr = $this->calculateReportingAmountPkr(
-                $amountInMinor,
-                $data['currency_code'],
-                $exchangeRate
-            );
-
-            // Create expense record
-            $expense = $this->expenseRepository->create([
-                'account_id' => $data['account_id'],
-                'category_id' => $data['category_id'] ?? null,
-                'amount' => $amountInMinor,
-                'currency_code' => $data['currency_code'],
-                'vendor' => $data['vendor'] ?? null,
-                'description' => $data['description'] ?? null,
-                'expense_date' => $data['expense_date'] ?? now()->format('Y-m-d'),
-                'exchange_rate' => $data['exchange_rate'] ?? null,
-                'reporting_amount_pkr' => $reportingAmountPkr,
-                'status' => 'draft',
-                'is_recurring' => false,
-            ]);
+            // Create draft expense first
+            $expense = $this->createDraftExpense($data);
 
             // Process the expense (create transaction)
-            $expense = $this->processExpense($expense->id);
-
-            return $expense;
+            return $this->processExpense($expense->id);
         });
+    }
+
+    /**
+     * Update a draft expense
+     */
+    public function updateExpense(int $expenseId, array $data): Expense
+    {
+        $expense = $this->expenseRepository->find($expenseId);
+
+        if (! $expense) {
+            throw new InvalidArgumentException("Expense {$expenseId} not found");
+        }
+
+        if ($expense->status !== 'draft') {
+            throw new InvalidArgumentException('Only draft expenses can be edited');
+        }
+
+        // Convert amount to minor units and recalculate PKR reporting amount
+        $amountInMinor = (int) ($data['amount'] * 100);
+        $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
+        $reportingAmountPkr = $this->calculateReportingAmountPkr(
+            $amountInMinor,
+            $data['currency_code'],
+            $exchangeRate
+        );
+
+        return $this->expenseRepository->update($expenseId, [
+            'account_id' => $data['account_id'],
+            'category_id' => $data['category_id'] ?? null,
+            'amount' => $amountInMinor,
+            'currency_code' => $data['currency_code'],
+            'vendor' => $data['vendor'] ?? null,
+            'description' => $data['description'] ?? null,
+            'expense_date' => $data['expense_date'],
+            'exchange_rate' => $data['exchange_rate'] ?? null,
+            'reporting_amount_pkr' => $reportingAmountPkr,
+        ]);
     }
 
     /**
@@ -205,6 +249,27 @@ class ExpenseService
     }
 
     /**
+     * Delete a draft expense (hard delete)
+     */
+    public function deleteExpense(int $expenseId): bool
+    {
+        $expense = $this->expenseRepository->find($expenseId);
+
+        if (! $expense) {
+            throw new InvalidArgumentException("Expense {$expenseId} not found");
+        }
+
+        if ($expense->status !== 'draft') {
+            throw new InvalidArgumentException('Only draft expenses can be deleted');
+        }
+
+        // Delete associated media (receipts)
+        $expense->clearMediaCollection('receipts');
+
+        return $this->expenseRepository->delete($expenseId);
+    }
+
+    /**
      * Get paginated expenses
      */
     public function getPaginatedExpenses(
@@ -262,6 +327,14 @@ class ExpenseService
             'period_start' => $startDate,
             'period_end' => $endDate,
         ];
+    }
+
+    /**
+     * Find an expense by ID
+     */
+    public function findExpense(int $id): ?Expense
+    {
+        return $this->expenseRepository->find($id);
     }
 
     /**

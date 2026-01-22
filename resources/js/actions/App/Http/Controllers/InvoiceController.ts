@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::index
-* @see app/Http/Controllers/InvoiceController.php:42
+* @see app/Http/Controllers/InvoiceController.php:43
 * @route '/dashboard/invoices'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 data.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::data
-* @see app/Http/Controllers/InvoiceController.php:50
+* @see app/Http/Controllers/InvoiceController.php:51
 * @route '/dashboard/invoices/data'
 */
 dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -197,7 +197,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -207,7 +207,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -217,7 +217,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -227,7 +227,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::create
-* @see app/Http/Controllers/InvoiceController.php:66
+* @see app/Http/Controllers/InvoiceController.php:67
 * @route '/dashboard/invoices/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -244,7 +244,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 export const show = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +259,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 show.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -286,7 +286,7 @@ show.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 show.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ show.get = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 show.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -306,7 +306,7 @@ show.head = (args: { id: string | number } | [id: string | number ] | string | n
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 const showForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ const showForm = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 showForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -326,7 +326,7 @@ showForm.get = (args: { id: string | number } | [id: string | number ] | string 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::show
-* @see app/Http/Controllers/InvoiceController.php:109
+* @see app/Http/Controllers/InvoiceController.php:110
 * @route '/dashboard/invoices/{id}'
 */
 showForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -343,7 +343,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 export const edit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -358,7 +358,7 @@ edit.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 edit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -385,7 +385,7 @@ edit.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 edit.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -395,7 +395,7 @@ edit.get = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 edit.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -405,7 +405,7 @@ edit.head = (args: { id: string | number } | [id: string | number ] | string | n
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 const editForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -415,7 +415,7 @@ const editForm = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 editForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -425,7 +425,7 @@ editForm.get = (args: { id: string | number } | [id: string | number ] | string 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::edit
-* @see app/Http/Controllers/InvoiceController.php:135
+* @see app/Http/Controllers/InvoiceController.php:136
 * @route '/dashboard/invoices/{id}/edit'
 */
 editForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -442,7 +442,7 @@ edit.form = editForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::store
-* @see app/Http/Controllers/InvoiceController.php:96
+* @see app/Http/Controllers/InvoiceController.php:97
 * @route '/dashboard/invoices'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -457,7 +457,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::store
-* @see app/Http/Controllers/InvoiceController.php:96
+* @see app/Http/Controllers/InvoiceController.php:97
 * @route '/dashboard/invoices'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -466,7 +466,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::store
-* @see app/Http/Controllers/InvoiceController.php:96
+* @see app/Http/Controllers/InvoiceController.php:97
 * @route '/dashboard/invoices'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -476,7 +476,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\InvoiceController::store
-* @see app/Http/Controllers/InvoiceController.php:96
+* @see app/Http/Controllers/InvoiceController.php:97
 * @route '/dashboard/invoices'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -486,7 +486,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::store
-* @see app/Http/Controllers/InvoiceController.php:96
+* @see app/Http/Controllers/InvoiceController.php:97
 * @route '/dashboard/invoices'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -498,7 +498,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::update
-* @see app/Http/Controllers/InvoiceController.php:176
+* @see app/Http/Controllers/InvoiceController.php:177
 * @route '/dashboard/invoices/{id}'
 */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -513,7 +513,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::update
-* @see app/Http/Controllers/InvoiceController.php:176
+* @see app/Http/Controllers/InvoiceController.php:177
 * @route '/dashboard/invoices/{id}'
 */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -540,7 +540,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::update
-* @see app/Http/Controllers/InvoiceController.php:176
+* @see app/Http/Controllers/InvoiceController.php:177
 * @route '/dashboard/invoices/{id}'
 */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -550,7 +550,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::update
-* @see app/Http/Controllers/InvoiceController.php:176
+* @see app/Http/Controllers/InvoiceController.php:177
 * @route '/dashboard/invoices/{id}'
 */
 const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -565,7 +565,7 @@ const updateForm = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\InvoiceController::update
-* @see app/Http/Controllers/InvoiceController.php:176
+* @see app/Http/Controllers/InvoiceController.php:177
 * @route '/dashboard/invoices/{id}'
 */
 updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -582,7 +582,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::destroy
-* @see app/Http/Controllers/InvoiceController.php:189
+* @see app/Http/Controllers/InvoiceController.php:190
 * @route '/dashboard/invoices/{id}'
 */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -597,7 +597,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::destroy
-* @see app/Http/Controllers/InvoiceController.php:189
+* @see app/Http/Controllers/InvoiceController.php:190
 * @route '/dashboard/invoices/{id}'
 */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -624,7 +624,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\InvoiceController::destroy
-* @see app/Http/Controllers/InvoiceController.php:189
+* @see app/Http/Controllers/InvoiceController.php:190
 * @route '/dashboard/invoices/{id}'
 */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -634,7 +634,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\InvoiceController::destroy
-* @see app/Http/Controllers/InvoiceController.php:189
+* @see app/Http/Controllers/InvoiceController.php:190
 * @route '/dashboard/invoices/{id}'
 */
 const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -649,7 +649,7 @@ const destroyForm = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\InvoiceController::destroy
-* @see app/Http/Controllers/InvoiceController.php:189
+* @see app/Http/Controllers/InvoiceController.php:190
 * @route '/dashboard/invoices/{id}'
 */
 destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -666,7 +666,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::changeStatus
-* @see app/Http/Controllers/InvoiceController.php:213
+* @see app/Http/Controllers/InvoiceController.php:214
 * @route '/dashboard/invoices/{id}/change-status'
 */
 export const changeStatus = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -681,7 +681,7 @@ changeStatus.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::changeStatus
-* @see app/Http/Controllers/InvoiceController.php:213
+* @see app/Http/Controllers/InvoiceController.php:214
 * @route '/dashboard/invoices/{id}/change-status'
 */
 changeStatus.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -708,7 +708,7 @@ changeStatus.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\InvoiceController::changeStatus
-* @see app/Http/Controllers/InvoiceController.php:213
+* @see app/Http/Controllers/InvoiceController.php:214
 * @route '/dashboard/invoices/{id}/change-status'
 */
 changeStatus.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -718,7 +718,7 @@ changeStatus.post = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\InvoiceController::changeStatus
-* @see app/Http/Controllers/InvoiceController.php:213
+* @see app/Http/Controllers/InvoiceController.php:214
 * @route '/dashboard/invoices/{id}/change-status'
 */
 const changeStatusForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -728,7 +728,7 @@ const changeStatusForm = (args: { id: string | number } | [id: string | number ]
 
 /**
 * @see \App\Http\Controllers\InvoiceController::changeStatus
-* @see app/Http/Controllers/InvoiceController.php:213
+* @see app/Http/Controllers/InvoiceController.php:214
 * @route '/dashboard/invoices/{id}/change-status'
 */
 changeStatusForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -740,7 +740,7 @@ changeStatus.form = changeStatusForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::recordPayment
-* @see app/Http/Controllers/InvoiceController.php:236
+* @see app/Http/Controllers/InvoiceController.php:237
 * @route '/dashboard/invoices/{id}/record-payment'
 */
 export const recordPayment = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -755,7 +755,7 @@ recordPayment.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::recordPayment
-* @see app/Http/Controllers/InvoiceController.php:236
+* @see app/Http/Controllers/InvoiceController.php:237
 * @route '/dashboard/invoices/{id}/record-payment'
 */
 recordPayment.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -782,7 +782,7 @@ recordPayment.url = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\InvoiceController::recordPayment
-* @see app/Http/Controllers/InvoiceController.php:236
+* @see app/Http/Controllers/InvoiceController.php:237
 * @route '/dashboard/invoices/{id}/record-payment'
 */
 recordPayment.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -792,7 +792,7 @@ recordPayment.post = (args: { id: string | number } | [id: string | number ] | s
 
 /**
 * @see \App\Http\Controllers\InvoiceController::recordPayment
-* @see app/Http/Controllers/InvoiceController.php:236
+* @see app/Http/Controllers/InvoiceController.php:237
 * @route '/dashboard/invoices/{id}/record-payment'
 */
 const recordPaymentForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -802,7 +802,7 @@ const recordPaymentForm = (args: { id: string | number } | [id: string | number 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::recordPayment
-* @see app/Http/Controllers/InvoiceController.php:236
+* @see app/Http/Controllers/InvoiceController.php:237
 * @route '/dashboard/invoices/{id}/record-payment'
 */
 recordPaymentForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -814,7 +814,7 @@ recordPayment.form = recordPaymentForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::voidMethod
-* @see app/Http/Controllers/InvoiceController.php:252
+* @see app/Http/Controllers/InvoiceController.php:253
 * @route '/dashboard/invoices/{id}/void'
 */
 export const voidMethod = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -829,7 +829,7 @@ voidMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::voidMethod
-* @see app/Http/Controllers/InvoiceController.php:252
+* @see app/Http/Controllers/InvoiceController.php:253
 * @route '/dashboard/invoices/{id}/void'
 */
 voidMethod.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -856,7 +856,7 @@ voidMethod.url = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\InvoiceController::voidMethod
-* @see app/Http/Controllers/InvoiceController.php:252
+* @see app/Http/Controllers/InvoiceController.php:253
 * @route '/dashboard/invoices/{id}/void'
 */
 voidMethod.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -866,7 +866,7 @@ voidMethod.post = (args: { id: string | number } | [id: string | number ] | stri
 
 /**
 * @see \App\Http\Controllers\InvoiceController::voidMethod
-* @see app/Http/Controllers/InvoiceController.php:252
+* @see app/Http/Controllers/InvoiceController.php:253
 * @route '/dashboard/invoices/{id}/void'
 */
 const voidMethodForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -876,7 +876,7 @@ const voidMethodForm = (args: { id: string | number } | [id: string | number ] |
 
 /**
 * @see \App\Http\Controllers\InvoiceController::voidMethod
-* @see app/Http/Controllers/InvoiceController.php:252
+* @see app/Http/Controllers/InvoiceController.php:253
 * @route '/dashboard/invoices/{id}/void'
 */
 voidMethodForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -887,8 +887,92 @@ voidMethodForm.post = (args: { id: string | number } | [id: string | number ] | 
 voidMethod.form = voidMethodForm
 
 /**
+* @see \App\Http\Controllers\InvoiceController::updateDueDate
+* @see app/Http/Controllers/InvoiceController.php:272
+* @route '/dashboard/invoices/{id}/due-date'
+*/
+export const updateDueDate = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateDueDate.url(args, options),
+    method: 'put',
+})
+
+updateDueDate.definition = {
+    methods: ["put"],
+    url: '/dashboard/invoices/{id}/due-date',
+} satisfies RouteDefinition<["put"]>
+
+/**
+* @see \App\Http\Controllers\InvoiceController::updateDueDate
+* @see app/Http/Controllers/InvoiceController.php:272
+* @route '/dashboard/invoices/{id}/due-date'
+*/
+updateDueDate.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { id: args }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            id: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        id: args.id,
+    }
+
+    return updateDueDate.definition.url
+            .replace('{id}', parsedArgs.id.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\InvoiceController::updateDueDate
+* @see app/Http/Controllers/InvoiceController.php:272
+* @route '/dashboard/invoices/{id}/due-date'
+*/
+updateDueDate.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+    url: updateDueDate.url(args, options),
+    method: 'put',
+})
+
+/**
+* @see \App\Http\Controllers\InvoiceController::updateDueDate
+* @see app/Http/Controllers/InvoiceController.php:272
+* @route '/dashboard/invoices/{id}/due-date'
+*/
+const updateDueDateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updateDueDate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+/**
+* @see \App\Http\Controllers\InvoiceController::updateDueDate
+* @see app/Http/Controllers/InvoiceController.php:272
+* @route '/dashboard/invoices/{id}/due-date'
+*/
+updateDueDateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+    action: updateDueDate.url(args, {
+        [options?.mergeQuery ? 'mergeQuery' : 'query']: {
+            _method: 'PUT',
+            ...(options?.query ?? options?.mergeQuery ?? {}),
+        }
+    }),
+    method: 'post',
+})
+
+updateDueDate.form = updateDueDateForm
+
+/**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 export const generatePdf = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -903,7 +987,7 @@ generatePdf.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 generatePdf.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -930,7 +1014,7 @@ generatePdf.url = (args: { id: string | number } | [id: string | number ] | stri
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 generatePdf.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -940,7 +1024,7 @@ generatePdf.get = (args: { id: string | number } | [id: string | number ] | stri
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 generatePdf.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -950,7 +1034,7 @@ generatePdf.head = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 const generatePdfForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -960,7 +1044,7 @@ const generatePdfForm = (args: { id: string | number } | [id: string | number ] 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 generatePdfForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -970,7 +1054,7 @@ generatePdfForm.get = (args: { id: string | number } | [id: string | number ] | 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::generatePdf
-* @see app/Http/Controllers/InvoiceController.php:271
+* @see app/Http/Controllers/InvoiceController.php:291
 * @route '/dashboard/invoices/{id}/pdf'
 */
 generatePdfForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -987,7 +1071,7 @@ generatePdf.form = generatePdfForm
 
 /**
 * @see \App\Http\Controllers\InvoiceController::sendEmail
-* @see app/Http/Controllers/InvoiceController.php:359
+* @see app/Http/Controllers/InvoiceController.php:379
 * @route '/dashboard/invoices/{id}/send-email'
 */
 export const sendEmail = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1002,7 +1086,7 @@ sendEmail.definition = {
 
 /**
 * @see \App\Http\Controllers\InvoiceController::sendEmail
-* @see app/Http/Controllers/InvoiceController.php:359
+* @see app/Http/Controllers/InvoiceController.php:379
 * @route '/dashboard/invoices/{id}/send-email'
 */
 sendEmail.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -1029,7 +1113,7 @@ sendEmail.url = (args: { id: string | number } | [id: string | number ] | string
 
 /**
 * @see \App\Http\Controllers\InvoiceController::sendEmail
-* @see app/Http/Controllers/InvoiceController.php:359
+* @see app/Http/Controllers/InvoiceController.php:379
 * @route '/dashboard/invoices/{id}/send-email'
 */
 sendEmail.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -1039,7 +1123,7 @@ sendEmail.post = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\InvoiceController::sendEmail
-* @see app/Http/Controllers/InvoiceController.php:359
+* @see app/Http/Controllers/InvoiceController.php:379
 * @route '/dashboard/invoices/{id}/send-email'
 */
 const sendEmailForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1049,7 +1133,7 @@ const sendEmailForm = (args: { id: string | number } | [id: string | number ] | 
 
 /**
 * @see \App\Http\Controllers\InvoiceController::sendEmail
-* @see app/Http/Controllers/InvoiceController.php:359
+* @see app/Http/Controllers/InvoiceController.php:379
 * @route '/dashboard/invoices/{id}/send-email'
 */
 sendEmailForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -1059,6 +1143,6 @@ sendEmailForm.post = (args: { id: string | number } | [id: string | number ] | s
 
 sendEmail.form = sendEmailForm
 
-const InvoiceController = { index, data, create, show, edit, store, update, destroy, changeStatus, recordPayment, voidMethod, generatePdf, sendEmail, void: voidMethod }
+const InvoiceController = { index, data, create, show, edit, store, update, destroy, changeStatus, recordPayment, voidMethod, updateDueDate, generatePdf, sendEmail, void: voidMethod }
 
 export default InvoiceController

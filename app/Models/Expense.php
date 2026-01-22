@@ -78,8 +78,7 @@ class Expense extends Model implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('receipts')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
-            ->maxFileSize(5 * 1024 * 1024); // 5MB
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf']);
     }
 
     /**

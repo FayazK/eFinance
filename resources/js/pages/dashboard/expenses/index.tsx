@@ -1,11 +1,11 @@
 import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
-import { create, data } from '@/routes/expenses';
+import { create, data, edit, process } from '@/routes/expenses';
 import type { Account, Expense, FilterConfig, TransactionCategory } from '@/types';
-import { PlusOutlined } from '@ant-design/icons';
-import { Link, usePage } from '@inertiajs/react';
-import { Button, Tag, theme } from 'antd';
-import React from 'react';
+import { CheckCircleOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Link, router, usePage } from '@inertiajs/react';
+import { Button, Modal, notification, Space, Tag, theme, Tooltip } from 'antd';
+import React, { useState } from 'react';
 
 const { useToken } = theme;
 
@@ -17,6 +17,43 @@ interface ExpensesIndexProps {
 export default function ExpensesIndex() {
     const { token } = useToken();
     const { accounts, categories } = usePage<ExpensesIndexProps>().props;
+    const [processModalOpen, setProcessModalOpen] = useState(false);
+    const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+    const [processing, setProcessing] = useState(false);
+
+    const handleProcessClick = (expense: Expense) => {
+        setSelectedExpense(expense);
+        setProcessModalOpen(true);
+    };
+
+    const handleProcessConfirm = () => {
+        if (!selectedExpense) return;
+
+        setProcessing(true);
+        router.post(
+            process.url(selectedExpense.id),
+            {},
+            {
+                onSuccess: () => {
+                    notification.success({
+                        message: 'Expense Processed',
+                        description: 'The expense has been processed and the transaction has been created.',
+                    });
+                    setProcessModalOpen(false);
+                    setSelectedExpense(null);
+                },
+                onError: (errors) => {
+                    notification.error({
+                        message: 'Processing Failed',
+                        description: Object.values(errors)[0] as string,
+                    });
+                },
+                onFinish: () => {
+                    setProcessing(false);
+                },
+            },
+        );
+    };
 
     const filters: FilterConfig[] = [
         {
@@ -76,7 +113,7 @@ export default function ExpensesIndex() {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
-            width: 300,
+            width: 250,
             searchable: true,
             render: (description: unknown, record: Expense) => {
                 const text = (description as string) || '—';
@@ -159,6 +196,37 @@ export default function ExpensesIndex() {
                 return <Tag color={colorMap[statusValue as keyof typeof colorMap]}>{statusValue}</Tag>;
             },
         },
+        {
+            title: 'Actions',
+            key: 'actions',
+            width: 120,
+            render: (_: unknown, record: Expense) => {
+                const isDraft = record.status === 'draft';
+
+                if (!isDraft) {
+                    return <span style={{ color: token.colorTextDisabled }}>—</span>;
+                }
+
+                return (
+                    <Space size="small">
+                        <Tooltip title="Edit">
+                            <Link href={edit.url(record.id)}>
+                                <Button type="text" size="small" icon={<EditOutlined />} />
+                            </Link>
+                        </Tooltip>
+                        <Tooltip title="Process">
+                            <Button
+                                type="text"
+                                size="small"
+                                icon={<CheckCircleOutlined />}
+                                style={{ color: token.colorSuccess }}
+                                onClick={() => handleProcessClick(record)}
+                            />
+                        </Tooltip>
+                    </Space>
+                );
+            },
+        },
     ];
 
     return (
@@ -181,6 +249,25 @@ export default function ExpensesIndex() {
                 emptyMessage="No expenses have been recorded yet."
                 emptyFilterMessage="No expenses match your search criteria."
             />
+
+            <Modal
+                title="Process Expense"
+                open={processModalOpen}
+                onOk={handleProcessConfirm}
+                onCancel={() => {
+                    setProcessModalOpen(false);
+                    setSelectedExpense(null);
+                }}
+                okText="Process"
+                okButtonProps={{ loading: processing }}
+                cancelButtonProps={{ disabled: processing }}
+            >
+                <p>
+                    This will create a transaction and deduct <strong>{selectedExpense?.formatted_amount}</strong> from the account{' '}
+                    <strong>{selectedExpense?.account?.name}</strong>.
+                </p>
+                <p style={{ color: token.colorWarning, marginTop: 8 }}>This action cannot be undone. Continue?</p>
+            </Modal>
         </AppLayout>
     );
 }
