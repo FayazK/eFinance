@@ -121,6 +121,7 @@ class InvoiceController extends Controller
                 'id' => $account->id,
                 'name' => $account->name,
                 'currency_code' => $account->currency_code,
+                'current_balance' => $account->balance_in_major_units,
                 'formatted_balance' => $account->formatted_balance,
             ])->values();
 
