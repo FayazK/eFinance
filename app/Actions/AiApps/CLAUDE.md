@@ -7,6 +7,6 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
-| #277 | 11:03 PM | 🔵 | AiApp Model Schema and Relationships | ~279 |
-| #263 | 11:01 PM | 🔵 | AI App Model Architecture Identified | ~210 |
+| #271 | 11:02 PM | 🔵 | Nano Banana Pro Integration and Documentation | ~340 |
+| #267 | 11:01 PM | 🔵 | Action-Based AI App Architecture Pattern | ~325 |
 </claude-mem-context>
