@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\DepositCurrency;
 use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +20,8 @@ class Employee extends Model
         'designation',
         'email',
         'joining_date',
-        'base_salary_pkr',
+        'base_salary',
+        'deposit_currency',
         'iban',
         'bank_name',
         'status',
@@ -31,15 +33,16 @@ class Employee extends Model
         return [
             'joining_date' => 'date',
             'termination_date' => 'date',
+            'deposit_currency' => DepositCurrency::class,
         ];
     }
 
     /**
-     * Get formatted salary for display
+     * Get formatted salary for display (always in PKR)
      */
     public function getFormattedSalaryAttribute(): string
     {
-        return CurrencyHelper::format($this->base_salary_pkr / 100, 'PKR');
+        return CurrencyHelper::format($this->base_salary / 100, 'PKR');
     }
 
     /**
@@ -47,7 +50,7 @@ class Employee extends Model
      */
     public function getSalaryInMajorUnitsAttribute(): float
     {
-        return $this->base_salary_pkr / 100;
+        return $this->base_salary / 100;
     }
 
     /**

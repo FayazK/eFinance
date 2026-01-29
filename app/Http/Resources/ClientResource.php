@@ -21,6 +21,10 @@ class ClientResource extends JsonResource
                 'iso2' => $this->country->iso2,
                 'emoji' => $this->country->emoji,
             ]),
+            'state' => $this->whenLoaded('state', fn () => [
+                'id' => $this->state?->id,
+                'name' => $this->state?->name,
+            ]),
             'city' => $this->whenLoaded('city', fn () => [
                 'id' => $this->city?->id,
                 'name' => $this->city?->name,

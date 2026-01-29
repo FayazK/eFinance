@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InvoiceTemplate;
 use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,14 +12,27 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Invoice extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'total_amount', 'due_date', 'void_reason', 'client_id'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn (string $event) => "Invoice {$event}");
+    }
 
     protected $fillable = [
         'invoice_number',
         'status',
+        'template',
+        'company_id',
         'client_id',
         'project_id',
         'currency_code',
@@ -35,11 +49,13 @@ class Invoice extends Model
         'notes',
         'terms',
         'client_notes',
+        'void_reason',
     ];
 
     protected function casts(): array
     {
         return [
+            'template' => InvoiceTemplate::class,
             'subtotal' => 'integer',
             'tax_amount' => 'integer',
             'total_amount' => 'integer',
@@ -54,6 +70,11 @@ class Invoice extends Model
     }
 
     // === RELATIONSHIPS ===
+
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     public function client(): BelongsTo
     {
@@ -141,7 +162,7 @@ class Invoice extends Model
 
     public function getIsPayableAttribute(): bool
     {
-        return in_array($this->status, ['sent', 'partial', 'overdue'])
+        return in_array($this->status, ['draft', 'sent', 'partial', 'overdue'])
             && $this->balance_due > 0;
     }
 }

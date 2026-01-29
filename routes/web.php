@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DistributionController;
@@ -61,6 +63,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/', [ContactController::class, 'store'])->name('store');
         Route::put('/{contact}', [ContactController::class, 'update'])->name('update');
         Route::delete('/{contact}', [ContactController::class, 'destroy'])->name('destroy');
+    });
+
+    // Companies
+    Route::prefix('dashboard/companies')->name('companies.')->group(function () {
+        Route::get('/', [CompanyController::class, 'index'])->name('index');
+        Route::get('/data', [CompanyController::class, 'data'])->name('data');
+        Route::get('/create', [CompanyController::class, 'create'])->name('create');
+        Route::get('/{company}', [CompanyController::class, 'show'])->name('show');
+        Route::get('/{company}/edit', [CompanyController::class, 'edit'])->name('edit');
+        Route::post('/', [CompanyController::class, 'store'])->name('store');
+        Route::put('/{company}', [CompanyController::class, 'update'])->name('update');
+        Route::delete('/{company}', [CompanyController::class, 'destroy'])->name('destroy');
     });
 
     Route::prefix('dashboard/projects')->name('projects.')->group(function () {
@@ -127,8 +141,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/', [ExpenseController::class, 'index'])->name('index');
         Route::get('/data', [ExpenseController::class, 'data'])->name('data');
         Route::get('/create', [ExpenseController::class, 'create'])->name('create');
-        Route::get('/{id}', [ExpenseController::class, 'show'])->name('show');
+        Route::get('/{id}', [ExpenseController::class, 'show'])->name('show')->whereNumber('id');
+        Route::get('/{id}/edit', [ExpenseController::class, 'edit'])->name('edit')->whereNumber('id');
         Route::post('/', [ExpenseController::class, 'store'])->name('store');
+        Route::put('/{id}', [ExpenseController::class, 'update'])->name('update')->whereNumber('id');
+        Route::post('/{id}/process', [ExpenseController::class, 'process'])->name('process')->whereNumber('id');
+        Route::post('/{id}/void', [ExpenseController::class, 'void'])->name('void')->whereNumber('id');
         Route::delete('/{id}', [ExpenseController::class, 'destroy'])->name('destroy');
 
         // Helper route for exchange rates
@@ -150,6 +168,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/change-status', [InvoiceController::class, 'changeStatus'])->name('change-status');
         Route::post('/{id}/record-payment', [InvoiceController::class, 'recordPayment'])->name('record-payment');
         Route::post('/{id}/void', [InvoiceController::class, 'void'])->name('void');
+        Route::put('/{id}/due-date', [InvoiceController::class, 'updateDueDate'])->name('update-due-date');
         Route::get('/{id}/pdf', [InvoiceController::class, 'generatePdf'])->name('pdf');
         Route::post('/{id}/send-email', [InvoiceController::class, 'sendEmail'])->name('send-email');
     });
@@ -199,6 +218,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{id}/process', [DistributionController::class, 'process'])->name('process');
         Route::get('/{id}/statements/{shareholderId}', [DistributionController::class, 'downloadStatement'])->name('download-statement');
     });
+
+    // Activities (Activity Log API)
+    Route::get('dashboard/activities/{type}/{id}', [ActivityController::class, 'index'])->name('activities.index');
 });
 
 require __DIR__.'/settings.php';

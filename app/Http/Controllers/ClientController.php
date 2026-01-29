@@ -57,7 +57,7 @@ class ClientController extends Controller
     public function edit(Client $client): Response
     {
         return Inertia::render('dashboard/clients/edit', [
-            'client' => $client->load(['country', 'city', 'currency']),
+            'client' => $client->load(['country', 'state', 'city', 'currency']),
         ]);
     }
 
@@ -67,7 +67,7 @@ class ClientController extends Controller
 
         return response()->json([
             'message' => 'Client created successfully',
-            'data' => new ClientResource($client->load(['country', 'city', 'currency'])),
+            'data' => new ClientResource($client->load(['country', 'state', 'city', 'currency'])),
         ], 201);
     }
 

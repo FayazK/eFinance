@@ -65,6 +65,11 @@ export interface City {
     name: string;
 }
 
+export interface State {
+    id: number;
+    name: string;
+}
+
 export interface Currency {
     id: number;
     name: string;
@@ -72,11 +77,26 @@ export interface Currency {
     symbol: string;
 }
 
+export interface Company {
+    id: number;
+    name: string;
+    logo_url: string | null;
+    address: string | null;
+    phone: string | null;
+    email: string | null;
+    tax_id: string | null;
+    vat_number: string | null;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | null | undefined;
+}
+
 export interface Client {
     id: number;
     name: string;
     email: string;
     country?: Country;
+    state?: State;
     city?: City;
     currency?: Currency;
     address?: string;
@@ -87,7 +107,7 @@ export interface Client {
     notes?: string;
     created_at: string;
     updated_at: string;
-    [key: string]: string | number | boolean | Country | City | Currency | null | undefined;
+    [key: string]: string | number | boolean | Country | State | City | Currency | null | undefined;
 }
 
 export interface Contact {
@@ -100,16 +120,16 @@ export interface Contact {
         name: string;
     };
     address?: string;
-    city?: string;
-    state?: string;
     country?: Country;
+    state?: State;
+    city?: City;
     primary_phone?: string;
     primary_email: string;
     additional_phones: string[];
     additional_emails: string[];
     created_at: string;
     updated_at: string;
-    [key: string]: string | number | boolean | Country | { id: number; name: string } | string[] | null | undefined;
+    [key: string]: string | number | boolean | Country | State | City | { id: number; name: string } | string[] | null | undefined;
 }
 
 export interface Media {
@@ -224,6 +244,14 @@ export interface Transfer {
 
 export type InvoiceStatus = 'draft' | 'sent' | 'partial' | 'paid' | 'void' | 'overdue';
 
+export type InvoiceTemplate = 'modern' | 'classic' | 'minimal' | 'corporate' | 'creative';
+
+export interface InvoiceTemplateOption {
+    value: InvoiceTemplate;
+    label: string;
+    description: string;
+}
+
 export interface InvoiceItem {
     id: number;
     description: string;
@@ -253,6 +281,8 @@ export interface InvoicePayment {
     has_fee: boolean;
     payment_date: string;
     notes?: string;
+    voided_at?: string;
+    is_voided: boolean;
     created_at: string;
 }
 
@@ -260,6 +290,13 @@ export interface Invoice {
     id: number;
     invoice_number: string;
     status: InvoiceStatus;
+    template: InvoiceTemplate;
+    company_id?: number;
+    company?: {
+        id: number;
+        name: string;
+        logo_url?: string;
+    };
     client_id: number;
     client?: Client;
     project_id?: number;
@@ -286,6 +323,7 @@ export interface Invoice {
     notes?: string;
     terms?: string;
     client_notes?: string;
+    void_reason?: string;
     created_at: string;
     updated_at: string;
     items?: InvoiceItem[];
@@ -301,7 +339,8 @@ export interface Employee {
     designation: string;
     email: string;
     joining_date: string;
-    base_salary_pkr: number; // In major units (PKR)
+    base_salary: number; // In major units (always PKR)
+    deposit_currency: 'PKR' | 'USD'; // How salary is deposited
     formatted_salary: string;
     iban?: string;
     bank_name?: string;
@@ -321,7 +360,8 @@ export interface Payroll {
     month: number;
     year: number;
     period_label: string;
-    base_salary: number; // In major units (PKR)
+    base_salary: number; // In major units (PKR for PKR employees, USD for USD employees)
+    deposit_currency: 'PKR' | 'USD'; // How salary is deposited
     bonus: number;
     deductions: number;
     net_payable: number;
@@ -335,6 +375,8 @@ export interface Payroll {
     paid_at?: string;
     transaction_id?: number;
     transaction?: Transaction;
+    exchange_rate?: number;
+    formatted_exchange_rate?: string;
     notes?: string;
     created_at: string;
     updated_at: string;
@@ -401,7 +443,7 @@ export interface Distribution {
     [key: string]: string | number | boolean | DistributionLine[] | null | undefined;
 }
 
-export type ExpenseStatus = 'draft' | 'processed' | 'cancelled';
+export type ExpenseStatus = 'draft' | 'processed' | 'cancelled' | 'voided';
 
 export interface Expense {
     id: number;
@@ -438,7 +480,11 @@ export interface Expense {
     status: ExpenseStatus;
     is_pending?: boolean;
     is_processed?: boolean;
+    is_voided?: boolean;
     is_recurring_template?: boolean;
+    // Void fields
+    void_reason?: string;
+    voided_at?: string;
     // Media
     receipts?: Media[];
     receipts_count?: number;
@@ -455,6 +501,38 @@ export interface Expense {
         | Media[]
         | null
         | undefined;
+}
+
+export interface ActivityChange {
+    field: string;
+    old: string | number | null;
+    new: string | number | null;
+}
+
+export interface ActivityProperties {
+    old?: Record<string, unknown>;
+    attributes?: Record<string, unknown>;
+    custom?: Record<string, unknown>;
+}
+
+export interface ActivityCauser {
+    id: number;
+    name: string;
+    avatar_url?: string;
+}
+
+export interface Activity {
+    id: number;
+    log_name: string;
+    description: string;
+    event: 'created' | 'updated' | 'deleted' | string;
+    subject_type: string;
+    subject_id: number;
+    causer?: ActivityCauser;
+    properties: ActivityProperties;
+    changes: ActivityChange[];
+    created_at: string;
+    created_at_human: string;
 }
 
 export interface PaginationLinks {

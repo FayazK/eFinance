@@ -38,9 +38,10 @@ export default function RecentTransactionsList({ transactions }: Props) {
 
     return (
         <Card title="Recent Transactions">
-            <List
-                dataSource={transactions}
-                renderItem={(transaction) => (
+            <div style={{ maxHeight: 400, overflowY: 'auto' }}>
+                <List
+                    dataSource={transactions}
+                    renderItem={(transaction) => (
                     <List.Item>
                         <List.Item.Meta
                             avatar={
@@ -70,7 +71,8 @@ export default function RecentTransactionsList({ transactions }: Props) {
                         </Text>
                     </List.Item>
                 )}
-            />
+                />
+            </div>
         </Card>
     );
 }

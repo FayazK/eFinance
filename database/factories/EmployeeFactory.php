@@ -29,7 +29,8 @@ class EmployeeFactory extends Factory
             ]),
             'email' => $this->faker->unique()->safeEmail(),
             'joining_date' => $this->faker->dateTimeBetween('-5 years', 'now'),
-            'base_salary_pkr' => $this->faker->numberBetween(5000000, 50000000), // 50k - 500k PKR in paisa
+            'base_salary' => $this->faker->numberBetween(5000000, 50000000), // 50k - 500k PKR in paisa
+            'deposit_currency' => 'PKR',
             'iban' => 'PK'.$this->faker->numerify('##MEZN################'),
             'bank_name' => $this->faker->randomElement(['Meezan Bank', 'HBL', 'UBL', 'Allied Bank']),
             'status' => 'active',

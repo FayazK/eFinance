@@ -23,6 +23,9 @@ class ExpenseResource extends JsonResource
             'formatted_amount' => $this->formatted_amount,
             'formatted_reporting_amount' => $this->formatted_reporting_amount,
             'status' => $this->status,
+            'is_voided' => $this->is_voided,
+            'void_reason' => $this->void_reason,
+            'voided_at' => $this->voided_at?->format('Y-m-d H:i:s'),
             'is_recurring' => $this->is_recurring,
             'is_active' => $this->is_active,
             'recurrence_frequency' => $this->recurrence_frequency,
@@ -41,6 +44,13 @@ class ExpenseResource extends JsonResource
             'transaction' => $this->whenLoaded('transaction', fn () => [
                 'id' => $this->transaction->id,
             ]),
+            'receipts' => $this->whenLoaded('media', fn () => $this->getMedia('receipts')->map(fn ($media) => [
+                'id' => $media->id,
+                'name' => $media->file_name,
+                'url' => $media->getUrl(),
+                'mime_type' => $media->mime_type,
+                'size' => $media->size,
+            ])),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];

@@ -1,10 +1,13 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
 import { index } from '@/routes/expenses';
 import type { Expense, ExpenseStatus } from '@/types';
-import { ArrowLeftOutlined, DeleteOutlined, FileOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, DeleteOutlined, FileOutlined, StopOutlined } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
 import { Button, Card, Col, Descriptions, Image, Modal, notification, Row, Space, Tag, theme } from 'antd';
+import { useState } from 'react';
+import ExpenseVoidModal from './partials/expense-void-modal';
 
 const { useToken } = theme;
 
@@ -12,6 +15,7 @@ const STATUS_COLORS: Record<ExpenseStatus, string> = {
     draft: 'default',
     processed: 'green',
     cancelled: 'red',
+    voided: 'orange',
 };
 
 interface ExpenseShowProps {
@@ -20,6 +24,7 @@ interface ExpenseShowProps {
 
 export default function ExpenseShow({ expense }: ExpenseShowProps) {
     const { token } = useToken();
+    const [voidModalOpen, setVoidModalOpen] = useState(false);
 
     const handleCancel = () => {
         Modal.confirm({
@@ -44,6 +49,10 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
         });
     };
 
+    const canVoid = expense.status === 'processed';
+    const canCancel = expense.status === 'draft';
+    const isVoided = expense.status === 'voided';
+
     return (
         <AppLayout
             pageTitle={`Expense #${expense.id}`}
@@ -52,7 +61,12 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                     <Link href={index.url()}>
                         <Button icon={<ArrowLeftOutlined />}>Back to Expenses</Button>
                     </Link>
-                    {expense.status !== 'cancelled' && (
+                    {canVoid && (
+                        <Button danger icon={<StopOutlined />} onClick={() => setVoidModalOpen(true)}>
+                            Void Expense
+                        </Button>
+                    )}
+                    {canCancel && (
                         <Button danger icon={<DeleteOutlined />} onClick={handleCancel}>
                             Cancel Expense
                         </Button>
@@ -114,6 +128,25 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                     </Card>
                 </Col>
 
+                {isVoided && (
+                    <Col span={24}>
+                        <Card
+                            title="Void Information"
+                            style={{
+                                borderColor: token.colorWarningBorder,
+                                backgroundColor: token.colorWarningBg,
+                            }}
+                        >
+                            <Descriptions bordered column={1}>
+                                <Descriptions.Item label="Voided At">
+                                    {expense.voided_at ? new Date(expense.voided_at).toLocaleString() : '—'}
+                                </Descriptions.Item>
+                                <Descriptions.Item label="Void Reason">{expense.void_reason || '—'}</Descriptions.Item>
+                            </Descriptions>
+                        </Card>
+                    </Col>
+                )}
+
                 {expense.receipts && expense.receipts.length > 0 && (
                     <Col span={24}>
                         <Card title={`Receipts (${expense.receipts.length})`}>
@@ -141,7 +174,15 @@ export default function ExpenseShow({ expense }: ExpenseShowProps) {
                         </Card>
                     </Col>
                 )}
+
+                <Col span={24}>
+                    <Card>
+                        <ActivityTimeline subjectType="Expense" subjectId={expense.id} />
+                    </Card>
+                </Col>
             </Row>
+
+            <ExpenseVoidModal open={voidModalOpen} onCancel={() => setVoidModalOpen(false)} expense={expense} />
         </AppLayout>
     );
 }

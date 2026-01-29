@@ -8,10 +8,21 @@ use App\Helpers\CurrencyHelper;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class InvoicePayment extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['payment_amount', 'payment_date', 'voided_at'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn (string $event) => "Invoice payment {$event}");
+    }
 
     protected $fillable = [
         'invoice_id',
@@ -23,6 +34,7 @@ class InvoicePayment extends Model
         'fee_amount',
         'payment_date',
         'notes',
+        'voided_at',
     ];
 
     protected function casts(): array
@@ -32,6 +44,7 @@ class InvoicePayment extends Model
             'amount_received' => 'integer',
             'fee_amount' => 'integer',
             'payment_date' => 'date',
+            'voided_at' => 'datetime',
         ];
     }
 
@@ -98,5 +111,10 @@ class InvoicePayment extends Model
     public function getFeeAmountInMajorUnitsAttribute(): float
     {
         return $this->fee_amount / 100;
+    }
+
+    public function getIsVoidedAttribute(): bool
+    {
+        return $this->voided_at !== null;
     }
 }

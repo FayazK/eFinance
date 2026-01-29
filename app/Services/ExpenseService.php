@@ -22,39 +22,84 @@ class ExpenseService
     ) {}
 
     /**
+     * Create a draft expense (no transaction created yet)
+     */
+    public function createDraftExpense(array $data): Expense
+    {
+        // Convert amount to minor units and calculate PKR reporting amount
+        $amountInMinor = (int) ($data['amount'] * 100);
+        $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
+        $reportingAmountPkr = $this->calculateReportingAmountPkr(
+            $amountInMinor,
+            $data['currency_code'],
+            $exchangeRate
+        );
+
+        // Create expense record as draft
+        return $this->expenseRepository->create([
+            'account_id' => $data['account_id'],
+            'category_id' => $data['category_id'] ?? null,
+            'amount' => $amountInMinor,
+            'currency_code' => $data['currency_code'],
+            'vendor' => $data['vendor'] ?? null,
+            'description' => $data['description'] ?? null,
+            'expense_date' => $data['expense_date'] ?? now()->format('Y-m-d'),
+            'exchange_rate' => $data['exchange_rate'] ?? null,
+            'reporting_amount_pkr' => $reportingAmountPkr,
+            'status' => 'draft',
+            'is_recurring' => false,
+        ]);
+    }
+
+    /**
      * Create and process a one-time expense (Quick Entry or International)
      */
     public function createAndProcessExpense(array $data): Expense
     {
         return DB::transaction(function () use ($data) {
-            // Convert amount to minor units and calculate PKR reporting amount
-            $amountInMinor = (int) ($data['amount'] * 100);
-            $reportingAmountPkr = $this->calculateReportingAmountPkr(
-                $amountInMinor,
-                $data['currency_code'],
-                $data['exchange_rate'] ?? null
-            );
-
-            // Create expense record
-            $expense = $this->expenseRepository->create([
-                'account_id' => $data['account_id'],
-                'category_id' => $data['category_id'] ?? null,
-                'amount' => $amountInMinor,
-                'currency_code' => $data['currency_code'],
-                'vendor' => $data['vendor'] ?? null,
-                'description' => $data['description'] ?? null,
-                'expense_date' => $data['expense_date'] ?? now()->format('Y-m-d'),
-                'exchange_rate' => $data['exchange_rate'] ?? null,
-                'reporting_amount_pkr' => $reportingAmountPkr,
-                'status' => 'draft',
-                'is_recurring' => false,
-            ]);
+            // Create draft expense first
+            $expense = $this->createDraftExpense($data);
 
             // Process the expense (create transaction)
-            $expense = $this->processExpense($expense->id);
-
-            return $expense;
+            return $this->processExpense($expense->id);
         });
+    }
+
+    /**
+     * Update a draft expense
+     */
+    public function updateExpense(int $expenseId, array $data): Expense
+    {
+        $expense = $this->expenseRepository->find($expenseId);
+
+        if (! $expense) {
+            throw new InvalidArgumentException("Expense {$expenseId} not found");
+        }
+
+        if ($expense->status !== 'draft') {
+            throw new InvalidArgumentException('Only draft expenses can be edited');
+        }
+
+        // Convert amount to minor units and recalculate PKR reporting amount
+        $amountInMinor = (int) ($data['amount'] * 100);
+        $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
+        $reportingAmountPkr = $this->calculateReportingAmountPkr(
+            $amountInMinor,
+            $data['currency_code'],
+            $exchangeRate
+        );
+
+        return $this->expenseRepository->update($expenseId, [
+            'account_id' => $data['account_id'],
+            'category_id' => $data['category_id'] ?? null,
+            'amount' => $amountInMinor,
+            'currency_code' => $data['currency_code'],
+            'vendor' => $data['vendor'] ?? null,
+            'description' => $data['description'] ?? null,
+            'expense_date' => $data['expense_date'],
+            'exchange_rate' => $data['exchange_rate'] ?? null,
+            'reporting_amount_pkr' => $reportingAmountPkr,
+        ]);
     }
 
     /**
@@ -70,7 +115,7 @@ class ExpenseService
         $nextOccurrence = $this->calculateNextOccurrenceFromDate(
             $startDate,
             $data['recurrence_frequency'],
-            $data['recurrence_interval'] ?? 1
+            (int) ($data['recurrence_interval'] ?? 1)
         );
 
         return $this->expenseRepository->create([
@@ -84,7 +129,7 @@ class ExpenseService
             'is_recurring' => true,
             'is_active' => true,
             'recurrence_frequency' => $data['recurrence_frequency'],
-            'recurrence_interval' => $data['recurrence_interval'] ?? 1,
+            'recurrence_interval' => (int) ($data['recurrence_interval'] ?? 1),
             'recurrence_start_date' => $startDate->format('Y-m-d'),
             'recurrence_end_date' => $data['recurrence_end_date'] ?? null,
             'next_occurrence_date' => $nextOccurrence->format('Y-m-d'),
@@ -130,6 +175,18 @@ class ExpenseService
                 'transaction_id' => $transaction->id,
                 'status' => 'processed',
             ]);
+
+            // Log the expense processing
+            activity()
+                ->performedOn($expense)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'amount' => $expense->amount / 100,
+                    'currency' => $expense->currency_code,
+                    'vendor' => $expense->vendor,
+                    'transaction_id' => $transaction->id,
+                ])
+                ->log('Expense processed');
 
             return $expense;
         });
@@ -204,6 +261,89 @@ class ExpenseService
     }
 
     /**
+     * Void a processed expense
+     *
+     * Creates a credit reversal transaction to restore the money back to the account.
+     *
+     * @param  int  $expenseId  The expense to void
+     * @param  string|null  $voidReason  Required reason for voiding (for audit trail)
+     */
+    public function voidExpense(int $expenseId, ?string $voidReason = null): Expense
+    {
+        return DB::transaction(function () use ($expenseId, $voidReason) {
+            $expense = $this->expenseRepository->find($expenseId);
+
+            if (! $expense) {
+                throw new InvalidArgumentException("Expense {$expenseId} not found");
+            }
+
+            if ($expense->status === 'voided') {
+                throw new InvalidArgumentException('Expense is already voided');
+            }
+
+            if ($expense->status !== 'processed') {
+                throw new InvalidArgumentException('Only processed expenses can be voided');
+            }
+
+            // Create credit reversal transaction (restore money to account)
+            $reversalTransaction = $this->transactionService->createTransaction([
+                'account_id' => $expense->account_id,
+                'category_id' => $this->getExpenseCategoryId(),
+                'reference_type' => Expense::class,
+                'reference_id' => $expense->id,
+                'type' => 'credit',
+                'amount' => $expense->amount / 100, // Convert to major units for service
+                'description' => "Void reversal: Expense #{$expense->id} - {$expense->vendor}",
+                'date' => now()->format('Y-m-d'),
+            ]);
+
+            // Update expense: void status, store reason and timestamp
+            $expense = $this->expenseRepository->update($expenseId, [
+                'status' => 'voided',
+                'voided_at' => now(),
+                'void_reason' => $voidReason,
+            ]);
+
+            // Log the void action with business context
+            activity()
+                ->performedOn($expense)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'void_reason' => $voidReason,
+                    'amount' => $expense->amount / 100,
+                    'currency' => $expense->currency_code,
+                    'vendor' => $expense->vendor,
+                    'original_transaction_id' => $expense->transaction_id,
+                    'reversal_transaction_id' => $reversalTransaction->id,
+                ])
+                ->log('Expense voided');
+
+            return $expense;
+        });
+    }
+
+    /**
+     * Delete a draft expense (hard delete)
+     */
+    public function deleteExpense(int $expenseId): bool
+    {
+        $expense = $this->expenseRepository->find($expenseId);
+
+        if (! $expense) {
+            throw new InvalidArgumentException("Expense {$expenseId} not found");
+        }
+
+        if ($expense->status !== 'draft') {
+            throw new InvalidArgumentException('Only draft expenses can be deleted');
+        }
+
+        // Delete associated media (receipts)
+        $expense->clearMediaCollection('receipts');
+
+        return $this->expenseRepository->delete($expenseId);
+    }
+
+    /**
      * Get paginated expenses
      */
     public function getPaginatedExpenses(
@@ -261,6 +401,14 @@ class ExpenseService
             'period_start' => $startDate,
             'period_end' => $endDate,
         ];
+    }
+
+    /**
+     * Find an expense by ID
+     */
+    public function findExpense(int $id): ?Expense
+    {
+        return $this->expenseRepository->find($id);
     }
 
     /**

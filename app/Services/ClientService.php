@@ -26,6 +26,7 @@ class ClientService
             'name',
             'email',
             'country_id',
+            'state_id',
             'city_id',
             'currency_id',
             'address',

@@ -4,28 +4,42 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\DepositCurrency;
 use App\Helpers\CurrencyHelper;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Payroll extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, LogsActivity, SoftDeletes;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['status', 'net_payable', 'paid_at', 'bonus', 'deductions'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs()
+            ->setDescriptionForEvent(fn (string $event) => "Payroll {$event}");
+    }
 
     protected $fillable = [
         'employee_id',
         'month',
         'year',
         'base_salary',
+        'deposit_currency',
         'bonus',
         'deductions',
         'net_payable',
         'status',
         'paid_at',
         'transaction_id',
+        'exchange_rate',
         'notes',
     ];
 
@@ -35,6 +49,8 @@ class Payroll extends Model
             'paid_at' => 'date',
             'month' => 'integer',
             'year' => 'integer',
+            'deposit_currency' => DepositCurrency::class,
+            'exchange_rate' => 'decimal:4',
         ];
     }
 
@@ -63,7 +79,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted net payable for display
+     * Get formatted net payable for display (always in PKR)
      */
     public function getFormattedNetPayableAttribute(): string
     {
@@ -71,7 +87,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted base salary
+     * Get formatted base salary (always in PKR)
      */
     public function getFormattedBaseSalaryAttribute(): string
     {
@@ -79,7 +95,7 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted bonus
+     * Get formatted bonus (always in PKR)
      */
     public function getFormattedBonusAttribute(): string
     {
@@ -87,11 +103,23 @@ class Payroll extends Model
     }
 
     /**
-     * Get formatted deductions
+     * Get formatted deductions (always in PKR)
      */
     public function getFormattedDeductionsAttribute(): string
     {
         return CurrencyHelper::format($this->deductions / 100, 'PKR');
+    }
+
+    /**
+     * Get formatted exchange rate for display
+     */
+    public function getFormattedExchangeRateAttribute(): ?string
+    {
+        if ($this->exchange_rate === null) {
+            return null;
+        }
+
+        return number_format((float) $this->exchange_rate, 2);
     }
 
     /**

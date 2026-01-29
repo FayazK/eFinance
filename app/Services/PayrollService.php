@@ -49,10 +49,11 @@ class PayrollService
                     'employee_id' => $employee->id,
                     'month' => $month,
                     'year' => $year,
-                    'base_salary' => $employee->base_salary_pkr, // Snapshot
+                    'base_salary' => $employee->base_salary, // Snapshot
+                    'deposit_currency' => $employee->deposit_currency->value, // Snapshot deposit method
                     'bonus' => 0,
                     'deductions' => 0,
-                    'net_payable' => $employee->base_salary_pkr,
+                    'net_payable' => $employee->base_salary,
                     'status' => 'pending',
                 ]);
 
@@ -109,7 +110,7 @@ class PayrollService
     }
 
     /**
-     * Pay multiple payrolls in batch
+     * Pay multiple payrolls in batch (supports mixed currencies)
      */
     public function payBatchPayrolls(array $payrollIds, array $data): array
     {
@@ -128,30 +129,64 @@ class PayrollService
                 }
             }
 
-            // Get account
-            $account = $this->accountRepository->find($data['account_id']);
+            // Group payrolls by currency
+            $pkrPayrolls = $payrolls->filter(fn ($p) => ($p->deposit_currency?->value ?? 'PKR') === 'PKR');
+            $usdPayrolls = $payrolls->filter(fn ($p) => ($p->deposit_currency?->value ?? 'PKR') === 'USD');
 
-            if (! $account) {
-                throw new InvalidArgumentException('Account not found');
-            }
-
-            // Validate account is PKR
-            if ($account->currency_code !== 'PKR') {
-                throw new InvalidArgumentException('Payroll can only be paid from PKR accounts');
-            }
-
-            // Calculate total needed
-            $totalNeeded = $payrolls->sum('net_payable');
-
-            // HARD BLOCK: Validate balance
-            if ($account->current_balance < $totalNeeded) {
-                throw new InvalidArgumentException('Insufficient balance. Please transfer funds first.');
-            }
-
-            // Pay each payroll
             $payments = [];
-            foreach ($payrolls as $payroll) {
-                $payments[] = $this->paySinglePayroll($payroll, $data);
+
+            // Process PKR payrolls
+            if ($pkrPayrolls->isNotEmpty()) {
+                $pkrAccount = $this->accountRepository->find($data['pkr_account_id']);
+                if (! $pkrAccount) {
+                    throw new InvalidArgumentException('PKR account not found');
+                }
+                if ($pkrAccount->currency_code !== 'PKR') {
+                    throw new InvalidArgumentException('PKR account must be a PKR currency account');
+                }
+
+                $pkrTotal = $pkrPayrolls->sum('net_payable');
+                if ($pkrAccount->current_balance < $pkrTotal) {
+                    throw new InvalidArgumentException('Insufficient PKR balance');
+                }
+
+                foreach ($pkrPayrolls as $payroll) {
+                    $payments[] = $this->paySinglePayroll($payroll, [
+                        'account_id' => $data['pkr_account_id'],
+                        'payment_date' => $data['payment_date'] ?? now()->format('Y-m-d'),
+                    ]);
+                }
+            }
+
+            // Process USD payrolls
+            if ($usdPayrolls->isNotEmpty()) {
+                $usdAccount = $this->accountRepository->find($data['usd_account_id']);
+                if (! $usdAccount) {
+                    throw new InvalidArgumentException('USD account not found');
+                }
+                if ($usdAccount->currency_code !== 'USD') {
+                    throw new InvalidArgumentException('USD account must be a USD currency account');
+                }
+
+                $exchangeRate = (float) ($data['exchange_rate'] ?? 0);
+                if ($exchangeRate <= 0) {
+                    throw new InvalidArgumentException('Exchange rate is required for USD payrolls');
+                }
+
+                // Calculate total USD needed: PKR ÷ rate = USD (in minor units)
+                $usdTotalPkr = $usdPayrolls->sum('net_payable');
+                $usdNeeded = (int) round($usdTotalPkr / $exchangeRate);
+                if ($usdAccount->current_balance < $usdNeeded) {
+                    throw new InvalidArgumentException('Insufficient USD balance');
+                }
+
+                foreach ($usdPayrolls as $payroll) {
+                    $payments[] = $this->paySinglePayrollUsd($payroll, [
+                        'account_id' => $data['usd_account_id'],
+                        'payment_date' => $data['payment_date'] ?? now()->format('Y-m-d'),
+                        'exchange_rate' => $exchangeRate,
+                    ]);
+                }
             }
 
             return $payments;
@@ -159,7 +194,7 @@ class PayrollService
     }
 
     /**
-     * Pay a single payroll
+     * Pay a single payroll (PKR)
      */
     private function paySinglePayroll(Payroll $payroll, array $data): Payroll
     {
@@ -181,6 +216,66 @@ class PayrollService
             'paid_at' => now(),
             'transaction_id' => $transaction->id,
         ]);
+
+        // Log the payroll payment
+        activity()
+            ->performedOn($payroll)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'net_payable' => $payroll->net_payable / 100,
+                'currency' => 'PKR',
+                'employee_name' => $payroll->employee->name,
+                'period' => $payroll->period_label,
+            ])
+            ->log('Payroll paid');
+
+        // Fire event
+        event(new PayrollPaid($payroll));
+
+        return $payroll->load(['employee', 'transaction']);
+    }
+
+    /**
+     * Pay a single payroll (USD) - stores exchange rate and calculates USD amount
+     */
+    private function paySinglePayrollUsd(Payroll $payroll, array $data): Payroll
+    {
+        $exchangeRate = (float) $data['exchange_rate'];
+        // Calculate USD amount: PKR ÷ rate = USD
+        $usdAmountMinor = (int) round($payroll->net_payable / $exchangeRate);
+
+        // Create expense transaction (in USD)
+        $transaction = $this->transactionService->createTransaction([
+            'account_id' => $data['account_id'],
+            'category_id' => $this->getSalariesCategoryId(),
+            'reference_type' => Payroll::class,
+            'reference_id' => $payroll->id,
+            'type' => 'debit',
+            'amount' => $usdAmountMinor / 100, // Convert to major units
+            'description' => "Salary (USD): {$payroll->employee->name} - {$payroll->period_label}",
+            'date' => $data['payment_date'] ?? now()->format('Y-m-d'),
+        ]);
+
+        // Update payroll with exchange rate
+        $payroll = $this->payrollRepository->update($payroll->id, [
+            'status' => 'paid',
+            'paid_at' => now(),
+            'transaction_id' => $transaction->id,
+            'exchange_rate' => $exchangeRate,
+        ]);
+
+        // Log the payroll payment (USD)
+        activity()
+            ->performedOn($payroll)
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'net_payable_pkr' => $payroll->net_payable / 100,
+                'usd_amount' => $usdAmountMinor / 100,
+                'exchange_rate' => $exchangeRate,
+                'employee_name' => $payroll->employee->name,
+                'period' => $payroll->period_label,
+            ])
+            ->log('Payroll paid (USD)');
 
         // Fire event
         event(new PayrollPaid($payroll));

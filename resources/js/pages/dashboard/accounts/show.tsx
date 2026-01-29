@@ -1,3 +1,4 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
@@ -88,7 +89,7 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
             title: 'Date',
             dataIndex: 'date',
             key: 'date',
-            width: 120,
+            width: 100,
             sorter: true,
             render: (date: unknown) => new Date(date as string).toLocaleDateString(),
         },
@@ -96,14 +97,29 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
+            width: 400,
             searchable: true,
-            render: (description: unknown) => (description as string) || '—',
+            render: (description: unknown) => (
+                <div
+                    style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        wordBreak: 'break-word',
+                    }}
+                    title={(description as string) || ''}
+                >
+                    {(description as string) || '—'}
+                </div>
+            ),
         },
         {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
-            width: 150,
+            width: 130,
             render: (_: unknown, record: Transaction) =>
                 record.category ? (
                     <Tag color={record.category.color || 'default'}>{record.category.name}</Tag>
@@ -115,7 +131,7 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
             title: 'Type',
             dataIndex: 'type',
             key: 'type',
-            width: 100,
+            width: 90,
             filterable: true,
             render: (type: unknown) => (type === 'credit' ? <Tag color="green">Credit</Tag> : <Tag color="red">Debit</Tag>),
         },
@@ -123,7 +139,7 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            width: 150,
+            width: 130,
             sorter: true,
             render: (_: unknown, record: Transaction) => (
                 <span
@@ -208,6 +224,11 @@ export default function AccountShow({ account: accountProp }: AccountShowProps) 
                     emptyFilterMessage="No transactions match your search criteria."
                 />
             ),
+        },
+        {
+            key: 'activity',
+            label: 'Activity',
+            children: <ActivityTimeline subjectType="Account" subjectId={account.id} />,
         },
     ];
 

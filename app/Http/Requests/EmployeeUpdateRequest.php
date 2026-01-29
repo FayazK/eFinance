@@ -24,6 +24,7 @@ class EmployeeUpdateRequest extends FormRequest
             'email' => ['sometimes', 'email', Rule::unique('employees', 'email')->ignore($employeeId)],
             'joining_date' => ['sometimes', 'date'],
             'base_salary' => ['sometimes', 'numeric', 'min:0.01'],
+            'deposit_currency' => ['sometimes', 'in:PKR,USD'],
             'iban' => ['nullable', 'string', 'max:255'],
             'bank_name' => ['nullable', 'string', 'max:255'],
             'status' => ['sometimes', 'in:active,terminated'],

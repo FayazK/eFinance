@@ -284,6 +284,19 @@ class InvoiceService
                 'paid_at' => $newStatus === 'paid' ? now() : null,
             ]);
 
+            // Log the payment action
+            activity()
+                ->performedOn($invoice)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'payment_amount' => $paymentAmount / 100,
+                    'amount_received' => $amountReceived / 100,
+                    'fee_amount' => $feeAmount / 100,
+                    'account_name' => $account->name,
+                    'invoice_number' => $invoice->invoice_number,
+                ])
+                ->log('Payment recorded');
+
             return $invoicePayment->load([
                 'invoice',
                 'account',
@@ -295,10 +308,13 @@ class InvoiceService
 
     /**
      * Void an invoice (reverses all transactions)
+     *
+     * @param  int  $invoiceId  The invoice to void
+     * @param  string|null  $voidReason  Required reason for voiding (for audit trail)
      */
-    public function voidInvoice(int $invoiceId): Invoice
+    public function voidInvoice(int $invoiceId, ?string $voidReason = null): Invoice
     {
-        return DB::transaction(function () use ($invoiceId) {
+        return DB::transaction(function () use ($invoiceId, $voidReason) {
             $invoice = $this->invoiceRepository->find($invoiceId);
 
             if (! $invoice) {
@@ -309,13 +325,14 @@ class InvoiceService
                 throw new InvalidArgumentException('Invoice is already voided');
             }
 
-            if ($invoice->status === 'paid') {
-                throw new InvalidArgumentException('Cannot void a paid invoice');
-            }
-
-            // Reverse all payment transactions
+            // Reverse all payment transactions and mark payments as voided
             foreach ($invoice->payments as $payment) {
-                // Reverse income transaction
+                // Skip already voided payments
+                if ($payment->is_voided) {
+                    continue;
+                }
+
+                // Reverse income transaction (debit to reduce balance)
                 $this->transactionService->createTransaction([
                     'account_id' => $payment->account_id,
                     'type' => 'debit',
@@ -324,7 +341,7 @@ class InvoiceService
                     'date' => now()->format('Y-m-d'),
                 ]);
 
-                // Reverse fee transaction (if exists)
+                // Reverse fee transaction if exists (credit to restore the fee amount)
                 if ($payment->fee_transaction_id) {
                     $this->transactionService->createTransaction([
                         'account_id' => $payment->account_id,
@@ -334,13 +351,55 @@ class InvoiceService
                         'date' => now()->format('Y-m-d'),
                     ]);
                 }
+
+                // Mark payment as voided for audit trail
+                $payment->update(['voided_at' => now()]);
             }
 
-            return $this->invoiceRepository->update($invoiceId, [
+            // Update invoice: void status, reset amounts, store reason
+            $invoice = $this->invoiceRepository->update($invoiceId, [
                 'status' => 'void',
                 'voided_at' => now(),
+                'void_reason' => $voidReason,
+                'amount_paid' => 0,
+                'balance_due' => $invoice->total_amount,
+                'paid_at' => null,
             ]);
+
+            // Log the void action with business context
+            activity()
+                ->performedOn($invoice)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'void_reason' => $voidReason,
+                    'amount_voided' => $invoice->amount_paid,
+                    'invoice_number' => $invoice->invoice_number,
+                ])
+                ->log('Invoice voided');
+
+            return $invoice;
         });
+    }
+
+    /**
+     * Update invoice due date (allowed for draft, sent, partial, overdue statuses)
+     */
+    public function updateDueDate(int $invoiceId, string $dueDate): Invoice
+    {
+        $invoice = $this->invoiceRepository->find($invoiceId);
+
+        if (! $invoice) {
+            throw new InvalidArgumentException('Invoice not found');
+        }
+
+        // Only unpaid/non-void invoices can have their due date edited
+        if (in_array($invoice->status, ['paid', 'void'])) {
+            throw new InvalidArgumentException('Cannot edit due date of paid or voided invoices');
+        }
+
+        return $this->invoiceRepository->update($invoiceId, [
+            'due_date' => $dueDate,
+        ]);
     }
 
     /**

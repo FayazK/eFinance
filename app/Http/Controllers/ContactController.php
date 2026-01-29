@@ -57,7 +57,7 @@ class ContactController extends Controller
     public function edit(Contact $contact): Response
     {
         return Inertia::render('dashboard/contacts/edit', [
-            'contact' => $contact->load(['client', 'country']),
+            'contact' => $contact->load(['client', 'country', 'state', 'city']),
         ]);
     }
 
@@ -67,7 +67,7 @@ class ContactController extends Controller
 
         return response()->json([
             'message' => 'Contact created successfully',
-            'data' => new ContactResource($contact->load(['client', 'country'])),
+            'data' => new ContactResource($contact->load(['client', 'country', 'state', 'city'])),
         ], 201);
     }
 

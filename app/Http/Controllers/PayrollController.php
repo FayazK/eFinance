@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\PayrollAdjustmentRequest;
 use App\Http\Requests\PayrollGenerateRequest;
 use App\Http\Requests\PayrollPaymentRequest;
+use App\Http\Resources\AccountResource;
 use App\Http\Resources\PayrollResource;
 use App\Models\Account;
 use App\Models\Payroll;
@@ -28,13 +29,18 @@ class PayrollController extends Controller
         $year = $request->query('year', now()->year);
 
         $payrolls = $this->payrollService->getPayrollsForMonth((int) $month, (int) $year);
-        $pkrAccounts = Account::where('currency_code', 'PKR')->where('is_active', true)->get();
+
+        $accounts = Account::where('is_active', true)
+            ->whereIn('currency_code', ['PKR', 'USD'])
+            ->get()
+            ->groupBy('currency_code');
 
         return Inertia::render('dashboard/payroll/index', [
             'payrolls' => PayrollResource::collection($payrolls),
             'month' => (int) $month,
             'year' => (int) $year,
-            'pkrAccounts' => $pkrAccounts,
+            'pkrAccounts' => AccountResource::collection($accounts->get('PKR', collect()))->resolve(),
+            'usdAccounts' => AccountResource::collection($accounts->get('USD', collect()))->resolve(),
         ]);
     }
 

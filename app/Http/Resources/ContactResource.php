@@ -21,13 +21,19 @@ class ContactResource extends JsonResource
                 'name' => $this->client->name,
             ]),
             'address' => $this->address,
-            'city' => $this->city,
-            'state' => $this->state,
             'country' => $this->whenLoaded('country', fn () => [
                 'id' => $this->country?->id,
                 'name' => $this->country?->name,
                 'iso2' => $this->country?->iso2,
                 'emoji' => $this->country?->emoji,
+            ]),
+            'state' => $this->whenLoaded('state', fn () => [
+                'id' => $this->state?->id,
+                'name' => $this->state?->name,
+            ]),
+            'city' => $this->whenLoaded('city', fn () => [
+                'id' => $this->city?->id,
+                'name' => $this->city?->name,
             ]),
             'primary_phone' => $this->primary_phone,
             'primary_email' => $this->primary_email,

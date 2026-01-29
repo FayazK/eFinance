@@ -4,7 +4,7 @@ import { Contact } from '@/types';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
 import { Button, Card, Col, Form, Input, notification, Row, Space } from 'antd';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface ContactFormProps {
     contact?: Contact;
@@ -14,6 +14,18 @@ interface ContactFormProps {
 export default function ContactForm({ contact, isEdit = false }: ContactFormProps) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
+
+    // Watch country_id and state_id for dependent dropdowns
+    // Use contact values as fallback for initial render before form is populated
+    const formCountryId = Form.useWatch('country_id', form);
+    const formStateId = Form.useWatch('state_id', form);
+    const countryId = formCountryId ?? contact?.country?.id;
+    const stateId = formStateId ?? contact?.state?.id;
+
+    // Track previous values to avoid resetting on initial load
+    const prevCountryId = useRef<number | undefined>(contact?.country?.id);
+    const prevStateId = useRef<number | undefined>(contact?.state?.id);
+    const isInitialized = useRef(false);
 
     useEffect(() => {
         // Check for client_id in URL query params (for pre-filling from Client page)
@@ -25,15 +37,32 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
             last_name: contact?.last_name || '',
             client_id: contact?.client?.id || (clientIdFromUrl ? parseInt(clientIdFromUrl) : undefined),
             address: contact?.address || '',
-            city: contact?.city || '',
-            state: contact?.state || '',
             country_id: contact?.country?.id,
+            state_id: contact?.state?.id,
+            city_id: contact?.city?.id,
             primary_phone: contact?.primary_phone || '',
             primary_email: contact?.primary_email || '',
             additional_phones: contact?.additional_phones || [],
             additional_emails: contact?.additional_emails || [],
         });
+        isInitialized.current = true;
     }, [contact, form]);
+
+    // Reset state and city when country changes (only after initialization)
+    useEffect(() => {
+        if (isInitialized.current && prevCountryId.current !== countryId) {
+            form.setFieldsValue({ state_id: undefined, city_id: undefined });
+        }
+        prevCountryId.current = countryId;
+    }, [countryId, form]);
+
+    // Reset city when state changes (only after initialization)
+    useEffect(() => {
+        if (isInitialized.current && prevStateId.current !== stateId) {
+            form.setFieldsValue({ city_id: undefined });
+        }
+        prevStateId.current = stateId;
+    }, [stateId, form]);
 
     const onFinish = async (values: Record<string, unknown>) => {
         setLoading(true);
@@ -171,18 +200,18 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
 
                 <Row gutter={16}>
                     <Col span={8}>
-                        <Form.Item label="City" name="city">
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col span={8}>
-                        <Form.Item label="State" name="state">
-                            <Input />
-                        </Form.Item>
-                    </Col>
-                    <Col span={8}>
                         <Form.Item label="Country" name="country_id">
                             <AdvancedSelect type="countries" id={contact?.country?.id} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item label="State" name="state_id">
+                            <AdvancedSelect type="states" id={contact?.state?.id} params={{ country_id: countryId }} disabled={!countryId} />
+                        </Form.Item>
+                    </Col>
+                    <Col span={8}>
+                        <Form.Item label="City" name="city_id">
+                            <AdvancedSelect type="cities" id={contact?.city?.id} params={{ state_id: stateId }} disabled={!stateId} />
                         </Form.Item>
                     </Col>
                 </Row>

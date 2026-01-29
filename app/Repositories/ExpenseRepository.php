@@ -13,7 +13,7 @@ class ExpenseRepository
 {
     public function find(int $id): ?Expense
     {
-        return Expense::with(['account', 'category', 'transaction'])->find($id);
+        return Expense::with(['account', 'category', 'transaction', 'media'])->find($id);
     }
 
     public function create(array $data): Expense

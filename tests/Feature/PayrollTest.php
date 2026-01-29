@@ -49,7 +49,7 @@ describe('Payroll Generation', function () {
     });
 
     test('snapshots base salary at generation time', function () {
-        $employee = Employee::factory()->create(['base_salary_pkr' => 15000000]);
+        $employee = Employee::factory()->create(['base_salary' => 15000000]);
 
         $this->postJson(route('payroll.generate'), [
             'month' => 1,
@@ -60,7 +60,7 @@ describe('Payroll Generation', function () {
         expect($payroll->base_salary)->toBe(15000000);
 
         // Change employee salary
-        $employee->update(['base_salary_pkr' => 20000000]);
+        $employee->update(['base_salary' => 20000000]);
 
         // Payroll should still have old salary
         expect($payroll->fresh()->base_salary)->toBe(15000000);
@@ -123,18 +123,107 @@ describe('Payroll Adjustments', function () {
 });
 
 describe('Payroll Payment', function () {
-    test('rejects payment from non-PKR account', function () {
-        $usdAccount = Account::factory()->create(['currency_code' => 'USD']);
-        $payroll = Payroll::factory()->create(['status' => 'pending']);
+    test('pays USD payroll from USD account', function () {
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 200000, // $2000 = 200000 cents
+        ]);
+        $payroll = Payroll::factory()->usd()->create([
+            'status' => 'pending',
+            'base_salary' => 28000000, // 280k PKR (paisa) = $1000 at rate 280
+        ]);
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $usdAccount->id,
+            'usd_account_id' => $usdAccount->id,
+            'exchange_rate' => 280, // PKR per USD
+            'payroll_ids' => [$payroll->id],
+            'payment_date' => '2026-01-05',
+        ]);
+
+        $response->assertStatus(200);
+
+        $payroll->refresh();
+        expect($payroll->status)->toBe('paid');
+        expect($payroll->exchange_rate)->toBe('280.0000');
+        // 280k PKR / 280 rate = 1000 USD = 100000 cents deducted
+        expect($usdAccount->fresh()->current_balance)->toBe(100000); // $1000 remaining
+    });
+
+    test('rejects USD payroll when providing PKR account as usd_account', function () {
+        $pkrAccount = Account::factory()->create([
+            'currency_code' => 'PKR',
+            'current_balance' => 20000000,
+        ]);
+        $payroll = Payroll::factory()->usd()->create(['status' => 'pending']);
+
+        $response = $this->postJson(route('payroll.pay'), [
+            'usd_account_id' => $pkrAccount->id, // Wrong currency
+            'exchange_rate' => 280,
             'payroll_ids' => [$payroll->id],
             'payment_date' => '2026-01-05',
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['account_id']);
+            ->assertJsonValidationErrors(['usd_account_id']);
+    });
+
+    test('rejects PKR payroll when providing USD account as pkr_account', function () {
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 20000000,
+        ]);
+        $payroll = Payroll::factory()->pkr()->create(['status' => 'pending']);
+
+        $response = $this->postJson(route('payroll.pay'), [
+            'pkr_account_id' => $usdAccount->id, // Wrong currency
+            'payroll_ids' => [$payroll->id],
+            'payment_date' => '2026-01-05',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['pkr_account_id']);
+    });
+
+    test('pays mixed currency payroll batch with both accounts', function () {
+        $pkrAccount = Account::factory()->create([
+            'currency_code' => 'PKR',
+            'current_balance' => 50000000, // 500k PKR (paisa)
+        ]);
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 200000, // $2000 = 200000 cents
+        ]);
+        $pkrPayroll = Payroll::factory()->pkr()->create([
+            'status' => 'pending',
+            'base_salary' => 10000000, // 100k PKR (paisa)
+        ]);
+        $usdPayroll = Payroll::factory()->usd()->create([
+            'status' => 'pending',
+            'base_salary' => 28000000, // 280k PKR (paisa) = $1000 at rate 280
+        ]);
+
+        $response = $this->postJson(route('payroll.pay'), [
+            'pkr_account_id' => $pkrAccount->id,
+            'usd_account_id' => $usdAccount->id,
+            'exchange_rate' => 280,
+            'payroll_ids' => [$pkrPayroll->id, $usdPayroll->id],
+            'payment_date' => '2026-01-05',
+        ]);
+
+        $response->assertStatus(200);
+
+        // Both payrolls should be paid
+        expect($pkrPayroll->fresh()->status)->toBe('paid');
+        expect($usdPayroll->fresh()->status)->toBe('paid');
+
+        // USD payroll should have exchange rate
+        expect($usdPayroll->fresh()->exchange_rate)->toBe('280.0000');
+
+        // Account balances should be updated
+        // PKR: 500k - 100k = 400k remaining (40000000 paisa)
+        expect($pkrAccount->fresh()->current_balance)->toBe(40000000);
+        // USD: $2000 - $1000 = $1000 remaining (100000 cents)
+        expect($usdAccount->fresh()->current_balance)->toBe(100000);
     });
 
     test('hard blocks on insufficient balance', function () {
@@ -142,19 +231,19 @@ describe('Payroll Payment', function () {
             'currency_code' => 'PKR',
             'current_balance' => 5000000, // 50k PKR
         ]);
-        $payroll = Payroll::factory()->create([
+        $payroll = Payroll::factory()->pkr()->create([
             'status' => 'pending',
             'base_salary' => 10000000, // 100k PKR (insufficient, net_payable will auto-calculate)
         ]);
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $account->id,
+            'pkr_account_id' => $account->id,
             'payroll_ids' => [$payroll->id],
             'payment_date' => '2026-01-05',
         ]);
 
         $response->assertStatus(422)
-            ->assertJsonValidationErrors(['account_id']);
+            ->assertJsonValidationErrors(['pkr_account_id']);
     });
 
     test('creates transaction and updates balances atomically', function () {
@@ -162,7 +251,7 @@ describe('Payroll Payment', function () {
             'currency_code' => 'PKR',
             'current_balance' => 20000000, // 200k PKR
         ]);
-        $payroll = Payroll::factory()->create([
+        $payroll = Payroll::factory()->pkr()->create([
             'status' => 'pending',
             'base_salary' => 10000000, // 100k PKR (net_payable will auto-calculate)
         ]);
@@ -170,7 +259,7 @@ describe('Payroll Payment', function () {
         Event::fake();
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $account->id,
+            'pkr_account_id' => $account->id,
             'payroll_ids' => [$payroll->id],
             'payment_date' => '2026-01-05',
         ]);
@@ -202,13 +291,13 @@ describe('Payroll Payment', function () {
             'current_balance' => 50000000, // 500k PKR
         ]);
 
-        $payrolls = Payroll::factory()->count(3)->create([
+        $payrolls = Payroll::factory()->count(3)->pkr()->create([
             'status' => 'pending',
             'base_salary' => 10000000, // 100k each = 300k total (net_payable will auto-calculate)
         ]);
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $account->id,
+            'pkr_account_id' => $account->id,
             'payroll_ids' => $payrolls->pluck('id')->toArray(),
             'payment_date' => '2026-01-05',
         ]);
@@ -227,10 +316,10 @@ describe('Payroll Payment', function () {
             'currency_code' => 'PKR',
             'current_balance' => 50000000,
         ]);
-        $paidPayroll = Payroll::factory()->paid()->create();
+        $paidPayroll = Payroll::factory()->pkr()->paid()->create();
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $account->id,
+            'pkr_account_id' => $account->id,
             'payroll_ids' => [$paidPayroll->id],
             'payment_date' => '2026-01-05',
         ]);
@@ -245,16 +334,16 @@ describe('Payroll Payment', function () {
             'current_balance' => 20000000, // 200k PKR
         ]);
 
-        $payroll1 = Payroll::factory()->create([
+        $payroll1 = Payroll::factory()->pkr()->create([
             'status' => 'pending',
             'net_payable' => 10000000, // 100k
         ]);
-        $payroll2 = Payroll::factory()->paid()->create(); // Already paid - will cause error
+        $payroll2 = Payroll::factory()->pkr()->paid()->create(); // Already paid - will cause error
 
         $initialBalance = $account->current_balance;
 
         $response = $this->postJson(route('payroll.pay'), [
-            'account_id' => $account->id,
+            'pkr_account_id' => $account->id,
             'payroll_ids' => [$payroll1->id, $payroll2->id],
             'payment_date' => '2026-01-05',
         ]);

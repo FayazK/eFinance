@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\Account;
 use App\Models\Client;
+use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Project;
@@ -11,7 +12,6 @@ use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Nnjeim\World\Models\Country;
 use Nnjeim\World\Models\Currency;
 
 uses(RefreshDatabase::class);
@@ -26,9 +26,11 @@ beforeEach(function () {
 
 describe('Invoice Creation', function () {
     test('user can create invoice with line items', function () {
+        $company = Company::factory()->create();
         $client = Client::factory()->create();
 
         $response = $this->postJson('/dashboard/invoices', [
+            'company_id' => $company->id,
             'client_id' => $client->id,
             'currency_code' => $client->currency->code,
             'issue_date' => '2025-01-01',
@@ -62,7 +64,7 @@ describe('Invoice Creation', function () {
 
         $invoice = Invoice::first();
         expect($invoice->items)->toHaveCount(2);
-        expect($invoice->invoice_number)->toStartWith('INV-2025-');
+        expect($invoice->invoice_number)->toStartWith('INV-'.now()->format('Y').'-');
     });
 
     test('invoice requires at least one line item', function () {
@@ -90,9 +92,11 @@ describe('Invoice Creation', function () {
             'precision' => 2,
         ]);
 
+        $company = Company::factory()->create();
         $client = Client::factory()->create(['currency_id' => $pkrCurrency->id]);
 
         $response = $this->postJson('/dashboard/invoices', [
+            'company_id' => $company->id,
             'client_id' => $client->id,
             'currency_code' => 'PKR',
             'issue_date' => '2025-01-01',
@@ -303,6 +307,68 @@ describe('Payment Recording', function () {
 
         $response->assertUnprocessable();
     });
+
+    test('recording full payment on draft invoice marks it as paid', function () {
+        $invoice = Invoice::factory()->create([
+            'status' => 'draft',
+            'currency_code' => 'USD',
+            'total_amount' => 100000, // $1000
+            'balance_due' => 100000,
+        ]);
+
+        $account = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/record-payment", [
+            'account_id' => $account->id,
+            'payment_amount' => 1000.00,
+            'amount_received' => 1000.00,
+            'payment_date' => '2025-01-10',
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('invoices', [
+            'id' => $invoice->id,
+            'status' => 'paid',
+            'amount_paid' => 100000,
+            'balance_due' => 0,
+        ]);
+
+        expect($account->fresh()->current_balance)->toBe(100000);
+    });
+
+    test('recording partial payment on draft invoice marks it as partial', function () {
+        $invoice = Invoice::factory()->create([
+            'status' => 'draft',
+            'currency_code' => 'USD',
+            'total_amount' => 100000, // $1000
+            'balance_due' => 100000,
+        ]);
+
+        $account = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/record-payment", [
+            'account_id' => $account->id,
+            'payment_amount' => 500.00, // Partial payment
+            'amount_received' => 500.00,
+            'payment_date' => '2025-01-10',
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('invoices', [
+            'id' => $invoice->id,
+            'status' => 'partial',
+            'amount_paid' => 50000,
+            'balance_due' => 50000,
+        ]);
+    });
 });
 
 describe('Status Transitions', function () {
@@ -332,25 +398,31 @@ describe('Status Transitions', function () {
 });
 
 describe('Void Invoice', function () {
-    test('user can void unpaid invoice', function () {
+    test('user can void unpaid invoice with valid reason', function () {
         $invoice = Invoice::factory()->sent()->create();
 
-        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void");
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void", [
+            'void_reason' => 'Client cancelled the project',
+        ]);
 
         $response->assertOk();
         $this->assertDatabaseHas('invoices', [
             'id' => $invoice->id,
             'status' => 'void',
+            'void_reason' => 'Client cancelled the project',
         ]);
         expect($invoice->fresh()->voided_at)->not->toBeNull();
     });
 
-    test('cannot void paid invoice', function () {
-        $invoice = Invoice::factory()->paid()->create();
+    test('void reason is required', function () {
+        $invoice = Invoice::factory()->sent()->create();
 
-        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void");
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/void", [
+            'void_reason' => '',
+        ]);
 
-        $response->assertForbidden();
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['void_reason']);
     });
 });
 

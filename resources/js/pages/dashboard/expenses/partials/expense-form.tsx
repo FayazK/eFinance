@@ -1,32 +1,72 @@
 import api from '@/lib/axios';
-import { index } from '@/routes/expenses';
-import { UploadOutlined } from '@ant-design/icons';
+import { index, update } from '@/routes/expenses';
+import type { Expense } from '@/types';
+import { PlusOutlined, UploadOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
 import type { UploadFile } from 'antd';
-import { Button, Col, DatePicker, Divider, Form, Input, InputNumber, notification, Radio, Row, Select, Space, Upload } from 'antd';
+import { Button, Col, ColorPicker, DatePicker, Divider, Form, Input, InputNumber, Modal, notification, Radio, Row, Select, Space, Upload } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
 interface ExpenseFormProps {
     accounts?: Array<{ id: number; name: string; currency_code: string; formatted_balance: string }>;
     categories?: Array<{ id: number; name: string; color?: string }>;
+    expense?: Expense;
+    isEditing?: boolean;
 }
 
-export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseFormProps) {
+export default function ExpenseForm({ accounts = [], categories: initialCategories = [], expense, isEditing = false }: ExpenseFormProps) {
     const [form] = Form.useForm();
+    const [categoryForm] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [workflowType, setWorkflowType] = useState<'one-time' | 'recurring'>('one-time');
     const [selectedAccount, setSelectedAccount] = useState<{ id: number; name: string; currency_code: string } | null>(null);
     const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [fetchingExchangeRate, setFetchingExchangeRate] = useState(false);
+    const [categories, setCategories] = useState(initialCategories);
+    const [categoryModalOpen, setCategoryModalOpen] = useState(false);
+    const [creatingCategory, setCreatingCategory] = useState(false);
 
     const showExchangeRate = selectedAccount?.currency_code !== 'PKR';
-    const showRecurringFields = workflowType === 'recurring';
+    const showRecurringFields = workflowType === 'recurring' && !isEditing;
 
+    // Initialize form with expense data when editing
     useEffect(() => {
-        // Set default date to today
-        form.setFieldValue('expense_date', dayjs());
-    }, [form]);
+        if (isEditing && expense) {
+            // Set the selected account first
+            const account = accounts.find((acc) => acc.id === expense.account?.id);
+            if (account) {
+                setSelectedAccount(account);
+            }
+
+            // Set form values
+            form.setFieldsValue({
+                account_id: expense.account?.id,
+                category_id: expense.category?.id,
+                amount: expense.amount / 100, // Convert from minor units
+                expense_date: expense.expense_date ? dayjs(expense.expense_date) : undefined,
+                exchange_rate: expense.exchange_rate,
+                vendor: expense.vendor,
+                description: expense.description,
+            });
+
+            // Initialize fileList with existing receipts
+            if (expense.receipts && expense.receipts.length > 0) {
+                const existingFiles: UploadFile[] = expense.receipts.map((receipt) => ({
+                    uid: String(receipt.id),
+                    name: receipt.name,
+                    status: 'done',
+                    url: receipt.url,
+                    type: receipt.mime_type,
+                    size: receipt.size,
+                }));
+                setFileList(existingFiles);
+            }
+        } else {
+            // Set default date to today for new expenses
+            form.setFieldValue('expense_date', dayjs());
+        }
+    }, [form, expense, isEditing, accounts]);
 
     // Fetch last used exchange rate when account changes and it's a foreign currency
     useEffect(() => {
@@ -75,87 +115,145 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
         }
     };
 
-    const onFinish = async (values: Record<string, unknown>) => {
-        setLoading(true);
-
-        // Format dates
-        const formattedValues = {
-            ...values,
-            expense_date: values.expense_date ? dayjs(values.expense_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
-            recurrence_start_date: values.recurrence_start_date ? dayjs(values.recurrence_start_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
-            recurrence_end_date: values.recurrence_end_date ? dayjs(values.recurrence_end_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
-            is_recurring: workflowType === 'recurring',
-            currency_code: selectedAccount?.currency_code,
-        };
-
-        // Create FormData for file upload
-        const formData = new FormData();
-        Object.keys(formattedValues).forEach((key) => {
-            const value = formattedValues[key];
-            if (value !== undefined && value !== null) {
-                formData.append(key, String(value));
-            }
-        });
-
-        // Append receipts if present
-        fileList.forEach((file) => {
-            if (file.originFileObj) {
-                formData.append('receipts[]', file.originFileObj);
-            }
-        });
-
+    const handleCreateCategory = async () => {
         try {
-            const response = await api.post('/dashboard/expenses', formData, {
-                headers: { 'Content-Type': 'multipart/form-data' },
+            const values = await categoryForm.validateFields();
+            setCreatingCategory(true);
+
+            const colorValue = values.color?.toHexString?.() ?? values.color ?? '#6366f1';
+            const response = await api.post('/dashboard/transaction-categories', {
+                name: values.name,
+                type: 'expense',
+                color: colorValue,
             });
+
+            const newCategory = response.data.data;
+            setCategories((prev) => [...prev, { id: newCategory.id, name: newCategory.name, color: newCategory.color }]);
+            form.setFieldValue('category_id', newCategory.id);
+            setCategoryModalOpen(false);
+            categoryForm.resetFields();
+
             notification.success({
-                message: response.data.message || 'Expense recorded successfully',
+                message: 'Category Created',
+                description: `Category "${newCategory.name}" has been created.`,
             });
-            router.visit(index.url());
         } catch (error: unknown) {
-            const err = error as {
-                response?: {
-                    status: number;
-                    data: { errors: { [key: string]: string[] }; message: string };
-                };
-            };
-            if (err.response && err.response.status === 422) {
-                const validationErrors = err.response.data.errors;
-                const formErrors = Object.keys(validationErrors).map((key) => ({
-                    name: key,
-                    errors: validationErrors[key],
-                }));
-                form.setFields(formErrors);
+            if (error && typeof error === 'object' && 'response' in error) {
+                const axiosError = error as { response?: { data?: { message?: string } } };
                 notification.error({
-                    message: 'Validation Error',
-                    description: err.response.data.message,
-                });
-            } else {
-                notification.error({
-                    message: 'Error',
-                    description: 'An unexpected error occurred.',
+                    message: 'Failed to create category',
+                    description: axiosError.response?.data?.message || 'An error occurred',
                 });
             }
         } finally {
-            setLoading(false);
+            setCreatingCategory(false);
+        }
+    };
+
+    const onFinish = async (values: Record<string, unknown>) => {
+        setLoading(true);
+
+        // Format dates and values
+        const isRecurring = workflowType === 'recurring' && !isEditing;
+        const expenseDate = values.expense_date ? dayjs(values.expense_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined;
+
+        const formattedValues = {
+            ...values,
+            expense_date: expenseDate,
+            // For recurring expenses, use expense_date as the start date
+            recurrence_start_date: isRecurring ? expenseDate : undefined,
+            recurrence_end_date: values.recurrence_end_date ? dayjs(values.recurrence_end_date as dayjs.Dayjs).format('YYYY-MM-DD') : undefined,
+            is_recurring: isRecurring ? '1' : '0', // Use "1"/"0" for FormData boolean compatibility
+            currency_code: selectedAccount?.currency_code,
+        };
+
+        if (isEditing && expense) {
+            // Update existing expense
+            router.put(update.url(expense.id), formattedValues, {
+                onSuccess: () => {
+                    notification.success({
+                        message: 'Expense updated successfully!',
+                    });
+                },
+                onError: (errors) => {
+                    const formErrors = Object.keys(errors).map((key) => ({
+                        name: key,
+                        errors: [errors[key]],
+                    }));
+                    form.setFields(formErrors);
+                    notification.error({
+                        message: 'Validation Error',
+                        description: Object.values(errors)[0] as string,
+                    });
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            });
+        } else {
+            // Create FormData for file upload (new expense)
+            const formData = new FormData();
+            Object.keys(formattedValues).forEach((key) => {
+                const value = formattedValues[key as keyof typeof formattedValues];
+                if (value !== undefined && value !== null) {
+                    formData.append(key, String(value));
+                }
+            });
+
+            // Append receipts if present
+            fileList.forEach((file) => {
+                if (file.originFileObj) {
+                    formData.append('receipts[]', file.originFileObj);
+                }
+            });
+
+            // Use Inertia router for proper redirect and error handling
+            router.post('/dashboard/expenses', formData, {
+                forceFormData: true,
+                onSuccess: () => {
+                    notification.success({
+                        message: isRecurring ? 'Recurring expense template created!' : 'Expense saved as draft!',
+                    });
+                },
+                onError: (errors) => {
+                    // Handle validation errors
+                    const formErrors = Object.keys(errors).map((key) => ({
+                        name: key,
+                        errors: [errors[key]],
+                    }));
+                    form.setFields(formErrors);
+                    notification.error({
+                        message: 'Validation Error',
+                        description: Object.values(errors)[0] as string,
+                    });
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            });
         }
     };
 
     return (
+        <>
         <Form form={form} layout="vertical" onFinish={onFinish}>
-            {/* Workflow Selector */}
-            <Form.Item label="Expense Type">
-                <Radio.Group
-                    value={workflowType}
-                    onChange={(e) => handleWorkflowChange(e.target.value as 'one-time' | 'recurring')}
-                    buttonStyle="solid"
-                >
-                    <Radio.Button value="one-time">One-Time Expense</Radio.Button>
-                    <Radio.Button value="recurring">Recurring Expense</Radio.Button>
-                </Radio.Group>
-            </Form.Item>
+            {/* Workflow Selector - hidden when editing */}
+            {!isEditing && (
+                <>
+                    <Form.Item label="Expense Type">
+                        <Radio.Group
+                            value={workflowType}
+                            onChange={(e) => handleWorkflowChange(e.target.value as 'one-time' | 'recurring')}
+                            buttonStyle="solid"
+                        >
+                            <Radio.Button value="one-time">One-Time Expense</Radio.Button>
+                            <Radio.Button value="recurring">Recurring Expense</Radio.Button>
+                        </Radio.Group>
+                    </Form.Item>
 
-            <Divider />
+                    <Divider />
+                </>
+            )}
 
             {/* Core Fields */}
             <Row gutter={16}>
@@ -184,6 +282,20 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
                                 label: category.name,
                                 value: category.id,
                             }))}
+                            popupRender={(menu) => (
+                                <>
+                                    {menu}
+                                    <Divider style={{ margin: '8px 0' }} />
+                                    <Button
+                                        type="text"
+                                        icon={<PlusOutlined />}
+                                        onClick={() => setCategoryModalOpen(true)}
+                                        style={{ width: '100%', textAlign: 'left' }}
+                                    >
+                                        Create new category
+                                    </Button>
+                                </>
+                            )}
                         />
                     </Form.Item>
                 </Col>
@@ -320,12 +432,18 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
                     <Divider orientation="left">Receipts</Divider>
                     <Form.Item label="Upload Receipts" extra="Upload receipt images or PDFs (max 5MB each)">
                         <Upload
+                            listType="picture"
                             fileList={fileList}
                             onChange={({ fileList: newFileList }) => setFileList(newFileList)}
                             beforeUpload={() => false}
                             multiple
                             accept="image/jpeg,image/png,image/webp,application/pdf"
                             maxCount={10}
+                            onPreview={(file) => {
+                                if (file.url) {
+                                    window.open(file.url, '_blank');
+                                }
+                            }}
                         >
                             <Button icon={<UploadOutlined />}>Select Files</Button>
                         </Upload>
@@ -336,11 +454,41 @@ export default function ExpenseForm({ accounts = [], categories = [] }: ExpenseF
             <Form.Item>
                 <Space>
                     <Button type="primary" htmlType="submit" loading={loading}>
-                        {workflowType === 'recurring' ? 'Create Recurring Template' : 'Record Expense'}
+                        {isEditing
+                            ? 'Update Expense'
+                            : workflowType === 'recurring'
+                              ? 'Create Recurring Template'
+                              : 'Save as Draft'}
                     </Button>
                     <Button onClick={() => router.visit(index.url())}>Cancel</Button>
                 </Space>
             </Form.Item>
         </Form>
+
+        <Modal
+            title="Create New Category"
+            open={categoryModalOpen}
+            onOk={handleCreateCategory}
+            onCancel={() => {
+                setCategoryModalOpen(false);
+                categoryForm.resetFields();
+            }}
+            confirmLoading={creatingCategory}
+            okText="Create"
+        >
+            <Form form={categoryForm} layout="vertical">
+                <Form.Item
+                    label="Category Name"
+                    name="name"
+                    rules={[{ required: true, message: 'Please enter a category name' }]}
+                >
+                    <Input placeholder="e.g., Office Supplies, Marketing" />
+                </Form.Item>
+                <Form.Item label="Color" name="color" initialValue="#6366f1">
+                    <ColorPicker showText />
+                </Form.Item>
+            </Form>
+        </Modal>
+        </>
     );
 }

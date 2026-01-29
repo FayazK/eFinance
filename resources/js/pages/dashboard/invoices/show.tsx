@@ -1,12 +1,15 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
-import { edit, index, pdf } from '@/routes/invoices';
+import { edit, index, pdf, updateDueDate } from '@/routes/invoices';
 import type { Account, Invoice, InvoicePayment, InvoiceStatus } from '@/types';
-import { ArrowLeftOutlined, DollarOutlined, EditOutlined, FileTextOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined, CheckOutlined, CloseOutlined, DollarOutlined, EditOutlined, FileTextOutlined, SendOutlined, StopOutlined } from '@ant-design/icons';
 import { Link, router } from '@inertiajs/react';
-import { Button, Card, Descriptions, Modal, notification, Space, Table, Tabs, Tag, theme } from 'antd';
+import { Alert, Button, Card, DatePicker, Descriptions, notification, Space, Table, Tabs, Tag, theme, Tooltip } from 'antd';
+import dayjs from 'dayjs';
 import React, { useState } from 'react';
 import InvoicePaymentModal from './partials/invoice-payment-modal';
+import InvoiceVoidModal from './partials/invoice-void-modal';
 
 const { useToken } = theme;
 
@@ -27,28 +30,89 @@ interface InvoiceShowProps {
 export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
     const { token } = useToken();
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [voidModalOpen, setVoidModalOpen] = useState(false);
+    const [editingDueDate, setEditingDueDate] = useState(false);
+    const [newDueDate, setNewDueDate] = useState<dayjs.Dayjs | null>(dayjs(invoice.due_date));
+    const [savingDueDate, setSavingDueDate] = useState(false);
 
-    const handleVoidInvoice = () => {
-        Modal.confirm({
-            title: 'Void Invoice',
-            content: 'Are you sure you want to void this invoice? This action cannot be undone.',
-            okText: 'Void Invoice',
-            okType: 'danger',
-            cancelText: 'Cancel',
-            onOk: async () => {
-                try {
-                    await api.post(`/dashboard/invoices/${invoice.id}/void`);
-                    notification.success({ message: 'Invoice voided successfully' });
-                    router.reload();
-                } catch (error: unknown) {
-                    const err = error as { response?: { data: { message: string } } };
-                    notification.error({
-                        message: 'Error',
-                        description: err.response?.data.message || 'Failed to void invoice',
-                    });
-                }
-            },
-        });
+    const canEditDueDate = !['paid', 'void'].includes(invoice.status);
+
+    const handleSaveDueDate = async () => {
+        if (!newDueDate) return;
+
+        setSavingDueDate(true);
+        try {
+            await api.put(updateDueDate.url(invoice.id), {
+                due_date: newDueDate.format('YYYY-MM-DD'),
+            });
+            notification.success({ message: 'Due date updated successfully' });
+            setEditingDueDate(false);
+            router.reload();
+        } catch (error: unknown) {
+            const err = error as { response?: { data: { message: string } } };
+            notification.error({
+                message: 'Error',
+                description: err.response?.data.message || 'Failed to update due date',
+            });
+        } finally {
+            setSavingDueDate(false);
+        }
+    };
+
+    const handleCancelEditDueDate = () => {
+        setEditingDueDate(false);
+        setNewDueDate(dayjs(invoice.due_date));
+    };
+
+    const renderDueDateField = () => {
+        if (editingDueDate) {
+            return (
+                <Space size="small">
+                    <DatePicker
+                        value={newDueDate}
+                        onChange={(date) => setNewDueDate(date)}
+                        format="YYYY-MM-DD"
+                        size="small"
+                        style={{ width: 140 }}
+                    />
+                    <Tooltip title="Save">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<CheckOutlined />}
+                            style={{ color: token.colorSuccess }}
+                            onClick={handleSaveDueDate}
+                            loading={savingDueDate}
+                        />
+                    </Tooltip>
+                    <Tooltip title="Cancel">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<CloseOutlined />}
+                            onClick={handleCancelEditDueDate}
+                            disabled={savingDueDate}
+                        />
+                    </Tooltip>
+                </Space>
+            );
+        }
+
+        return (
+            <Space size="small">
+                <span>{new Date(invoice.due_date).toLocaleDateString()}</span>
+                {canEditDueDate && (
+                    <Tooltip title="Edit due date">
+                        <Button
+                            type="text"
+                            size="small"
+                            icon={<EditOutlined />}
+                            onClick={() => setEditingDueDate(true)}
+                        />
+                    </Tooltip>
+                )}
+            </Space>
+        );
     };
 
     const handleSendInvoice = async () => {
@@ -67,39 +131,72 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
 
     const paymentColumns = [
         {
+            title: 'Status',
+            key: 'status',
+            width: 100,
+            render: (_: unknown, record: InvoicePayment) =>
+                record.is_voided ? <Tag color="red">Voided</Tag> : <Tag color="green">Active</Tag>,
+        },
+        {
             title: 'Date',
             dataIndex: 'payment_date',
             key: 'payment_date',
-            render: (date: string) => new Date(date).toLocaleDateString(),
+            render: (date: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {new Date(date).toLocaleDateString()}
+                </span>
+            ),
         },
         {
             title: 'Account',
             dataIndex: 'account',
             key: 'account',
-            render: (account: { name: string; currency_code: string }) => `${account.name} (${account.currency_code})`,
+            render: (account: { name: string; currency_code: string }, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {account.name} ({account.currency_code})
+                </span>
+            ),
         },
         {
             title: 'Payment Amount',
             dataIndex: 'formatted_payment_amount',
             key: 'payment_amount',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>{text}</span>
+            ),
         },
         {
             title: 'Amount Received',
             dataIndex: 'formatted_amount_received',
             key: 'amount_received',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>{text}</span>
+            ),
         },
         {
             title: 'Fee',
             dataIndex: 'formatted_fee',
             key: 'fee',
-            render: (text: string, record: InvoicePayment) =>
-                record.has_fee ? <span style={{ color: token.colorError }}>{text}</span> : <span>—</span>,
+            render: (text: string, record: InvoicePayment) => {
+                if (record.is_voided) {
+                    return record.has_fee ? (
+                        <span style={{ textDecoration: 'line-through', color: token.colorTextDisabled }}>{text}</span>
+                    ) : (
+                        <span style={{ color: token.colorTextDisabled }}>—</span>
+                    );
+                }
+                return record.has_fee ? <span style={{ color: token.colorError }}>{text}</span> : <span>—</span>;
+            },
         },
         {
             title: 'Notes',
             dataIndex: 'notes',
             key: 'notes',
-            render: (text: string) => text || '—',
+            render: (text: string, record: InvoicePayment) => (
+                <span style={record.is_voided ? { textDecoration: 'line-through', color: token.colorTextDisabled } : undefined}>
+                    {text || '—'}
+                </span>
+            ),
         },
     ];
 
@@ -166,9 +263,9 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                                         <span>Issue Date:</span>
                                         <span>{new Date(invoice.issue_date).toLocaleDateString()}</span>
                                     </div>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                                         <span>Due Date:</span>
-                                        <span>{new Date(invoice.due_date).toLocaleDateString()}</span>
+                                        {renderDueDateField()}
                                     </div>
                                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                         <span>Currency:</span>
@@ -273,7 +370,7 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                         <Descriptions.Item label="Client">{invoice.client?.name}</Descriptions.Item>
                         <Descriptions.Item label="Project">{invoice.project?.name || '—'}</Descriptions.Item>
                         <Descriptions.Item label="Issue Date">{new Date(invoice.issue_date).toLocaleDateString()}</Descriptions.Item>
-                        <Descriptions.Item label="Due Date">{new Date(invoice.due_date).toLocaleDateString()}</Descriptions.Item>
+                        <Descriptions.Item label="Due Date">{renderDueDateField()}</Descriptions.Item>
                         <Descriptions.Item label="Currency">{invoice.currency_code}</Descriptions.Item>
                         <Descriptions.Item label="Subtotal">{invoice.formatted_subtotal}</Descriptions.Item>
                         <Descriptions.Item label="Tax">{invoice.formatted_tax}</Descriptions.Item>
@@ -289,7 +386,21 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                                 {invoice.notes}
                             </Descriptions.Item>
                         )}
+                        {invoice.void_reason && (
+                            <Descriptions.Item label="Void Reason" span={2}>
+                                <span style={{ color: token.colorError }}>{invoice.void_reason}</span>
+                            </Descriptions.Item>
+                        )}
                     </Descriptions>
+                    {invoice.status === 'void' && invoice.void_reason && (
+                        <Alert
+                            message="Invoice Voided"
+                            description={invoice.void_reason}
+                            type="error"
+                            showIcon
+                            style={{ marginTop: 16 }}
+                        />
+                    )}
                 </Card>
             ),
         },
@@ -307,6 +418,15 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                             emptyText: 'No payments have been recorded yet.',
                         }}
                     />
+                </Card>
+            ),
+        },
+        {
+            key: 'activity',
+            label: 'Activity',
+            children: (
+                <Card>
+                    <ActivityTimeline subjectType="Invoice" subjectId={invoice.id} />
                 </Card>
             ),
         },
@@ -347,8 +467,8 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
                         </Button>
                     )}
 
-                    {invoice.status !== 'void' && invoice.status !== 'paid' && (
-                        <Button danger icon={<StopOutlined />} onClick={handleVoidInvoice}>
+                    {invoice.status !== 'void' && (
+                        <Button danger icon={<StopOutlined />} onClick={() => setVoidModalOpen(true)}>
                             Void Invoice
                         </Button>
                     )}
@@ -358,6 +478,7 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
             <Tabs defaultActiveKey="preview" items={tabItems} />
 
             <InvoicePaymentModal open={paymentModalOpen} onCancel={() => setPaymentModalOpen(false)} invoice={invoice} accounts={accounts} />
+            <InvoiceVoidModal open={voidModalOpen} onCancel={() => setVoidModalOpen(false)} invoice={invoice} accounts={accounts} />
         </AppLayout>
     );
 }

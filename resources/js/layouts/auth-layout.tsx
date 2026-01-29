@@ -2,7 +2,6 @@ import { home } from '@/routes';
 import { Link } from '@inertiajs/react';
 import { Card, Flex, theme, Typography } from 'antd';
 import { type PropsWithChildren } from 'react';
-import logo from '../../images/logo.svg';
 
 const { Title, Text } = Typography;
 const { useToken } = theme;
@@ -30,14 +29,9 @@ export default function AuthLayout({ children, title, description }: PropsWithCh
                 {/* Logo */}
                 <Flex justify="center" style={{ marginBottom: token.marginXL }}>
                     <Link href={home()}>
-                        <img
-                            src={logo}
-                            alt="Liar Logo"
-                            style={{
-                                height: '64px',
-                                width: '64px',
-                            }}
-                        />
+                        <Text strong style={{ fontSize: '32px', color: token.colorPrimary }}>
+                            Envoice
+                        </Text>
                     </Link>
                 </Flex>
 

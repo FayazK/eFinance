@@ -12,7 +12,7 @@ class InvoiceRepository
 {
     public function find(int $id): ?Invoice
     {
-        return Invoice::with(['client', 'project', 'items', 'payments.account'])
+        return Invoice::with(['company', 'client', 'project', 'items', 'payments.account'])
             ->find($id);
     }
 
@@ -26,7 +26,7 @@ class InvoiceRepository
         $invoice = Invoice::findOrFail($id);
         $invoice->update($data);
 
-        return $invoice->fresh(['client', 'project', 'items', 'payments']);
+        return $invoice->fresh(['company', 'client', 'project', 'items', 'payments']);
     }
 
     public function delete(int $id): bool
@@ -43,7 +43,7 @@ class InvoiceRepository
         ?string $sortBy = 'issue_date',
         string $sortDirection = 'desc'
     ): LengthAwarePaginator {
-        $query = Invoice::query()->with(['client', 'project']);
+        $query = Invoice::query()->with(['company', 'client', 'project']);
 
         // Search by invoice number or client name
         if ($search) {

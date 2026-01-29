@@ -1,3 +1,4 @@
+import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
 import { index as distributionsIndex, downloadStatement } from '@/routes/distributions';
 import type { Account, Distribution, DistributionLine } from '@/types';
@@ -196,6 +197,10 @@ export default function DistributionShow() {
 
                 <Card title="Distribution Lines">
                     <Table columns={lineColumns} dataSource={distribution.lines} rowKey="id" pagination={false} />
+                </Card>
+
+                <Card>
+                    <ActivityTimeline subjectType="Distribution" subjectId={distribution.id} />
                 </Card>
             </Space>
 

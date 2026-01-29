@@ -29,5 +29,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withSchedule(function (Schedule $schedule) {
         $schedule->command('invoices:mark-overdue')->daily();
         $schedule->command('expenses:process-recurring')->daily();
+        $schedule->command('activitylog:clean')->daily();
     })
     ->create();

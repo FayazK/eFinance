@@ -1,5 +1,5 @@
 import { Card, Empty, theme } from 'antd';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts';
 
 const { useToken } = theme;
 
@@ -18,6 +18,41 @@ interface Props {
     data: InvoiceStatusBreakdown;
 }
 
+interface ChartDataPoint {
+    name: string;
+    value: number;
+    amount: string;
+}
+
+function CustomTooltip({
+    active,
+    payload,
+    token,
+}: TooltipProps<number, string> & { token: { colorBgContainer: string; colorBorder: string; colorText: string } }) {
+    if (!active || !payload || payload.length === 0) {
+        return null;
+    }
+
+    const entry = payload[0].payload as ChartDataPoint;
+
+    return (
+        <div
+            style={{
+                backgroundColor: token.colorBgContainer,
+                border: `1px solid ${token.colorBorder}`,
+                borderRadius: 6,
+                padding: '8px 12px',
+            }}
+        >
+            <p style={{ margin: 0, marginBottom: 4, fontWeight: 600, color: token.colorText }}>{entry.name}</p>
+            <p style={{ margin: 0, color: token.colorText }}>
+                Count: {entry.value} invoice{entry.value !== 1 ? 's' : ''}
+            </p>
+            <p style={{ margin: 0, color: token.colorText }}>Amount: {entry.amount}</p>
+        </div>
+    );
+}
+
 export default function InvoiceStatusChart({ data }: Props) {
     const { token } = useToken();
 
@@ -29,7 +64,7 @@ export default function InvoiceStatusChart({ data }: Props) {
         overdue: token.colorError,
     };
 
-    const chartData = data.statuses.map((s) => ({
+    const chartData: ChartDataPoint[] = data.statuses.map((s) => ({
         name: s.status.charAt(0).toUpperCase() + s.status.slice(1),
         value: s.count,
         amount: s.formatted_amount,
@@ -51,17 +86,17 @@ export default function InvoiceStatusChart({ data }: Props) {
                         data={chartData}
                         cx="50%"
                         cy="50%"
-                        labelLine={false}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
-                        outerRadius={80}
+                        innerRadius={50}
+                        outerRadius={90}
                         fill="#8884d8"
                         dataKey="value"
+                        paddingAngle={2}
                     >
                         {chartData.map((entry, index) => (
                             <Cell key={`cell-${index}`} fill={COLORS[entry.name.toLowerCase()] || token.colorPrimary} />
                         ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip content={<CustomTooltip token={token} />} />
                     <Legend />
                 </PieChart>
             </ResponsiveContainer>

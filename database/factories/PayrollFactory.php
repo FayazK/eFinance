@@ -63,4 +63,24 @@ class PayrollFactory extends Factory
             'paid_at' => now(),
         ]);
     }
+
+    /**
+     * Indicate that the payroll is for USD deposit
+     */
+    public function usd(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'deposit_currency' => 'USD',
+        ]);
+    }
+
+    /**
+     * Indicate that the payroll is for PKR deposit
+     */
+    public function pkr(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'deposit_currency' => 'PKR',
+        ]);
+    }
 }

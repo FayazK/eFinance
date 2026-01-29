@@ -1,11 +1,12 @@
 import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
-import { create, data } from '@/routes/expenses';
+import { create, data, edit, process } from '@/routes/expenses';
 import type { Account, Expense, FilterConfig, TransactionCategory } from '@/types';
-import { PlusOutlined } from '@ant-design/icons';
-import { Link, usePage } from '@inertiajs/react';
-import { Button, Tag, theme } from 'antd';
-import React from 'react';
+import { CheckCircleOutlined, EditOutlined, PlusOutlined, StopOutlined } from '@ant-design/icons';
+import ExpenseVoidModal from './partials/expense-void-modal';
+import { Link, router, usePage } from '@inertiajs/react';
+import { Button, Modal, notification, Space, Tag, theme, Tooltip } from 'antd';
+import React, { useState } from 'react';
 
 const { useToken } = theme;
 
@@ -17,6 +18,50 @@ interface ExpensesIndexProps {
 export default function ExpensesIndex() {
     const { token } = useToken();
     const { accounts, categories } = usePage<ExpensesIndexProps>().props;
+    const [processModalOpen, setProcessModalOpen] = useState(false);
+    const [selectedExpense, setSelectedExpense] = useState<Expense | null>(null);
+    const [processing, setProcessing] = useState(false);
+    const [voidModalOpen, setVoidModalOpen] = useState(false);
+    const [expenseToVoid, setExpenseToVoid] = useState<Expense | null>(null);
+
+    const handleProcessClick = (expense: Expense) => {
+        setSelectedExpense(expense);
+        setProcessModalOpen(true);
+    };
+
+    const handleProcessConfirm = () => {
+        if (!selectedExpense) return;
+
+        setProcessing(true);
+        router.post(
+            process.url(selectedExpense.id),
+            {},
+            {
+                onSuccess: () => {
+                    notification.success({
+                        message: 'Expense Processed',
+                        description: 'The expense has been processed and the transaction has been created.',
+                    });
+                    setProcessModalOpen(false);
+                    setSelectedExpense(null);
+                },
+                onError: (errors) => {
+                    notification.error({
+                        message: 'Processing Failed',
+                        description: Object.values(errors)[0] as string,
+                    });
+                },
+                onFinish: () => {
+                    setProcessing(false);
+                },
+            },
+        );
+    };
+
+    const handleVoidClick = (expense: Expense) => {
+        setExpenseToVoid(expense);
+        setVoidModalOpen(true);
+    };
 
     const filters: FilterConfig[] = [
         {
@@ -44,6 +89,7 @@ export default function ExpensesIndex() {
             options: [
                 { label: 'Draft', value: 'draft' },
                 { label: 'Processed', value: 'processed' },
+                { label: 'Voided', value: 'voided' },
                 { label: 'Cancelled', value: 'cancelled' },
             ],
         },
@@ -59,7 +105,7 @@ export default function ExpensesIndex() {
             title: 'Date',
             dataIndex: 'expense_date',
             key: 'expense_date',
-            width: 120,
+            width: 100,
             sorter: true,
             filterable: true,
             render: (date: unknown) => new Date(date as string).toLocaleDateString(),
@@ -68,7 +114,7 @@ export default function ExpensesIndex() {
             title: 'Vendor',
             dataIndex: 'vendor',
             key: 'vendor',
-            width: 180,
+            width: 150,
             searchable: true,
             render: (vendor: unknown) => (vendor as string) || <span style={{ color: token.colorTextDisabled }}>—</span>,
         },
@@ -76,26 +122,35 @@ export default function ExpensesIndex() {
             title: 'Description',
             dataIndex: 'description',
             key: 'description',
+            width: 250,
             searchable: true,
             render: (description: unknown, record: Expense) => {
+                const text = (description as string) || '—';
+                const textStyle: React.CSSProperties = {
+                    display: '-webkit-box',
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden',
+                };
+
                 if (record.is_recurring) {
                     return (
                         <div>
                             <Tag color="blue" style={{ marginBottom: 4 }}>
                                 Recurring
                             </Tag>
-                            <div>{(description as string) || '—'}</div>
+                            <div style={textStyle}>{text}</div>
                         </div>
                     );
                 }
-                return (description as string) || '—';
+                return <div style={textStyle}>{text}</div>;
             },
         },
         {
             title: 'Account',
             dataIndex: 'account',
             key: 'account',
-            width: 160,
+            width: 140,
             filterable: true,
             render: (_: unknown, record: Expense) => (
                 <div>
@@ -110,7 +165,7 @@ export default function ExpensesIndex() {
             title: 'Category',
             dataIndex: 'category',
             key: 'category',
-            width: 140,
+            width: 120,
             filterable: true,
             render: (_: unknown, record: Expense) =>
                 record.category ? (
@@ -123,7 +178,7 @@ export default function ExpensesIndex() {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            width: 140,
+            width: 120,
             sorter: true,
             render: (_: unknown, record: Expense) => (
                 <div>
@@ -138,16 +193,60 @@ export default function ExpensesIndex() {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 110,
+            width: 100,
             filterable: true,
             render: (status: unknown) => {
                 const statusValue = status as string;
                 const colorMap = {
                     draft: 'default',
                     processed: 'green',
+                    voided: 'orange',
                     cancelled: 'red',
                 };
                 return <Tag color={colorMap[statusValue as keyof typeof colorMap]}>{statusValue}</Tag>;
+            },
+        },
+        {
+            title: 'Actions',
+            key: 'actions',
+            width: 120,
+            render: (_: unknown, record: Expense) => {
+                if (record.status === 'draft') {
+                    return (
+                        <Space size="small">
+                            <Tooltip title="Edit">
+                                <Link href={edit.url(record.id)}>
+                                    <Button type="text" size="small" icon={<EditOutlined />} />
+                                </Link>
+                            </Tooltip>
+                            <Tooltip title="Process">
+                                <Button
+                                    type="text"
+                                    size="small"
+                                    icon={<CheckCircleOutlined />}
+                                    style={{ color: token.colorSuccess }}
+                                    onClick={() => handleProcessClick(record)}
+                                />
+                            </Tooltip>
+                        </Space>
+                    );
+                }
+
+                if (record.status === 'processed') {
+                    return (
+                        <Tooltip title="Void">
+                            <Button
+                                type="text"
+                                size="small"
+                                icon={<StopOutlined />}
+                                style={{ color: token.colorError }}
+                                onClick={() => handleVoidClick(record)}
+                            />
+                        </Tooltip>
+                    );
+                }
+
+                return <span style={{ color: token.colorTextDisabled }}>—</span>;
             },
         },
     ];
@@ -172,6 +271,36 @@ export default function ExpensesIndex() {
                 emptyMessage="No expenses have been recorded yet."
                 emptyFilterMessage="No expenses match your search criteria."
             />
+
+            <Modal
+                title="Process Expense"
+                open={processModalOpen}
+                onOk={handleProcessConfirm}
+                onCancel={() => {
+                    setProcessModalOpen(false);
+                    setSelectedExpense(null);
+                }}
+                okText="Process"
+                okButtonProps={{ loading: processing }}
+                cancelButtonProps={{ disabled: processing }}
+            >
+                <p>
+                    This will create a transaction and deduct <strong>{selectedExpense?.formatted_amount}</strong> from the account{' '}
+                    <strong>{selectedExpense?.account?.name}</strong>.
+                </p>
+                <p style={{ color: token.colorWarning, marginTop: 8 }}>This action cannot be undone. Continue?</p>
+            </Modal>
+
+            {expenseToVoid && (
+                <ExpenseVoidModal
+                    open={voidModalOpen}
+                    onCancel={() => {
+                        setVoidModalOpen(false);
+                        setExpenseToVoid(null);
+                    }}
+                    expense={expenseToVoid}
+                />
+            )}
         </AppLayout>
     );
 }
