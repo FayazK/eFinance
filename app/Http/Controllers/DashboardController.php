@@ -18,18 +18,24 @@ class DashboardController extends Controller
 
     public function index(): Response
     {
-        return Inertia::render('dashboard', [
-            // Existing metrics
-            'distributableProfit' => $this->distributionService->getDistributableProfit(),
-            'runway' => $this->distributionService->calculateRunway(),
+        $user = auth()->user();
+        $canViewAccounts = $user->hasPermission('accounts.read');
 
-            // New metrics
-            'financialOverview' => $this->dashboardService->getFinancialOverview(),
+        return Inertia::render('dashboard', [
+            // Financial data - only for users with accounts.read permission
+            'distributableProfit' => $canViewAccounts ? $this->distributionService->getDistributableProfit() : null,
+            'runway' => $canViewAccounts ? $this->distributionService->calculateRunway() : null,
+            'financialOverview' => $canViewAccounts ? $this->dashboardService->getFinancialOverview() : null,
+            'cashFlowTrend' => $canViewAccounts ? $this->dashboardService->getCashFlowTrend(6) : null,
+            'recentTransactions' => $canViewAccounts ? $this->dashboardService->getRecentTransactions(10) : [],
+
+            // Non-sensitive metrics - always visible
             'revenueMetrics' => $this->dashboardService->getRevenueMetrics(),
             'payrollSummary' => $this->dashboardService->getPayrollSummary(),
-            'cashFlowTrend' => $this->dashboardService->getCashFlowTrend(6),
             'invoiceStatusBreakdown' => $this->dashboardService->getInvoiceStatusBreakdown(),
-            'recentTransactions' => $this->dashboardService->getRecentTransactions(10),
+
+            // Pass permission flag to frontend
+            'canViewAccounts' => $canViewAccounts,
         ]);
     }
 }

@@ -244,7 +244,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 export const show = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +259,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 show.url = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -286,7 +286,7 @@ show.url = (args: { transfer: string | number } | [transfer: string | number ] |
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 show.get = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ show.get = (args: { transfer: string | number } | [transfer: string | number ] |
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 show.head = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -306,7 +306,7 @@ show.head = (args: { transfer: string | number } | [transfer: string | number ] 
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 const showForm = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ const showForm = (args: { transfer: string | number } | [transfer: string | numb
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 showForm.get = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -326,7 +326,7 @@ showForm.get = (args: { transfer: string | number } | [transfer: string | number
 
 /**
 * @see \App\Http\Controllers\TransferController::show
-* @see app/Http/Controllers/TransferController.php:67
+* @see app/Http/Controllers/TransferController.php:68
 * @route '/dashboard/transfers/{transfer}'
 */
 showForm.head = (args: { transfer: string | number } | [transfer: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -343,7 +343,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
+* @see app/Http/Controllers/TransferController.php:58
 * @route '/dashboard/transfers'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -358,7 +358,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
+* @see app/Http/Controllers/TransferController.php:58
 * @route '/dashboard/transfers'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -367,7 +367,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
+* @see app/Http/Controllers/TransferController.php:58
 * @route '/dashboard/transfers'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -377,7 +377,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
+* @see app/Http/Controllers/TransferController.php:58
 * @route '/dashboard/transfers'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -387,7 +387,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\TransferController::store
-* @see app/Http/Controllers/TransferController.php:57
+* @see app/Http/Controllers/TransferController.php:58
 * @route '/dashboard/transfers'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({

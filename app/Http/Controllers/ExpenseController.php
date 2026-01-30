@@ -54,6 +54,8 @@ class ExpenseController extends Controller
 
     public function create(): Response
     {
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
+
         return Inertia::render('dashboard/expenses/create', [
             'accounts' => Account::where('is_active', true)
                 ->get()
@@ -61,7 +63,7 @@ class ExpenseController extends Controller
                     'id' => $account->id,
                     'name' => $account->name,
                     'currency_code' => $account->currency_code,
-                    'formatted_balance' => $account->formatted_balance,
+                    'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
                 ]),
             'categories' => TransactionCategory::where('type', 'expense')
                 ->get()
@@ -114,6 +116,8 @@ class ExpenseController extends Controller
             abort(403, 'Only draft expenses can be edited');
         }
 
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
+
         return Inertia::render('dashboard/expenses/edit', [
             'expense' => (new ExpenseResource($expense))->resolve(),
             'accounts' => Account::where('is_active', true)
@@ -122,7 +126,7 @@ class ExpenseController extends Controller
                     'id' => $account->id,
                     'name' => $account->name,
                     'currency_code' => $account->currency_code,
-                    'formatted_balance' => $account->formatted_balance,
+                    'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
                 ]),
             'categories' => TransactionCategory::where('type', 'expense')
                 ->get()

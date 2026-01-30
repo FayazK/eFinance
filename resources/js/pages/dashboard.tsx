@@ -87,20 +87,21 @@ interface PageProps extends SharedData {
     distributableProfit: {
         amount_pkr: number;
         formatted_amount: string;
-    };
+    } | null;
     runway: {
         runway_months: number;
         office_balance_pkr: number;
         formatted_office_balance: string;
         avg_monthly_expenses_pkr: number;
         formatted_avg_monthly_expenses: string;
-    };
-    financialOverview: FinancialOverview;
+    } | null;
+    financialOverview: FinancialOverview | null;
     revenueMetrics: RevenueMetrics;
     payrollSummary: PayrollSummary;
-    cashFlowTrend: CashFlowTrend;
+    cashFlowTrend: CashFlowTrend | null;
     invoiceStatusBreakdown: InvoiceStatusBreakdown;
     recentTransactions: RecentTransaction[];
+    canViewAccounts: boolean;
 }
 
 export default function Dashboard() {
@@ -129,37 +130,41 @@ export default function Dashboard() {
                     <Paragraph type="secondary">Here's your financial overview for the last 6 months.</Paragraph>
                 </div>
 
-                {/* Financial Overview - Dynamic columns based on currencies */}
-                <Row gutter={[16, 16]}>
-                    {financialOverview.accounts_by_currency.map((currency) => (
-                        <Col xs={24} sm={12} lg={6} key={currency.currency_code}>
-                            <Card>
-                                <Statistic
-                                    title={`Total Cash (${currency.currency_code})`}
-                                    value={currency.total_balance / 100}
-                                    precision={2}
-                                    prefix={<DollarOutlined style={{ color: token.colorSuccess }} />}
-                                    formatter={() => currency.formatted_balance}
-                                />
-                            </Card>
-                        </Col>
-                    ))}
-                    <Col xs={24} sm={12} lg={6}>
-                        <Card>
-                            <Statistic
-                                title={<Tooltip title="Undistributed profit available for distribution">Distributable Profit</Tooltip>}
-                                value={distributableProfit.amount_pkr / 100}
-                                precision={2}
-                                prefix={<DollarOutlined style={{ color: token.colorPrimary }} />}
-                                formatter={() => distributableProfit.formatted_amount}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+                {/* Financial Overview - Dynamic columns based on currencies (only for users with accounts.read permission) */}
+                {financialOverview && (
+                    <Row gutter={[16, 16]}>
+                        {financialOverview.accounts_by_currency.map((currency) => (
+                            <Col xs={24} sm={12} lg={6} key={currency.currency_code}>
+                                <Card>
+                                    <Statistic
+                                        title={`Total Cash (${currency.currency_code})`}
+                                        value={currency.total_balance / 100}
+                                        precision={2}
+                                        prefix={<DollarOutlined style={{ color: token.colorSuccess }} />}
+                                        formatter={() => currency.formatted_balance}
+                                    />
+                                </Card>
+                            </Col>
+                        ))}
+                        {distributableProfit && (
+                            <Col xs={24} sm={12} lg={6}>
+                                <Card>
+                                    <Statistic
+                                        title={<Tooltip title="Undistributed profit available for distribution">Distributable Profit</Tooltip>}
+                                        value={distributableProfit.amount_pkr / 100}
+                                        precision={2}
+                                        prefix={<DollarOutlined style={{ color: token.colorPrimary }} />}
+                                        formatter={() => distributableProfit.formatted_amount}
+                                    />
+                                </Card>
+                            </Col>
+                        )}
+                    </Row>
+                )}
 
-                {/* Key Metrics - 3 columns */}
+                {/* Key Metrics */}
                 <Row gutter={[16, 16]}>
-                    <Col xs={24} sm={12} lg={8}>
+                    <Col xs={24} sm={12} lg={runway ? 8 : 12}>
                         <Card>
                             <Statistic
                                 title="Total Receivables"
@@ -175,22 +180,24 @@ export default function Dashboard() {
                             )}
                         </Card>
                     </Col>
-                    <Col xs={24} sm={12} lg={8}>
-                        <Card>
-                            <Statistic
-                                title={
-                                    <Tooltip title="Months the company can operate on Office reserves based on average monthly expenses">
-                                        Runway
-                                    </Tooltip>
-                                }
-                                value={runway.runway_months}
-                                precision={1}
-                                prefix={<CalendarOutlined style={{ color: token.colorWarning }} />}
-                                suffix={runway.runway_months === 1 ? 'month' : 'months'}
-                            />
-                        </Card>
-                    </Col>
-                    <Col xs={24} sm={12} lg={8}>
+                    {runway && (
+                        <Col xs={24} sm={12} lg={8}>
+                            <Card>
+                                <Statistic
+                                    title={
+                                        <Tooltip title="Months the company can operate on Office reserves based on average monthly expenses">
+                                            Runway
+                                        </Tooltip>
+                                    }
+                                    value={runway.runway_months}
+                                    precision={1}
+                                    prefix={<CalendarOutlined style={{ color: token.colorWarning }} />}
+                                    suffix={runway.runway_months === 1 ? 'month' : 'months'}
+                                />
+                            </Card>
+                        </Col>
+                    )}
+                    <Col xs={24} sm={12} lg={runway ? 8 : 12}>
                         <Card>
                             <Statistic
                                 title="Active Employees"
@@ -206,31 +213,39 @@ export default function Dashboard() {
 
                 {/* Charts Section */}
                 <Row gutter={[16, 16]}>
-                    <Col xs={24} lg={16}>
-                        <CashFlowChart data={cashFlowTrend} />
-                    </Col>
-                    <Col xs={24} lg={8}>
+                    {cashFlowTrend && (
+                        <Col xs={24} lg={16}>
+                            <CashFlowChart data={cashFlowTrend} />
+                        </Col>
+                    )}
+                    <Col xs={24} lg={cashFlowTrend ? 8 : 24}>
                         <InvoiceStatusChart data={invoiceStatusBreakdown} />
                     </Col>
                 </Row>
 
-                {/* Recent Transactions & Office Reserve */}
-                <Row gutter={[16, 16]}>
-                    <Col xs={24} lg={16}>
-                        <RecentTransactionsList transactions={recentTransactions} />
-                    </Col>
-                    <Col xs={24} lg={8}>
-                        <Card title="Office Reserve">
-                            <Statistic
-                                title={<Tooltip title="Total retained earnings in Office Reserve">Office Reserve Balance</Tooltip>}
-                                value={runway.office_balance_pkr / 100}
-                                precision={2}
-                                prefix={<BankOutlined style={{ color: token.colorPrimary }} />}
-                                formatter={() => runway.formatted_office_balance}
-                            />
-                        </Card>
-                    </Col>
-                </Row>
+                {/* Recent Transactions & Office Reserve (only for users with accounts.read permission) */}
+                {(recentTransactions.length > 0 || runway) && (
+                    <Row gutter={[16, 16]}>
+                        {recentTransactions.length > 0 && (
+                            <Col xs={24} lg={runway ? 16 : 24}>
+                                <RecentTransactionsList transactions={recentTransactions} />
+                            </Col>
+                        )}
+                        {runway && (
+                            <Col xs={24} lg={recentTransactions.length > 0 ? 8 : 24}>
+                                <Card title="Office Reserve">
+                                    <Statistic
+                                        title={<Tooltip title="Total retained earnings in Office Reserve">Office Reserve Balance</Tooltip>}
+                                        value={runway.office_balance_pkr / 100}
+                                        precision={2}
+                                        prefix={<BankOutlined style={{ color: token.colorPrimary }} />}
+                                        formatter={() => runway.formatted_office_balance}
+                                    />
+                                </Card>
+                            </Col>
+                        )}
+                    </Row>
+                )}
             </Space>
         </AppLayout>
     );

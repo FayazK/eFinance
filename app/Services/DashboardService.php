@@ -135,9 +135,18 @@ class DashboardService
         $startDate = now()->subMonths($months)->startOfMonth();
 
         // Get transaction data grouped by month, type, and currency
+        // Use strftime for SQLite compatibility, YEAR/MONTH for MySQL
+        $driver = DB::connection()->getDriverName();
+        $yearExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%Y', transactions.date) AS INTEGER)"
+            : 'YEAR(transactions.date)';
+        $monthExpr = $driver === 'sqlite'
+            ? "CAST(strftime('%m', transactions.date) AS INTEGER)"
+            : 'MONTH(transactions.date)';
+
         $transactionData = Transaction::select(
-            DB::raw('YEAR(transactions.date) as year'),
-            DB::raw('MONTH(transactions.date) as month'),
+            DB::raw("{$yearExpr} as year"),
+            DB::raw("{$monthExpr} as month"),
             'transactions.type',
             'accounts.currency_code',
             DB::raw('SUM(transactions.amount) as total')

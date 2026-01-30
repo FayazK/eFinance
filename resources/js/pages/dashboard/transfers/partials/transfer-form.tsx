@@ -9,8 +9,8 @@ interface Account {
     id: number;
     name: string;
     currency_code: string;
-    current_balance: number;
-    formatted_balance: string;
+    current_balance: number | null;
+    formatted_balance: string | null;
 }
 
 interface TransferFormProps {
@@ -98,7 +98,9 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                             onChange={(value) => setSourceAccountId(value)}
                             filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
-                                label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
+                                label: account.formatted_balance
+                                    ? `${account.name} (${account.currency_code}) - ${account.formatted_balance}`
+                                    : `${account.name} (${account.currency_code})`,
                                 value: account.id,
                             }))}
                         />
@@ -116,7 +118,9 @@ export default function TransferForm({ accounts }: TransferFormProps) {
                             onChange={(value) => setDestinationAccountId(value)}
                             filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
-                                label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
+                                label: account.formatted_balance
+                                    ? `${account.name} (${account.currency_code}) - ${account.formatted_balance}`
+                                    : `${account.name} (${account.currency_code})`,
                                 value: account.id,
                                 disabled: account.id === sourceAccountId,
                             }))}

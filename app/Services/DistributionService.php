@@ -243,6 +243,9 @@ class DistributionService
 
             // HARD BLOCK: Validate balance
             if ($account->current_balance < $totalNeeded) {
+                if (! auth()->user()->hasPermission('accounts.read')) {
+                    throw new InvalidArgumentException('Insufficient account balance to process this distribution.');
+                }
                 throw new InvalidArgumentException(
                     'Insufficient balance. Need '.
                     CurrencyHelper::format($totalNeeded / 100, 'PKR').

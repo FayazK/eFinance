@@ -42,14 +42,15 @@ class TransferController extends Controller
     public function create(): Response
     {
         $accounts = $this->accountService->getActiveAccounts();
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
 
         return Inertia::render('dashboard/transfers/create', [
             'accounts' => $accounts->map(fn ($account) => [
                 'id' => $account->id,
                 'name' => $account->name,
                 'currency_code' => $account->currency_code,
-                'current_balance' => $account->balance_in_major_units,
-                'formatted_balance' => $account->formatted_balance,
+                'current_balance' => $canViewAccounts ? $account->balance_in_major_units : null,
+                'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
             ]),
         ]);
     }

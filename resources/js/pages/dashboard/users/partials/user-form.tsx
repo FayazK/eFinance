@@ -1,18 +1,35 @@
 import AdvancedSelect from '@/components/advanced-select';
+import { CanAccess } from '@/components/can-access';
 import api from '@/lib/axios';
-import { User } from '@/types';
+import { Role, User } from '@/types';
 import { router } from '@inertiajs/react';
-import { Button, Col, DatePicker, Form, Input, notification, Row, Switch } from 'antd';
-import dayjs from 'dayjs';
+import { Button, Col, DatePicker, Form, Input, notification, Row, Select, Switch } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
+
+interface UserFormValues {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password?: string;
+    password_confirmation?: string;
+    phone?: string;
+    date_of_birth?: Dayjs | null;
+    bio?: string;
+    timezone_id?: number;
+    language_id?: number;
+    role_id?: number;
+    is_active: boolean;
+}
 
 interface UserFormProps {
     user?: User;
+    roles?: Role[];
     isEdit?: boolean;
 }
 
-export default function UserForm({ user, isEdit = false }: UserFormProps) {
-    const [form] = Form.useForm();
+export default function UserForm({ user, roles = [], isEdit = false }: UserFormProps) {
+    const [form] = Form.useForm<UserFormValues>();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -23,13 +40,14 @@ export default function UserForm({ user, isEdit = false }: UserFormProps) {
             phone: user?.phone || '',
             date_of_birth: user?.date_of_birth ? dayjs(user.date_of_birth) : null,
             bio: user?.bio || '',
-            timezone_id: user?.timezone_id,
-            language_id: user?.language_id,
+            timezone_id: typeof user?.timezone_id === 'number' ? user.timezone_id : undefined,
+            language_id: typeof user?.language_id === 'number' ? user.language_id : undefined,
+            role_id: user?.role_id,
             is_active: user?.is_active ?? true,
         });
     }, [user, form]);
 
-    const onFinish = async (values: Partial<User>) => {
+    const onFinish = async (values: UserFormValues) => {
         setLoading(true);
         const requestData = {
             ...values,
@@ -45,17 +63,18 @@ export default function UserForm({ user, isEdit = false }: UserFormProps) {
                 message: response.data.message || `User ${isEdit ? 'updated' : 'created'} successfully`,
             });
             router.visit('/dashboard/users');
-        } catch (error: { response?: { status: number; data: { errors: { [key: string]: string[] }; message: string } } }) {
-            if (error.response && error.response.status === 422) {
-                const validationErrors = error.response.data.errors;
+        } catch (error: unknown) {
+            const err = error as { response?: { status: number; data: { errors?: Record<string, string[]>; message?: string } } };
+            if (err.response && err.response.status === 422) {
+                const validationErrors = err.response.data.errors || {};
                 const formErrors = Object.keys(validationErrors).map((key) => ({
-                    name: key,
+                    name: key as keyof UserFormValues,
                     errors: validationErrors[key],
                 }));
                 form.setFields(formErrors);
                 notification.error({
                     message: 'Validation Error',
-                    description: error.response.data.message,
+                    description: err.response.data.message,
                 });
             } else {
                 notification.error({
@@ -135,15 +154,30 @@ export default function UserForm({ user, isEdit = false }: UserFormProps) {
             <Row gutter={16}>
                 <Col span={12}>
                     <Form.Item label="Timezone" name="timezone_id">
-                        <AdvancedSelect type="timezones" id={user?.timezone_id} />
+                        <AdvancedSelect type="timezones" id={user?.timezone_id ?? null} />
                     </Form.Item>
                 </Col>
                 <Col span={12}>
                     <Form.Item label="Language" name="language_id">
-                        <AdvancedSelect type="languages" id={user?.language_id} />
+                        <AdvancedSelect type="languages" id={user?.language_id ?? null} />
                     </Form.Item>
                 </Col>
             </Row>
+
+            <CanAccess permission="roles.read">
+                <Form.Item label="Role" name="role_id">
+                    <Select
+                        placeholder="Select a role"
+                        allowClear
+                        options={roles
+                            .filter((role) => !role.is_super_admin)
+                            .map((role) => ({
+                                value: role.id,
+                                label: role.name,
+                            }))}
+                    />
+                </Form.Item>
+            </CanAccess>
 
             <Form.Item label="Active Status" name="is_active" valuePropName="checked">
                 <Switch />

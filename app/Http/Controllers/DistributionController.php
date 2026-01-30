@@ -26,7 +26,16 @@ class DistributionController extends Controller
 
     public function index(): Response
     {
-        $pkrAccounts = Account::where('currency_code', 'PKR')->where('is_active', true)->get();
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
+        $pkrAccounts = Account::where('currency_code', 'PKR')
+            ->where('is_active', true)
+            ->get()
+            ->map(fn ($account) => [
+                'id' => $account->id,
+                'name' => $account->name,
+                'currency_code' => $account->currency_code,
+                'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
+            ]);
 
         return Inertia::render('dashboard/distributions/index', [
             'pkrAccounts' => $pkrAccounts,
@@ -35,12 +44,15 @@ class DistributionController extends Controller
 
     public function create(): Response
     {
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
         $pkrAccounts = Account::where('currency_code', 'PKR')
             ->where('is_active', true)
             ->get()
             ->map(fn ($account) => [
-                ...$account->toArray(),
-                'formatted_balance' => $account->formatted_balance,
+                'id' => $account->id,
+                'name' => $account->name,
+                'currency_code' => $account->currency_code,
+                'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
             ]);
 
         $shareholders = Shareholder::where('is_active', true)->get();
@@ -86,7 +98,16 @@ class DistributionController extends Controller
             abort(404);
         }
 
-        $pkrAccounts = Account::where('currency_code', 'PKR')->where('is_active', true)->get();
+        $canViewAccounts = auth()->user()->hasPermission('accounts.read');
+        $pkrAccounts = Account::where('currency_code', 'PKR')
+            ->where('is_active', true)
+            ->get()
+            ->map(fn ($account) => [
+                'id' => $account->id,
+                'name' => $account->name,
+                'currency_code' => $account->currency_code,
+                'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
+            ]);
 
         return Inertia::render('dashboard/distributions/show', [
             'distribution' => new DistributionResource($distribution->load(['lines.shareholder', 'lines.transaction'])),

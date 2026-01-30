@@ -1,26 +1,19 @@
 import AppLayout from '@/layouts/app-layout';
+import type { Role, User } from '@/types';
+import { Card } from 'antd';
 import UserForm from './partials/user-form';
 
 interface EditUserProps {
-    user: {
-        id: number;
-        first_name: string;
-        last_name: string;
-        full_name: string;
-        email: string;
-        phone?: string;
-        date_of_birth?: string;
-        bio?: string;
-        timezone_id?: number;
-        language_id?: number;
-        is_active: boolean;
-    };
+    user: User;
+    roles: Role[];
 }
 
-export default function EditUser({ user }: EditUserProps) {
+export default function EditUser({ user, roles }: EditUserProps) {
     return (
         <AppLayout pageTitle={user ? `Edit User: ${user.full_name}` : 'Edit User'}>
-            <UserForm user={user} isEdit />
+            <Card>
+                <UserForm user={user} roles={roles} isEdit />
+            </Card>
         </AppLayout>
     );
 }

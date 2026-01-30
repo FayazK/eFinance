@@ -4,6 +4,22 @@ import { ForwardRefExoticComponent, RefAttributes } from 'react';
 
 export interface Auth {
     user: User;
+    permissions: string[];
+    is_super_admin: boolean;
+}
+
+export interface Role {
+    id: number;
+    name: string;
+    slug: string;
+    description?: string;
+    permissions: string[];
+    is_default: boolean;
+    is_super_admin: boolean;
+    users_count?: number;
+    created_at: string;
+    updated_at: string;
+    [key: string]: string | number | boolean | string[] | null | undefined;
 }
 
 export interface BreadcrumbItem {
@@ -41,16 +57,20 @@ export interface User {
     avatar_url?: string;
     avatar_thumb_url?: string;
     bio?: string;
-    timezone: string;
-    locale: string;
+    timezone_id?: number;
+    language_id?: number;
+    timezone?: string;
+    locale?: string;
     is_active: boolean;
+    is_super_admin: boolean;
+    role_id?: number;
+    role?: Role;
     last_login_at?: string;
     email_verified_at: string | null;
     created_at: string;
     updated_at: string;
     full_name: string; // Computed attribute from Laravel
     initials: string; // Computed attribute from Laravel
-    [key: string]: string | number | boolean | null | undefined; // Required for DataTable generic constraint
 }
 
 export interface Country {

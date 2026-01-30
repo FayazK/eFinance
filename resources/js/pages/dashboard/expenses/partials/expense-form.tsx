@@ -9,7 +9,7 @@ import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 
 interface ExpenseFormProps {
-    accounts?: Array<{ id: number; name: string; currency_code: string; formatted_balance: string }>;
+    accounts?: Array<{ id: number; name: string; currency_code: string; formatted_balance: string | null }>;
     categories?: Array<{ id: number; name: string; color?: string }>;
     expense?: Expense;
     isEditing?: boolean;
@@ -265,7 +265,9 @@ export default function ExpenseForm({ accounts = [], categories: initialCategori
                             onChange={handleAccountChange}
                             filterOption={(input, option) => (option?.label ?? '').toLowerCase().includes(input.toLowerCase())}
                             options={accounts.map((account) => ({
-                                label: `${account.name} (${account.currency_code}) - ${account.formatted_balance}`,
+                                label: account.formatted_balance
+                                    ? `${account.name} (${account.currency_code}) - ${account.formatted_balance}`
+                                    : `${account.name} (${account.currency_code})`,
                                 value: account.id,
                             }))}
                         />

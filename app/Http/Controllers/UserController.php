@@ -7,10 +7,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UserDataTableRequest;
 use App\Http\Requests\UserStoreRequest;
 use App\Http\Requests\UserUpdateRequest;
+use App\Http\Resources\RoleResource;
 use App\Http\Resources\UserCollection;
 use App\Http\Resources\UserDetailResource;
 use App\Models\User;
 use App\Queries\UserDataTableQueryService;
+use App\Services\RoleService;
 use App\Services\UserService;
 use Illuminate\Http\JsonResponse;
 use Inertia\Inertia;
@@ -19,7 +21,8 @@ use Inertia\Response;
 class UserController extends Controller
 {
     public function __construct(
-        private readonly UserService $userService
+        private readonly UserService $userService,
+        private readonly RoleService $roleService
     ) {}
 
     public function index(): Response
@@ -29,7 +32,9 @@ class UserController extends Controller
 
     public function create(): Response
     {
-        return Inertia::render('dashboard/users/create');
+        return Inertia::render('dashboard/users/create', [
+            'roles' => RoleResource::collection($this->roleService->getAssignableRoles())->resolve(),
+        ]);
     }
 
     public function data(UserDataTableRequest $request): UserCollection
@@ -54,7 +59,8 @@ class UserController extends Controller
     public function edit(User $user): Response
     {
         return Inertia::render('dashboard/users/edit', [
-            'user' => $user,
+            'user' => $user->load('role'),
+            'roles' => RoleResource::collection($this->roleService->getAssignableRoles())->resolve(),
         ]);
     }
 

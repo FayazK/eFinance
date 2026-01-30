@@ -15,6 +15,7 @@ use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectDocumentController;
 use App\Http\Controllers\ProjectLinkController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ShareholderController;
 use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\TransactionController;
@@ -221,6 +222,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Activities (Activity Log API)
     Route::get('dashboard/activities/{type}/{id}', [ActivityController::class, 'index'])->name('activities.index');
+
+    // Roles
+    Route::prefix('dashboard/roles')->name('roles.')->group(function () {
+        Route::get('/', [RoleController::class, 'index'])->middleware('permission:roles.read')->name('index');
+        Route::get('/data', [RoleController::class, 'data'])->middleware('permission:roles.read')->name('data');
+        Route::get('/assignable', [RoleController::class, 'assignable'])->name('assignable');
+        Route::get('/create', [RoleController::class, 'create'])->middleware('permission:roles.create')->name('create');
+        Route::get('/{role}/edit', [RoleController::class, 'edit'])->middleware('permission:roles.update')->name('edit');
+        Route::post('/', [RoleController::class, 'store'])->middleware('permission:roles.create')->name('store');
+        Route::put('/{role}', [RoleController::class, 'update'])->middleware('permission:roles.update')->name('update');
+        Route::delete('/{role}', [RoleController::class, 'destroy'])->middleware('permission:roles.delete')->name('destroy');
+    });
 });
 
 require __DIR__.'/settings.php';

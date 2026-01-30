@@ -1,6 +1,6 @@
+import { type NavGroupWithPermission, type NavItemWithPermission } from '@/lib/permissions';
 import { dashboard } from '@/routes';
 import { index as expenses } from '@/routes/expenses';
-import { type NavGroup, type NavItem } from '@/types';
 import {
     BankOutlined,
     CreditCardOutlined,
@@ -8,9 +8,9 @@ import {
     DollarOutlined,
     FileTextOutlined,
     IdcardOutlined,
+    LockOutlined,
     PieChartOutlined,
     ProjectOutlined,
-    SettingOutlined,
     ShopOutlined,
     SwapOutlined,
     TeamOutlined,
@@ -18,8 +18,8 @@ import {
     WalletOutlined,
 } from '@ant-design/icons';
 
-// Dashboard - standalone at top
-export const appMainNavItems: NavItem[] = [
+// Dashboard - standalone at top (no permission required)
+export const appMainNavItems: NavItemWithPermission[] = [
     {
         title: 'Dashboard',
         href: dashboard(),
@@ -27,8 +27,8 @@ export const appMainNavItems: NavItem[] = [
     },
 ];
 
-// Grouped navigation items
-export const appNavGroups: NavGroup[] = [
+// Grouped navigation items with permissions
+export const appNavGroups: NavGroupWithPermission[] = [
     {
         title: 'CRM',
         items: [
@@ -36,16 +36,19 @@ export const appNavGroups: NavGroup[] = [
                 title: 'Clients',
                 href: '/dashboard/clients',
                 icon: TeamOutlined,
+                permission: 'clients.read',
             },
             {
                 title: 'Contacts',
                 href: '/dashboard/contacts',
                 icon: UserOutlined,
+                permission: 'contacts.read',
             },
             {
                 title: 'Projects',
                 href: '/dashboard/projects',
                 icon: ProjectOutlined,
+                permission: 'projects.read',
             },
         ],
     },
@@ -56,11 +59,13 @@ export const appNavGroups: NavGroup[] = [
                 title: 'Invoices',
                 href: '/dashboard/invoices',
                 icon: FileTextOutlined,
+                permission: 'invoices.read',
             },
             {
                 title: 'Companies',
                 href: '/dashboard/companies',
                 icon: ShopOutlined,
+                permission: 'companies.read',
             },
         ],
     },
@@ -71,16 +76,19 @@ export const appNavGroups: NavGroup[] = [
                 title: 'Accounts',
                 href: '/dashboard/accounts',
                 icon: WalletOutlined,
+                permission: 'accounts.read',
             },
             {
                 title: 'Transfers',
                 href: '/dashboard/transfers',
                 icon: SwapOutlined,
+                permission: 'transfers.read',
             },
             {
                 title: 'Expenses',
                 href: expenses.url(),
                 icon: CreditCardOutlined,
+                permission: 'expenses.read',
             },
         ],
     },
@@ -91,11 +99,13 @@ export const appNavGroups: NavGroup[] = [
                 title: 'Employees',
                 href: '/dashboard/employees',
                 icon: IdcardOutlined,
+                permission: 'employees.read',
             },
             {
                 title: 'Payroll',
                 href: '/dashboard/payroll',
                 icon: DollarOutlined,
+                permission: 'payroll.read',
             },
         ],
     },
@@ -106,11 +116,13 @@ export const appNavGroups: NavGroup[] = [
                 title: 'Shareholders',
                 href: '/dashboard/shareholders',
                 icon: BankOutlined,
+                permission: 'shareholders.read',
             },
             {
                 title: 'Distributions',
                 href: '/dashboard/distributions',
                 icon: PieChartOutlined,
+                permission: 'distributions.read',
             },
         ],
     },
@@ -118,12 +130,19 @@ export const appNavGroups: NavGroup[] = [
         title: 'Administration',
         items: [
             {
-                title: 'User Management',
+                title: 'Users',
                 href: '/dashboard/users',
-                icon: SettingOutlined,
+                icon: UserOutlined,
+                permission: 'users.read',
+            },
+            {
+                title: 'Roles',
+                href: '/dashboard/roles',
+                icon: LockOutlined,
+                permission: 'roles.read',
             },
         ],
     },
 ];
 
-export const appFooterNavItems: NavItem[] = [];
+export const appFooterNavItems: NavItemWithPermission[] = [];

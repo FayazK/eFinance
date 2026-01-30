@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Traits\HasPermissions;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Image\Enums\Fit;
@@ -17,7 +19,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 class User extends Authenticatable implements HasMedia
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, InteractsWithMedia, Notifiable;
+    use HasFactory, HasPermissions, InteractsWithMedia, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -35,6 +37,7 @@ class User extends Authenticatable implements HasMedia
         'timezone_id',
         'language_id',
         'is_active',
+        'role_id',
         'last_login_at',
     ];
 
@@ -58,6 +61,7 @@ class User extends Authenticatable implements HasMedia
         'initials',
         'avatar_url',
         'avatar_thumb_url',
+        'is_super_admin',
     ];
 
     /**
@@ -74,6 +78,14 @@ class User extends Authenticatable implements HasMedia
             'is_active' => 'boolean',
             'last_login_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Get the role that the user belongs to.
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class);
     }
 
     /**

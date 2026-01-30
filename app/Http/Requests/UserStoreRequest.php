@@ -40,6 +40,7 @@ class UserStoreRequest extends FormRequest
             'timezone' => ['nullable', 'string', 'max:100'],
             'locale' => ['nullable', 'string', 'max:10'],
             'is_active' => ['boolean'],
+            'role_id' => ['nullable', 'integer', 'exists:roles,id'],
         ];
     }
 }

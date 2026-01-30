@@ -147,6 +147,9 @@ class PayrollService
 
                 $pkrTotal = $pkrPayrolls->sum('net_payable');
                 if ($pkrAccount->current_balance < $pkrTotal) {
+                    if (! auth()->user()->hasPermission('accounts.read')) {
+                        throw new InvalidArgumentException('Insufficient account balance to process payroll.');
+                    }
                     throw new InvalidArgumentException('Insufficient PKR balance');
                 }
 
@@ -177,6 +180,9 @@ class PayrollService
                 $usdTotalPkr = $usdPayrolls->sum('net_payable');
                 $usdNeeded = (int) round($usdTotalPkr / $exchangeRate);
                 if ($usdAccount->current_balance < $usdNeeded) {
+                    if (! auth()->user()->hasPermission('accounts.read')) {
+                        throw new InvalidArgumentException('Insufficient account balance to process payroll.');
+                    }
                     throw new InvalidArgumentException('Insufficient USD balance');
                 }
 

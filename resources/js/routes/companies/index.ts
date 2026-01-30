@@ -346,7 +346,7 @@ show.form = showForm
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-export const edit = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+export const edit = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -361,7 +361,7 @@ edit.definition = {
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-edit.url = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+edit.url = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { company: args }
     }
@@ -394,7 +394,7 @@ edit.url = (args: { company: number | { id: number } } | [company: number | { id
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-edit.get = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+edit.get = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
     url: edit.url(args, options),
     method: 'get',
 })
@@ -404,7 +404,7 @@ edit.get = (args: { company: number | { id: number } } | [company: number | { id
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-edit.head = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+edit.head = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
     url: edit.url(args, options),
     method: 'head',
 })
@@ -414,7 +414,7 @@ edit.head = (args: { company: number | { id: number } } | [company: number | { i
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-const editForm = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+const editForm = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -424,7 +424,7 @@ const editForm = (args: { company: number | { id: number } } | [company: number 
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-editForm.get = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.get = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, options),
     method: 'get',
 })
@@ -434,7 +434,7 @@ editForm.get = (args: { company: number | { id: number } } | [company: number | 
 * @see app/Http/Controllers/CompanyController.php:58
 * @route '/dashboard/companies/{company}/edit'
 */
-editForm.head = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
+editForm.head = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
     action: edit.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'HEAD',
@@ -507,7 +507,7 @@ store.form = storeForm
 * @see app/Http/Controllers/CompanyController.php:78
 * @route '/dashboard/companies/{company}'
 */
-export const update = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+export const update = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -522,7 +522,7 @@ update.definition = {
 * @see app/Http/Controllers/CompanyController.php:78
 * @route '/dashboard/companies/{company}'
 */
-update.url = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { company: args }
     }
@@ -555,7 +555,7 @@ update.url = (args: { company: number | { id: number } } | [company: number | { 
 * @see app/Http/Controllers/CompanyController.php:78
 * @route '/dashboard/companies/{company}'
 */
-update.put = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
+update.put = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
     url: update.url(args, options),
     method: 'put',
 })
@@ -565,7 +565,7 @@ update.put = (args: { company: number | { id: number } } | [company: number | { 
 * @see app/Http/Controllers/CompanyController.php:78
 * @route '/dashboard/companies/{company}'
 */
-const updateForm = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+const updateForm = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',
@@ -580,7 +580,7 @@ const updateForm = (args: { company: number | { id: number } } | [company: numbe
 * @see app/Http/Controllers/CompanyController.php:78
 * @route '/dashboard/companies/{company}'
 */
-updateForm.put = (args: { company: number | { id: number } } | [company: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
+updateForm.put = (args: { company: string | number | { id: string | number } } | [company: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
     action: update.url(args, {
         [options?.mergeQuery ? 'mergeQuery' : 'query']: {
             _method: 'PUT',

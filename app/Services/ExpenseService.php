@@ -153,6 +153,17 @@ class ExpenseService
                 throw new InvalidArgumentException("Expense {$expenseId} is already processed");
             }
 
+            // Validate account balance
+            $account = $expense->account;
+            if ($account->current_balance < $expense->amount) {
+                if (! auth()->user()->hasPermission('accounts.read')) {
+                    throw new InvalidArgumentException('Insufficient account balance to process this expense.');
+                }
+                throw new InvalidArgumentException(
+                    "Insufficient balance in {$account->name}. Available: {$account->formatted_balance}"
+                );
+            }
+
             // Get or create expense category for transactions
             $transactionCategoryId = $this->getExpenseCategoryId();
 

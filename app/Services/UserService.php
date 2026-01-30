@@ -28,6 +28,7 @@ class UserService
             'timezone' => $data['timezone'] ?? 'UTC',
             'locale' => $data['locale'] ?? 'en',
             'is_active' => $data['is_active'] ?? true,
+            'role_id' => $data['role_id'] ?? null,
         ];
 
         $user = $this->userRepository->create($userData);
@@ -40,20 +41,26 @@ class UserService
     public function updateProfile(int $userId, array $data): User
     {
         $updateData = [];
+        $user = $this->userRepository->find($userId);
 
         $allowedFields = [
             'first_name', 'last_name', 'email', 'phone',
-            'date_of_birth', 'bio', 'timezone', 'locale',
+            'date_of_birth', 'bio', 'timezone', 'locale', 'role_id',
         ];
 
         foreach ($allowedFields as $field) {
-            if (isset($data[$field])) {
+            if (array_key_exists($field, $data)) {
                 $updateData[$field] = $data[$field];
             }
         }
 
-        if (isset($data['email']) && $data['email'] !== $this->userRepository->find($userId)?->email) {
+        if (isset($data['email']) && $data['email'] !== $user?->email) {
             $updateData['email_verified_at'] = null;
+        }
+
+        // Clear permission cache if role changed
+        if (array_key_exists('role_id', $data) && $data['role_id'] !== $user?->role_id) {
+            $user?->clearPermissionCache();
         }
 
         return $this->userRepository->update($userId, $updateData);
