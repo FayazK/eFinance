@@ -146,14 +146,13 @@ export default function RolesIndex() {
                         key: 'edit',
                         label: (
                             <CanAccess permission="roles.update">
-                                <Link href={`/dashboard/roles/${record.id}/edit`}>
-                                    <Space>
-                                        <EditOutlined />
-                                        Edit
-                                    </Space>
-                                </Link>
+                                <Space>
+                                    <EditOutlined />
+                                    Edit
+                                </Space>
                             </CanAccess>
                         ),
+                        onClick: () => router.visit(`/dashboard/roles/${record.id}/edit`),
                     },
                     {
                         type: 'divider' as const,

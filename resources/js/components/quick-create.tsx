@@ -1,3 +1,4 @@
+import { usePermissions } from '@/hooks/use-permissions';
 import { create as createAccount } from '@/routes/accounts';
 import { create as createClient } from '@/routes/clients';
 import { create as createContact } from '@/routes/contacts';
@@ -23,95 +24,122 @@ import { router } from '@inertiajs/react';
 import type { MenuProps } from 'antd';
 import { Button, Dropdown } from 'antd';
 
+type MenuItem = NonNullable<MenuProps['items']>[number];
+
 export default function QuickCreate() {
+    const { can, isSuperAdmin } = usePermissions();
+
     const handleClick = (url: string) => {
         router.visit(url);
     };
 
+    const canCreate = (module: string): boolean => isSuperAdmin() || can(`${module}.create`);
+
+    const filterChildren = (children: MenuItem[]): MenuItem[] =>
+        children.filter((item): item is MenuItem => item !== null);
+
+    const billingChildren = filterChildren([
+        canCreate('invoices')
+            ? {
+                  key: 'invoice',
+                  icon: <FileTextOutlined />,
+                  label: 'Invoice',
+                  onClick: () => handleClick(createInvoice.url()),
+              }
+            : null,
+        canCreate('expenses')
+            ? {
+                  key: 'expense',
+                  icon: <CreditCardOutlined />,
+                  label: 'Expense',
+                  onClick: () => handleClick(createExpense.url()),
+              }
+            : null,
+    ]);
+
+    const financeChildren = filterChildren([
+        canCreate('accounts')
+            ? {
+                  key: 'account',
+                  icon: <WalletOutlined />,
+                  label: 'Account',
+                  onClick: () => handleClick(createAccount.url()),
+              }
+            : null,
+        canCreate('transfers')
+            ? {
+                  key: 'transfer',
+                  icon: <SwapOutlined />,
+                  label: 'Transfer',
+                  onClick: () => handleClick(createTransfer.url()),
+              }
+            : null,
+        canCreate('distributions')
+            ? {
+                  key: 'distribution',
+                  icon: <PieChartOutlined />,
+                  label: 'Distribution',
+                  onClick: () => handleClick(createDistribution.url()),
+              }
+            : null,
+    ]);
+
+    const crmChildren = filterChildren([
+        canCreate('clients')
+            ? {
+                  key: 'client',
+                  icon: <TeamOutlined />,
+                  label: 'Client',
+                  onClick: () => handleClick(createClient.url()),
+              }
+            : null,
+        canCreate('contacts')
+            ? {
+                  key: 'contact',
+                  icon: <UserOutlined />,
+                  label: 'Contact',
+                  onClick: () => handleClick(createContact.url()),
+              }
+            : null,
+        canCreate('projects')
+            ? {
+                  key: 'project',
+                  icon: <ProjectOutlined />,
+                  label: 'Project',
+                  onClick: () => handleClick(createProject.url()),
+              }
+            : null,
+    ]);
+
+    const hrChildren = filterChildren([
+        canCreate('employees')
+            ? {
+                  key: 'employee',
+                  icon: <IdcardOutlined />,
+                  label: 'Employee',
+                  onClick: () => handleClick(createEmployee.url()),
+              }
+            : null,
+    ]);
+
     const menuItems: MenuProps['items'] = [
-        {
-            key: 'billing',
-            type: 'group',
-            label: 'Billing',
-            children: [
-                {
-                    key: 'invoice',
-                    icon: <FileTextOutlined />,
-                    label: 'Invoice',
-                    onClick: () => handleClick(createInvoice.url()),
-                },
-                {
-                    key: 'expense',
-                    icon: <CreditCardOutlined />,
-                    label: 'Expense',
-                    onClick: () => handleClick(createExpense.url()),
-                },
-            ],
-        },
-        {
-            key: 'finance',
-            type: 'group',
-            label: 'Finance',
-            children: [
-                {
-                    key: 'account',
-                    icon: <WalletOutlined />,
-                    label: 'Account',
-                    onClick: () => handleClick(createAccount.url()),
-                },
-                {
-                    key: 'transfer',
-                    icon: <SwapOutlined />,
-                    label: 'Transfer',
-                    onClick: () => handleClick(createTransfer.url()),
-                },
-                {
-                    key: 'distribution',
-                    icon: <PieChartOutlined />,
-                    label: 'Distribution',
-                    onClick: () => handleClick(createDistribution.url()),
-                },
-            ],
-        },
-        {
-            key: 'crm',
-            type: 'group',
-            label: 'CRM',
-            children: [
-                {
-                    key: 'client',
-                    icon: <TeamOutlined />,
-                    label: 'Client',
-                    onClick: () => handleClick(createClient.url()),
-                },
-                {
-                    key: 'contact',
-                    icon: <UserOutlined />,
-                    label: 'Contact',
-                    onClick: () => handleClick(createContact.url()),
-                },
-                {
-                    key: 'project',
-                    icon: <ProjectOutlined />,
-                    label: 'Project',
-                    onClick: () => handleClick(createProject.url()),
-                },
-            ],
-        },
-        {
-            key: 'hr',
-            type: 'group',
-            label: 'HR',
-            children: [
-                {
-                    key: 'employee',
-                    icon: <IdcardOutlined />,
-                    label: 'Employee',
-                    onClick: () => handleClick(createEmployee.url()),
-                },
-            ],
-        },
+        ...(billingChildren.length > 0
+            ? [{ key: 'billing', type: 'group' as const, label: 'Billing', children: billingChildren }]
+            : []),
+        ...(financeChildren.length > 0
+            ? [{ key: 'finance', type: 'group' as const, label: 'Finance', children: financeChildren }]
+            : []),
+        ...(crmChildren.length > 0
+            ? [{ key: 'crm', type: 'group' as const, label: 'CRM', children: crmChildren }]
+            : []),
+        ...(hrChildren.length > 0
+            ? [{ key: 'hr', type: 'group' as const, label: 'HR', children: hrChildren }]
+            : []),
     ];
+
+    if (menuItems.length === 0) {
+        return null;
+    }
 
     return (
         <Dropdown menu={{ items: menuItems }} trigger={['click']} placement="bottomRight">

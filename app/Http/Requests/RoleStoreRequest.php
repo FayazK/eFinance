@@ -6,6 +6,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class RoleStoreRequest extends FormRequest
 {
@@ -24,9 +25,26 @@ class RoleStoreRequest extends FormRequest
             'slug' => ['nullable', 'string', 'max:255', 'unique:roles,slug'],
             'description' => ['nullable', 'string', 'max:1000'],
             'permissions' => ['required', 'array'],
-            'permissions.*' => ['string'],
+            'permissions.*' => ['string', Rule::in($this->validPermissions())],
             'is_default' => ['boolean'],
         ];
+    }
+
+    /**
+     * Get all valid permission strings from config.
+     *
+     * @return array<int, string>
+     */
+    private function validPermissions(): array
+    {
+        $permissions = [];
+        foreach (config('permissions.modules') as $module => $config) {
+            foreach ($config['permissions'] as $action) {
+                $permissions[] = "{$module}.{$action}";
+            }
+        }
+
+        return $permissions;
     }
 
     /**

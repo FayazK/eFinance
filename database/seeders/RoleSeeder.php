@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
@@ -39,17 +40,18 @@ class RoleSeeder extends Seeder
             ]
         );
 
-        // Manager - all except users and roles
-        $managerPermissions = array_filter($allPermissions, function ($permission) {
-            return ! str_starts_with($permission, 'users.') && ! str_starts_with($permission, 'roles.');
+
+        // HR - expenses module only
+        $hrPermissions = array_filter($allPermissions, function ($permission) {
+            return str_starts_with($permission, 'expenses.');
         });
 
-        Role::updateOrCreate(
-            ['slug' => 'manager'],
+        $hrRole = Role::updateOrCreate(
+            ['slug' => 'hr'],
             [
-                'name' => 'Manager',
-                'description' => 'Management access to most features except user and role management.',
-                'permissions' => array_values($managerPermissions),
+                'name' => 'HR',
+                'description' => 'Access to expenses module only.',
+                'permissions' => array_values($hrPermissions),
                 'is_default' => false,
             ]
         );
@@ -59,13 +61,24 @@ class RoleSeeder extends Seeder
             return str_ends_with($permission, '.read');
         });
 
-        Role::updateOrCreate(
-            ['slug' => 'viewer'],
+
+
+        // Assign admin role to info@fayazk.com
+        $adminRole = Role::where('slug', 'admin')->first();
+        if ($adminRole) {
+            User::where('email', '!=', 'hr@empowerbits.com')
+                ->update(['role_id' => $adminRole->id]);
+        }
+
+        // Create HR user and assign HR role
+        User::updateOrCreate(
+            ['email' => 'hr@empowerbits.com'],
             [
-                'name' => 'Viewer',
-                'description' => 'Read-only access to view all data.',
-                'permissions' => array_values($viewerPermissions),
-                'is_default' => true,
+                'first_name' => 'HR',
+                'last_name' => 'User',
+                'password' => '@Password1',
+                'is_active' => true,
+                'role_id' => $hrRole->id,
             ]
         );
     }

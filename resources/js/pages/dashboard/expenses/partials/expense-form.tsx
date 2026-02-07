@@ -323,7 +323,7 @@ export default function ExpenseForm({ accounts = [], categories: initialCategori
                             precision={2}
                             step={0.01}
                             min={0.01}
-                            addonAfter={selectedAccount?.currency_code || 'Currency'}
+                            suffix={selectedAccount?.currency_code || 'Currency'}
                         />
                     </Form.Item>
                 </Col>
@@ -359,8 +359,8 @@ export default function ExpenseForm({ accounts = [], categories: initialCategori
                         precision={4}
                         step={0.01}
                         min={0.01}
-                        loading={fetchingExchangeRate}
-                        addonAfter="PKR"
+                        disabled={fetchingExchangeRate}
+                        suffix="PKR"
                     />
                 </Form.Item>
             )}

@@ -32,9 +32,26 @@ class RoleUpdateRequest extends FormRequest
             ],
             'description' => ['nullable', 'string', 'max:1000'],
             'permissions' => ['required', 'array'],
-            'permissions.*' => ['string'],
+            'permissions.*' => ['string', Rule::in($this->validPermissions())],
             'is_default' => ['boolean'],
         ];
+    }
+
+    /**
+     * Get all valid permission strings from config.
+     *
+     * @return array<int, string>
+     */
+    private function validPermissions(): array
+    {
+        $permissions = [];
+        foreach (config('permissions.modules') as $module => $config) {
+            foreach ($config['permissions'] as $action) {
+                $permissions[] = "{$module}.{$action}";
+            }
+        }
+
+        return $permissions;
     }
 
     /**

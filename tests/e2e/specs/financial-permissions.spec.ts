@@ -71,21 +71,10 @@ test.describe('Financial Data Permissions', () => {
             expect(optionText).not.toContain('Rs.');
         });
 
-        test('transfer form dropdown should NOT show account balances', async ({ page }) => {
-            await page.goto('/dashboard/transfers/create');
-            await page.waitForLoadState('networkidle');
-
-            // Click on the source account dropdown
-            await page.click('.ant-select-selector >> nth=0');
-
-            // Wait for dropdown options to appear
-            await page.waitForSelector('.ant-select-item-option-content');
-
-            // Get the first option text
-            const optionText = await page.locator('.ant-select-item-option-content').first().textContent();
-
-            // Should NOT contain Rs. or $ (currency symbols)
-            expect(optionText).not.toContain('Rs.');
+        test('transfer create page returns 403 (no transfers permission)', async ({ page }) => {
+            const response = await page.goto('/dashboard/transfers/create');
+            // Route-level middleware blocks access — HR user has no transfers permissions
+            expect(response?.status()).toBe(403);
         });
     });
 

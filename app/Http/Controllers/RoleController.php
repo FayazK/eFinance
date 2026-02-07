@@ -99,13 +99,11 @@ class RoleController extends Controller
     /**
      * Delete a role.
      */
-    public function destroy(Role $role): JsonResponse
+    public function destroy(Role $role): \Illuminate\Http\RedirectResponse
     {
         $this->roleService->deleteRole($role->id);
 
-        return response()->json([
-            'message' => 'Role deleted successfully',
-        ]);
+        return redirect()->route('roles.index')->with('success', 'Role deleted successfully');
     }
 
     /**
