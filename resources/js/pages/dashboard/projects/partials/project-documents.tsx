@@ -95,17 +95,17 @@ export default function ProjectDocuments({ project }: ProjectDocumentsProps) {
         }
     };
 
-    const handleDelete = (document: Media) => {
+    const handleDelete = (doc: Media) => {
         Modal.confirm({
             title: 'Delete Document',
-            content: `Are you sure you want to delete "${document.file_name || document.name}"?`,
+            content: `Are you sure you want to delete "${doc.file_name || doc.name}"?`,
             okText: 'Delete',
             okType: 'danger',
             cancelText: 'Cancel',
             onOk: async () => {
                 try {
                     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
-                    const response = await fetch(`/dashboard/projects/${project.id}/documents/${document.id}`, {
+                    const response = await fetch(`/dashboard/projects/${project.id}/documents/${doc.id}`, {
                         method: 'DELETE',
                         headers: {
                             'X-CSRF-TOKEN': csrfToken,
