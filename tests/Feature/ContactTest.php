@@ -64,6 +64,14 @@ describe('Contact Index', function () {
     });
 });
 
+describe('Contact Factory', function () {
+    test('factory creates a contact without referencing dropped city/state columns', function () {
+        $contact = Contact::factory()->create(['client_id' => $this->client->id]);
+
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id]);
+    });
+});
+
 describe('Contact Create', function () {
     test('authenticated users can visit the create contact page', function () {
         $this->withoutVite();

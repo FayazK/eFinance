@@ -7,6 +7,7 @@ namespace Database\Factories;
 use App\Models\Client;
 use App\Models\Contact;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Nnjeim\World\Models\City;
 use Nnjeim\World\Models\Country;
 
 /**
@@ -22,6 +23,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         $country = Country::inRandomOrder()->first();
+        $city = City::where('country_id', $country?->id)->inRandomOrder()->first();
         $client = Client::inRandomOrder()->first() ?? Client::factory()->create();
 
         // Generate 0-3 additional phones and emails
@@ -43,9 +45,9 @@ class ContactFactory extends Factory
             'last_name' => fake()->lastName(),
             'client_id' => $client->id,
             'address' => fake()->optional()->address(),
-            'city' => fake()->optional()->city(),
-            'state' => fake()->optional()->state(),
             'country_id' => $country?->id,
+            'state_id' => $city?->state_id,
+            'city_id' => $city?->id,
             'primary_phone' => fake()->optional()->phoneNumber(),
             'primary_email' => fake()->unique()->safeEmail(),
             'additional_phones' => $additionalPhones,
