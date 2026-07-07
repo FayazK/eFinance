@@ -166,6 +166,19 @@ describe('Contact Create', function () {
     });
 });
 
+describe('Contact Edit', function () {
+    test('a contact serializes full_name so raw-model returns (e.g. the edit page) include it', function () {
+        $contact = Contact::factory()->create([
+            'first_name' => 'Jane',
+            'last_name' => 'Doe',
+            'client_id' => $this->client->id,
+        ]);
+
+        // The edit page passes the raw model to Inertia, which serializes via toArray().
+        expect($contact->toArray())->toHaveKey('full_name', 'Jane Doe');
+    });
+});
+
 describe('Contact Update', function () {
     test('authenticated users can update a contact', function () {
         $this->actingAs($this->user);
