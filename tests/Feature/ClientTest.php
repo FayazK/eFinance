@@ -1,8 +1,12 @@
 <?php
 
 use App\Models\Client;
+use App\Models\Project;
 use App\Models\User;
+use App\Services\ClientService;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -186,6 +190,48 @@ describe('Client Delete', function () {
         $response = $this->deleteJson('/dashboard/clients/99999');
 
         $response->assertNotFound();
+    });
+
+    test('deleting a client removes its projects and their document media', function () {
+        Storage::fake('public');
+
+        $client = Client::factory()->create();
+        $project = Project::factory()->create(['client_id' => $client->id]);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF";
+        $media = $project->addMedia(UploadedFile::fake()->createWithContent('doc.pdf', $pdfContent))
+            ->toMediaCollection('documents');
+        $path = $media->getPathRelativeToRoot();
+
+        expect(Storage::disk('public')->exists($path))->toBeTrue();
+        $this->assertDatabaseCount('media', 1);
+
+        app(ClientService::class)->deleteClient($client->id);
+
+        $this->assertDatabaseMissing('clients', ['id' => $client->id]);
+        $this->assertDatabaseMissing('projects', ['id' => $project->id]);
+        $this->assertDatabaseCount('media', 0);
+        expect(Storage::disk('public')->exists($path))->toBeFalse();
+    });
+
+    test('deleting a client also cleans media of its soft-deleted projects', function () {
+        Storage::fake('public');
+
+        $client = Client::factory()->create();
+        $project = Project::factory()->create(['client_id' => $client->id]);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj\ntrailer<</Root 1 0 R>>\n%%EOF";
+        $media = $project->addMedia(UploadedFile::fake()->createWithContent('doc.pdf', $pdfContent))
+            ->toMediaCollection('documents');
+        $path = $media->getPathRelativeToRoot();
+
+        $project->delete(); // soft delete keeps the media on disk
+        expect(Storage::disk('public')->exists($path))->toBeTrue();
+
+        app(ClientService::class)->deleteClient($client->id);
+
+        $this->assertDatabaseCount('media', 0);
+        expect(Storage::disk('public')->exists($path))->toBeFalse();
     });
 });
 
