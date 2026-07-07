@@ -15,6 +15,11 @@ class ClientRepository
         return Client::with(['country', 'city', 'currency'])->find($id);
     }
 
+    public function findWithTrashedProjects(int $id): ?Client
+    {
+        return Client::with(['projects' => fn ($query) => $query->withTrashed()])->find($id);
+    }
+
     public function findByEmail(string $email): ?Client
     {
         return Client::with(['country', 'city', 'currency'])

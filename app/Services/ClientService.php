@@ -8,6 +8,7 @@ use App\Models\Client;
 use App\Repositories\ClientRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ClientService
 {
@@ -49,7 +50,21 @@ class ClientService
 
     public function deleteClient(int $clientId): bool
     {
-        return $this->clientRepository->delete($clientId);
+        return DB::transaction(function () use ($clientId) {
+            $client = $this->clientRepository->findWithTrashedProjects($clientId);
+
+            if ($client === null) {
+                return false;
+            }
+
+            // The DB-level cascade hard-deletes project rows (bypassing Eloquent), so
+            // clear their document media here to avoid orphaned files/records on disk.
+            foreach ($client->projects as $project) {
+                $project->clearMediaCollection('documents');
+            }
+
+            return $this->clientRepository->delete($clientId);
+        });
     }
 
     public function findClient(int $id): ?Client
