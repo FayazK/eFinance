@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
-import { Client, Contact } from '@/types';
+import { Client, Contact, LaravelPaginatedResponse } from '@/types';
 import { DeleteOutlined, EditOutlined, MailOutlined, PhoneOutlined, PlusOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
 import { Button, Card, Modal, notification, Space, Table, Tabs, theme } from 'antd';
@@ -16,14 +16,20 @@ interface EditClientProps {
 export default function EditClient({ client }: EditClientProps) {
     const [contacts, setContacts] = useState<Contact[]>([]);
     const [loadingContacts, setLoadingContacts] = useState(false);
+    const [total, setTotal] = useState(0);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(15);
     const { token } = useToken();
 
-    const fetchContacts = async () => {
+    const fetchContacts = async (page: number, perPage: number) => {
         setLoadingContacts(true);
         try {
-            const response = await api.get(`/dashboard/contacts/data?client_id=${client.id}`);
+            const response = await api.get<LaravelPaginatedResponse<Contact>>(
+                `/dashboard/contacts/data?client_id=${client.id}&page=${page}&per_page=${perPage}`,
+            );
             setContacts(response.data.data);
-        } catch (error) {
+            setTotal(response.data.meta.total);
+        } catch {
             notification.error({
                 message: 'Failed to load contacts',
             });
@@ -33,7 +39,8 @@ export default function EditClient({ client }: EditClientProps) {
     };
 
     useEffect(() => {
-        fetchContacts();
+        setCurrentPage(1);
+        fetchContacts(1, pageSize);
     }, [client.id]);
 
     const handleDeleteContact = (contact: Contact) => {
@@ -48,7 +55,7 @@ export default function EditClient({ client }: EditClientProps) {
                     notification.success({
                         message: 'Contact deleted successfully',
                     });
-                    fetchContacts();
+                    fetchContacts(currentPage, pageSize);
                 } catch {
                     notification.error({
                         message: 'Failed to delete contact',
@@ -115,7 +122,7 @@ export default function EditClient({ client }: EditClientProps) {
         },
         {
             key: '2',
-            label: `Contacts (${contacts.length})`,
+            label: `Contacts (${total})`,
             children: (
                 <div>
                     <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'flex-end' }}>
@@ -125,7 +132,26 @@ export default function EditClient({ client }: EditClientProps) {
                             </Button>
                         </Link>
                     </div>
-                    <Table dataSource={contacts} columns={contactColumns} rowKey="id" loading={loadingContacts} pagination={false} />
+                    <Table
+                        dataSource={contacts}
+                        columns={contactColumns}
+                        rowKey="id"
+                        loading={loadingContacts}
+                        pagination={{
+                            current: currentPage,
+                            pageSize,
+                            total,
+                            showSizeChanger: true,
+                            showTotal: (t, range) => `${range[0]}-${range[1]} of ${t} contacts`,
+                        }}
+                        onChange={(p) => {
+                            const nextPage = p.current ?? 1;
+                            const nextSize = p.pageSize ?? pageSize;
+                            setCurrentPage(nextPage);
+                            setPageSize(nextSize);
+                            fetchContacts(nextPage, nextSize);
+                        }}
+                    />
                 </div>
             ),
         },
