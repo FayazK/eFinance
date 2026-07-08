@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Project;
-use App\Repositories\ProjectRepository;
+use App\Repositories\Contracts\ProjectRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProjectService
 {
     public function __construct(
-        private ProjectRepository $projectRepository
+        private ProjectRepositoryInterface $projectRepository
     ) {}
 
     public function createProject(array $data): Project

@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Contact;
-use App\Repositories\ContactRepository;
+use App\Repositories\Contracts\ContactRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class ContactService
 {
     public function __construct(
-        private ContactRepository $contactRepository
+        private ContactRepositoryInterface $contactRepository
     ) {}
 
     public function createContact(array $data): Contact

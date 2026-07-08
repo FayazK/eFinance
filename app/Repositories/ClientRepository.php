@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Client;
+use App\Repositories\Contracts\ClientRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class ClientRepository
+class ClientRepository implements ClientRepositoryInterface
 {
     public function find(int $id): ?Client
     {

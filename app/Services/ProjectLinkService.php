@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\ProjectLink;
-use App\Repositories\ProjectLinkRepository;
+use App\Repositories\Contracts\ProjectLinkRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class ProjectLinkService
 {
     public function __construct(
-        private ProjectLinkRepository $projectLinkRepository
+        private ProjectLinkRepositoryInterface $projectLinkRepository
     ) {}
 
     public function getProjectLinks(int $projectId): Collection

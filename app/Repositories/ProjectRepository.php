@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Project;
+use App\Repositories\Contracts\ProjectRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class ProjectRepository
+class ProjectRepository implements ProjectRepositoryInterface
 {
     public function find(int $id): ?Project
     {

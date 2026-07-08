@@ -5,6 +5,14 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Models\User;
+use App\Repositories\ClientRepository;
+use App\Repositories\ContactRepository;
+use App\Repositories\Contracts\ClientRepositoryInterface;
+use App\Repositories\Contracts\ContactRepositoryInterface;
+use App\Repositories\Contracts\ProjectLinkRepositoryInterface;
+use App\Repositories\Contracts\ProjectRepositoryInterface;
+use App\Repositories\ProjectLinkRepository;
+use App\Repositories\ProjectRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -16,7 +24,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(ClientRepositoryInterface::class, ClientRepository::class);
+        $this->app->bind(ContactRepositoryInterface::class, ContactRepository::class);
+        $this->app->bind(ProjectRepositoryInterface::class, ProjectRepository::class);
+        $this->app->bind(ProjectLinkRepositoryInterface::class, ProjectLinkRepository::class);
     }
 
     /**

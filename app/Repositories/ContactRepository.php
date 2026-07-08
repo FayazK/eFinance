@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Contact;
+use App\Repositories\Contracts\ContactRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class ContactRepository
+class ContactRepository implements ContactRepositoryInterface
 {
     public function find(int $id): ?Contact
     {
