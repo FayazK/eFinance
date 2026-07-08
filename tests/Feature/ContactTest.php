@@ -277,6 +277,24 @@ describe('Contact Update', function () {
         expect($contact->additional_phones)->toBe(['+9999999999', '+8888888888']);
         expect($contact->additional_emails)->toBe(['new1@test.com', 'new2@test.com']);
     });
+
+    test('update ignores fields outside the validation rules', function () {
+        $this->actingAs($this->user);
+
+        $contact = Contact::factory()->create(['client_id' => $this->client->id]);
+
+        $response = $this->putJson("/dashboard/contacts/{$contact->id}", [
+            'first_name' => 'Updated',
+            'last_name' => 'Name',
+            'client_id' => $this->client->id,
+            'primary_email' => 'updated@example.com',
+            'id' => 999999,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('contacts', ['id' => $contact->id, 'first_name' => 'Updated']);
+        $this->assertDatabaseMissing('contacts', ['id' => 999999]);
+    });
 });
 
 describe('Contact Delete', function () {

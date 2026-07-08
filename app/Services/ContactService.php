@@ -26,36 +26,15 @@ class ContactService
 
     public function updateContact(int $contactId, array $data): Contact
     {
-        $allowedFields = [
-            'first_name',
-            'last_name',
-            'client_id',
-            'address',
-            'country_id',
-            'state_id',
-            'city_id',
-            'primary_phone',
-            'primary_email',
-            'additional_phones',
-            'additional_emails',
-        ];
-
-        $updateData = [];
-        foreach ($allowedFields as $field) {
-            if (array_key_exists($field, $data)) {
-                $updateData[$field] = $data[$field];
-            }
-        }
-
         // Ensure JSON fields are properly formatted
-        if (array_key_exists('additional_phones', $updateData)) {
-            $updateData['additional_phones'] = $updateData['additional_phones'] ?? [];
+        if (array_key_exists('additional_phones', $data)) {
+            $data['additional_phones'] = $data['additional_phones'] ?? [];
         }
-        if (array_key_exists('additional_emails', $updateData)) {
-            $updateData['additional_emails'] = $updateData['additional_emails'] ?? [];
+        if (array_key_exists('additional_emails', $data)) {
+            $data['additional_emails'] = $data['additional_emails'] ?? [];
         }
 
-        return $this->contactRepository->update($contactId, $updateData);
+        return $this->contactRepository->update($contactId, $data);
     }
 
     public function deleteContact(int $contactId): bool

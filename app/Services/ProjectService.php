@@ -22,25 +22,7 @@ class ProjectService
 
     public function updateProject(int $projectId, array $data): Project
     {
-        $allowedFields = [
-            'name',
-            'description',
-            'client_id',
-            'start_date',
-            'completion_date',
-            'status',
-            'budget',
-            'actual_cost',
-        ];
-
-        $updateData = [];
-        foreach ($allowedFields as $field) {
-            if (array_key_exists($field, $data)) {
-                $updateData[$field] = $data[$field];
-            }
-        }
-
-        return $this->projectRepository->update($projectId, $updateData);
+        return $this->projectRepository->update($projectId, $data);
     }
 
     public function deleteProject(int $projectId): bool
