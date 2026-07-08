@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $superAdminRole = Role::create([
+        'name' => 'Super Admin',
+        'slug' => 'super-admin',
+        'permissions' => [],
+    ]);
+
+    $this->user = User::factory()->create(['role_id' => $superAdminRole->id]);
 
     // Create minimal world data for testing
     DB::table('countries')->insertOrIgnore([
@@ -64,6 +71,27 @@ describe('Project Index', function () {
         $this->actingAs($this->user);
 
         $this->get('/dashboard/projects')->assertOk();
+    });
+});
+
+describe('Project Data', function () {
+    test('budget and actual cost serialize as numbers, not decimal strings', function () {
+        $this->actingAs($this->user);
+
+        Project::factory()->create([
+            'client_id' => $this->client->id,
+            'budget' => 1500000,
+            'actual_cost' => 0,
+        ]);
+
+        $response = $this->getJson('/dashboard/projects/data');
+        $response->assertOk();
+
+        $budget = $response->json('data.0.budget');
+        $actualCost = $response->json('data.0.actual_cost');
+
+        expect($budget)->not->toBeString()->toEqual(1500000.0);
+        expect($actualCost)->not->toBeString()->toEqual(0.0);
     });
 });
 
