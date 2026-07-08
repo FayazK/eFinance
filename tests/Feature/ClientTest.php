@@ -2,6 +2,7 @@
 
 use App\Models\Client;
 use App\Models\Project;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\ClientService;
 use Illuminate\Http\UploadedFile;
@@ -9,7 +10,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $superAdminRole = Role::create([
+        'name' => 'Super Admin',
+        'slug' => 'super-admin',
+        'permissions' => [],
+    ]);
+
+    $this->user = User::factory()->create(['role_id' => $superAdminRole->id]);
 
     // Create minimal world data for testing using DB to bypass model validation
     DB::table('countries')->insertOrIgnore([
@@ -154,6 +161,23 @@ describe('Client Update', function () {
         ]);
     });
 
+    test('update response includes the state relation when state_id is set', function () {
+        $this->actingAs($this->user);
+
+        $client = Client::factory()->create(['state_id' => 1]);
+
+        $response = $this->putJson("/dashboard/clients/{$client->id}", [
+            'name' => 'Updated Client',
+            'email' => 'updated@example.com',
+            'country_id' => $this->countryId,
+            'currency_id' => $this->currencyId,
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.state.id', 1);
+        $response->assertJsonPath('data.state.name', 'Test State');
+    });
+
     test('client email can stay the same on update', function () {
         $this->actingAs($this->user);
 
@@ -253,5 +277,17 @@ describe('Client Show', function () {
         $response = $this->getJson('/dashboard/clients/99999');
 
         $response->assertNotFound();
+    });
+
+    test('show response includes the state relation when state_id is set', function () {
+        $this->actingAs($this->user);
+
+        $client = Client::factory()->create(['state_id' => 1]);
+
+        $response = $this->getJson("/dashboard/clients/{$client->id}");
+
+        $response->assertOk();
+        $response->assertJsonPath('state.id', 1);
+        $response->assertJsonPath('state.name', 'Test State');
     });
 });
