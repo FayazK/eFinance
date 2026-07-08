@@ -379,3 +379,63 @@ describe('Expense Voiding', function () {
             ->assertJsonValidationErrors('void_reason');
     });
 });
+
+describe('Expense Show', function () {
+    it('shows the requested expense, not the newest one', function () {
+        // Target has an older expense_date; the decoy is newer, so the buggy
+        // paginated-list lookup (default sort expense_date desc) would return the decoy.
+        $target = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'vendor' => 'Target Vendor',
+            'expense_date' => now()->subDays(5),
+        ]);
+
+        Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'vendor' => 'Decoy Vendor',
+            'expense_date' => now(),
+        ]);
+
+        $response = $this->get("/dashboard/expenses/{$target->id}");
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('dashboard/expenses/show')
+                ->where('expense.id', $target->id)
+                ->where('expense.vendor', 'Target Vendor')
+            );
+    });
+
+    it('includes formatted amount and receipt fields in the payload', function () {
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+        ]);
+
+        $response = $this->get("/dashboard/expenses/{$expense->id}");
+
+        $response->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('dashboard/expenses/show')
+                ->has('expense.formatted_amount')
+                ->has('expense.formatted_reporting_amount')
+                ->has('expense.is_voided')
+                ->has('expense.receipts')
+            );
+    });
+
+    it('returns 404 for an unknown expense id', function () {
+        // An expense must exist so the buggy fallback (return newest expense) is exercised;
+        // with an empty table it would 404 regardless.
+        Expense::factory()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+        ]);
+
+        $response = $this->get('/dashboard/expenses/999999');
+
+        $response->assertNotFound();
+    });
+});

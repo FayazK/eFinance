@@ -175,14 +175,14 @@ class ExpenseController extends Controller
 
     public function show(int $id): Response
     {
-        $expense = $this->expenseService->getPaginatedExpenses(1, null, ['id' => $id])->items()[0] ?? null;
+        $expense = $this->expenseService->findExpense($id);
 
         if (! $expense) {
             abort(404);
         }
 
         return Inertia::render('dashboard/expenses/show', [
-            'expense' => $expense,
+            'expense' => (new ExpenseResource($expense))->resolve(),
         ]);
     }
 
