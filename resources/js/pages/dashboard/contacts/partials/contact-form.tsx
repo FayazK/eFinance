@@ -1,5 +1,6 @@
 import AdvancedSelect from '@/components/advanced-select';
 import api from '@/lib/axios';
+import { index, store, update } from '@/routes/contacts';
 import { Contact } from '@/types';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { router } from '@inertiajs/react';
@@ -68,14 +69,14 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
         setLoading(true);
 
         const method = isEdit ? 'put' : 'post';
-        const url = isEdit ? `/dashboard/contacts/${contact!.id}` : '/dashboard/contacts';
+        const url = isEdit ? update.url(contact!.id) : store.url();
 
         try {
             const response = await api[method](url, values);
             notification.success({
                 message: response.data.message || `Contact ${isEdit ? 'updated' : 'created'} successfully`,
             });
-            router.visit('/dashboard/contacts');
+            router.visit(index.url());
         } catch (error: unknown) {
             const err = error as {
                 response?: {

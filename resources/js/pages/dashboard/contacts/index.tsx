@@ -1,6 +1,7 @@
 import DataTable from '@/components/ui/DataTable';
 import AppLayout from '@/layouts/app-layout';
 import api from '@/lib/axios';
+import { create, data, destroy, edit } from '@/routes/contacts';
 import type { Contact, FilterConfig } from '@/types';
 import { DeleteOutlined, EditOutlined, MailOutlined, MoreOutlined, PhoneOutlined, PlusOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Link } from '@inertiajs/react';
@@ -29,7 +30,7 @@ export default function ContactsIndex() {
             cancelText: 'Cancel',
             onOk: async () => {
                 try {
-                    await api.delete(`/dashboard/contacts/${contact.id}`);
+                    await api.delete(destroy.url(contact.id));
                     notification.success({
                         message: 'Contact deleted successfully',
                     });
@@ -140,7 +141,7 @@ export default function ContactsIndex() {
                     {
                         key: 'edit',
                         label: (
-                            <Link href={`/dashboard/contacts/${record.id}/edit`}>
+                            <Link href={edit.url(record.id)}>
                                 <Space>
                                     <EditOutlined />
                                     Edit
@@ -177,7 +178,7 @@ export default function ContactsIndex() {
         <AppLayout
             pageTitle="Contacts"
             actions={
-                <Link href="/dashboard/contacts/create">
+                <Link href={create.url()}>
                     <Button type="primary" icon={<PlusOutlined />}>
                         Add Contact
                     </Button>
@@ -185,7 +186,7 @@ export default function ContactsIndex() {
             }
         >
             <DataTable<Contact>
-                fetchUrl="/dashboard/contacts/data"
+                fetchUrl={data.url()}
                 columns={columns}
                 filters={filters}
                 searchPlaceholder="Search contacts by name, email, or client..."
