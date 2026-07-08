@@ -38,6 +38,13 @@ class Contact extends Model
     ];
 
     /**
+     * The accessors to append to the model's array form.
+     *
+     * @var list<string>
+     */
+    protected $appends = ['full_name'];
+
+    /**
      * Get the attributes that should be cast.
      */
     protected function casts(): array
