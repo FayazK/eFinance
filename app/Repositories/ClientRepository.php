@@ -12,7 +12,7 @@ class ClientRepository
 {
     public function find(int $id): ?Client
     {
-        return Client::with(['country', 'city', 'currency'])->find($id);
+        return Client::with(['country', 'state', 'city', 'currency'])->find($id);
     }
 
     public function findWithTrashedProjects(int $id): ?Client
@@ -22,7 +22,7 @@ class ClientRepository
 
     public function findByEmail(string $email): ?Client
     {
-        return Client::with(['country', 'city', 'currency'])
+        return Client::with(['country', 'state', 'city', 'currency'])
             ->where('email', $email)
             ->first();
     }
@@ -37,7 +37,7 @@ class ClientRepository
         $client = Client::findOrFail($id);
         $client->update($data);
 
-        return $client->fresh(['country', 'city', 'currency']);
+        return $client->fresh(['country', 'state', 'city', 'currency']);
     }
 
     public function delete(int $id): bool
@@ -60,7 +60,7 @@ class ClientRepository
 
     public function all(): Collection
     {
-        return Client::with(['country', 'city', 'currency'])->get();
+        return Client::with(['country', 'state', 'city', 'currency'])->get();
     }
 
     public function paginateClients(
@@ -70,7 +70,7 @@ class ClientRepository
         ?string $sortBy = 'created_at',
         string $sortDirection = 'desc'
     ): LengthAwarePaginator {
-        $query = Client::query()->with(['country', 'city', 'currency']);
+        $query = Client::query()->with(['country', 'state', 'city', 'currency']);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
