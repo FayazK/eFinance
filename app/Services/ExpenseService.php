@@ -126,6 +126,7 @@ class ExpenseService
             'vendor' => $data['vendor'] ?? null,
             'description' => $data['description'] ?? null,
             'expense_date' => $startDate->format('Y-m-d'),
+            'exchange_rate' => $data['exchange_rate'] ?? null,
             'is_recurring' => true,
             'is_active' => true,
             'recurrence_frequency' => $data['recurrence_frequency'],
@@ -215,6 +216,10 @@ class ExpenseService
         foreach ($dueExpenses as $template) {
             try {
                 DB::transaction(function () use ($template) {
+                    // Compute the PKR reporting amount the same way manual expenses do,
+                    // so recurring occurrences are counted in reporting totals.
+                    $exchangeRate = $template->exchange_rate ? (float) $template->exchange_rate : null;
+
                     // Create a new expense from the template
                     $newExpense = $this->expenseRepository->create([
                         'account_id' => $template->account_id,
@@ -224,6 +229,12 @@ class ExpenseService
                         'vendor' => $template->vendor,
                         'description' => ($template->description ?? '').' (Recurring)',
                         'expense_date' => $template->next_occurrence_date,
+                        'exchange_rate' => $template->exchange_rate,
+                        'reporting_amount_pkr' => $this->calculateReportingAmountPkr(
+                            $template->amount,
+                            $template->currency_code,
+                            $exchangeRate
+                        ),
                         'status' => 'draft',
                         'is_recurring' => false,
                     ]);

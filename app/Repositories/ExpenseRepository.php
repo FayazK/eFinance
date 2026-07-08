@@ -9,6 +9,7 @@ use App\Repositories\Contracts\ExpenseRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\DB;
 
 class ExpenseRepository implements ExpenseRepositoryInterface
 {
@@ -109,9 +110,9 @@ class ExpenseRepository implements ExpenseRepositoryInterface
         $quarterStart = Carbon::create($year, ($quarter - 1) * 3 + 1, 1)->startOfMonth();
         $quarterEnd = $quarterStart->copy()->addMonths(3)->subDay()->endOfDay();
 
-        return Expense::processed()
+        return (int) (Expense::processed()
             ->whereBetween('expense_date', [$quarterStart, $quarterEnd])
-            ->sum('reporting_amount_pkr') ?? 0;
+            ->sum(DB::raw('COALESCE(reporting_amount_pkr, amount)')) ?? 0);
     }
 
     public function getTotalExpensesByCategory(string $startDate, string $endDate): Collection

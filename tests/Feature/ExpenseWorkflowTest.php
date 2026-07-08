@@ -7,7 +7,10 @@ use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
+use App\Repositories\Contracts\ExpenseRepositoryInterface;
 use App\Services\ExpenseService;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
@@ -473,5 +476,64 @@ describe('Expense Show', function () {
         $response = $this->get('/dashboard/expenses/999999');
 
         $response->assertNotFound();
+    });
+});
+
+describe('Recurring Expense Reporting Amount', function () {
+    it('populates reporting_amount_pkr on generated occurrences so they count in quarter totals', function () {
+        $template = Expense::factory()->dueToday()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 50000, // 500.00 PKR in minor units
+            'currency_code' => 'PKR',
+            'description' => 'Monthly rent',
+        ]);
+
+        app(ExpenseService::class)->processDueRecurringExpenses();
+
+        // The generated occurrence is a non-recurring expense spawned from the template.
+        $occurrence = Expense::where('is_recurring', false)->latest('id')->first();
+
+        expect($occurrence)->not->toBeNull()
+            ->and($occurrence->reporting_amount_pkr)->toBe(50000); // PKR ⇒ reporting == amount
+
+        $now = now();
+        $quarterTotal = app(ExpenseRepositoryInterface::class)->getQuarterExpensesTotal(
+            (int) $now->year,
+            (int) $now->quarter,
+        );
+
+        expect($quarterTotal)->toBeGreaterThanOrEqual(50000);
+    });
+});
+
+describe('Recurring Expense Receipts', function () {
+    it('persists receipts attached when creating a recurring expense', function () {
+        Storage::fake('public');
+
+        $pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000115 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n206\n%%EOF";
+
+        $response = $this->post('/dashboard/expenses', [
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 500.00,
+            'currency_code' => 'PKR',
+            'description' => 'Monthly subscription',
+            'expense_date' => now()->format('Y-m-d'),
+            'is_recurring' => '1',
+            'recurrence_frequency' => 'monthly',
+            'recurrence_interval' => 1,
+            'recurrence_start_date' => now()->format('Y-m-d'),
+            'receipts' => [
+                UploadedFile::fake()->createWithContent('receipt.pdf', $pdfContent),
+            ],
+        ]);
+
+        $response->assertRedirect('/dashboard/expenses');
+
+        $template = Expense::where('is_recurring', true)->latest('id')->first();
+
+        expect($template)->not->toBeNull()
+            ->and($template->getMedia('receipts'))->toHaveCount(1);
     });
 });
