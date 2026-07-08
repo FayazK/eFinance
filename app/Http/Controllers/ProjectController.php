@@ -45,7 +45,8 @@ class ProjectController extends Controller
 
     public function show(Project $project): Response
     {
-        $project->load(['client.country', 'client.currency', 'links', 'media']);
+        $project->load(['client.country', 'client.currency', 'links', 'media'])
+            ->loadCount('media');
 
         return Inertia::render('dashboard/projects/show', [
             'project' => new ProjectResource($project),

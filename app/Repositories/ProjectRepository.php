@@ -27,7 +27,8 @@ class ProjectRepository
         $project = Project::findOrFail($id);
         $project->update($data);
 
-        return $project->fresh(['client.country', 'client.currency', 'links']);
+        return $project->fresh(['client.country', 'client.currency', 'links', 'media'])
+            ->loadCount('media');
     }
 
     public function delete(int $id): bool

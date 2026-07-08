@@ -187,6 +187,26 @@ describe('Project Update', function () {
             'status' => 'Active',
         ]);
     });
+
+    test('update response reports documents_count for a project with documents', function () {
+        Storage::fake('public');
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create(['client_id' => $this->client->id]);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000115 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n206\n%%EOF";
+        $file = UploadedFile::fake()->createWithContent('document.pdf', $pdfContent);
+        $project->addMedia($file)->toMediaCollection('documents');
+
+        $response = $this->putJson("/dashboard/projects/{$project->id}", [
+            'name' => 'Updated Project',
+            'client_id' => $this->client->id,
+            'status' => 'Active',
+        ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('data.documents_count', 1);
+    });
 });
 
 describe('Project Delete', function () {
@@ -222,6 +242,23 @@ describe('Project Show', function () {
         $response = $this->get("/dashboard/projects/{$project->id}");
 
         $response->assertOk();
+    });
+
+    test('show reports documents_count matching uploaded documents', function () {
+        Storage::fake('public');
+        $this->withoutVite();
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create(['client_id' => $this->client->id]);
+
+        $pdfContent = "%PDF-1.4\n1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>endobj 3 0 obj<</Type/Page/MediaBox[0 0 612 792]/Parent 2 0 R/Resources<<>>>>endobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000056 00000 n\n0000000115 00000 n\ntrailer<</Size 4/Root 1 0 R>>\nstartxref\n206\n%%EOF";
+        $file = UploadedFile::fake()->createWithContent('document.pdf', $pdfContent);
+        $project->addMedia($file)->toMediaCollection('documents');
+
+        $response = $this->get("/dashboard/projects/{$project->id}");
+
+        $response->assertOk();
+        $response->assertInertia(fn ($page) => $page->where('project.data.documents_count', 1));
     });
 });
 
