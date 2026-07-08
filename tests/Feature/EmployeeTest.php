@@ -16,6 +16,7 @@ describe('Employee Creation', function () {
             'email' => 'john@example.com',
             'joining_date' => '2026-01-01',
             'base_salary' => 150000, // Major units
+            'deposit_currency' => 'PKR',
             'iban' => 'PK36MEZN0003090107800014',
             'bank_name' => 'Meezan Bank',
         ];
@@ -28,7 +29,7 @@ describe('Employee Creation', function () {
         $this->assertDatabaseHas('employees', [
             'name' => 'John Doe',
             'email' => 'john@example.com',
-            'base_salary_pkr' => 15000000, // Minor units
+            'base_salary' => 15000000, // Minor units
         ]);
     });
 
@@ -58,7 +59,7 @@ describe('Employee Creation', function () {
 describe('Employee Update', function () {
     test('updates employee successfully', function () {
         $employee = Employee::factory()->create([
-            'base_salary_pkr' => 10000000, // 100k PKR
+            'base_salary' => 10000000, // 100k PKR
         ]);
 
         $response = $this->putJson(route('employees.update', $employee), [
@@ -69,7 +70,7 @@ describe('Employee Update', function () {
         $response->assertStatus(200);
 
         expect($employee->fresh()->name)->toBe('Updated Name');
-        expect($employee->fresh()->base_salary_pkr)->toBe(20000000);
+        expect($employee->fresh()->base_salary)->toBe(20000000);
     });
 
     test('can terminate employee', function () {
