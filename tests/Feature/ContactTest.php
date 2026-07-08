@@ -2,18 +2,11 @@
 
 use App\Models\Client;
 use App\Models\Contact;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
-    $superAdminRole = Role::create([
-        'name' => 'Super Admin',
-        'slug' => 'super-admin',
-        'permissions' => [],
-    ]);
-
-    $this->user = User::factory()->create(['role_id' => $superAdminRole->id]);
+    $this->user = User::factory()->superAdmin()->create();
 
     // Create minimal world data for testing
     DB::table('countries')->insertOrIgnore([

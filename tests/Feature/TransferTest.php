@@ -5,7 +5,7 @@ use App\Models\Transfer;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->superAdmin()->create();
 });
 
 describe('Transfer Index', function () {

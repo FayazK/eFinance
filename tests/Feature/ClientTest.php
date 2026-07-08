@@ -2,7 +2,6 @@
 
 use App\Models\Client;
 use App\Models\Project;
-use App\Models\Role;
 use App\Models\User;
 use App\Services\ClientService;
 use Illuminate\Http\UploadedFile;
@@ -10,13 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 beforeEach(function () {
-    $superAdminRole = Role::create([
-        'name' => 'Super Admin',
-        'slug' => 'super-admin',
-        'permissions' => [],
-    ]);
-
-    $this->user = User::factory()->create(['role_id' => $superAdminRole->id]);
+    $this->user = User::factory()->superAdmin()->create();
 
     // Create minimal world data for testing using DB to bypass model validation
     DB::table('countries')->insertOrIgnore([
