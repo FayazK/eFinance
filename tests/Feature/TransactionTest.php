@@ -4,10 +4,9 @@ use App\Models\Account;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->superAdmin()->create();
 });
 
 describe('Transaction Index', function () {

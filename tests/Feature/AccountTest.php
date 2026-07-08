@@ -4,7 +4,7 @@ use App\Models\Account;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->superAdmin()->create();
 });
 
 describe('Account Index', function () {

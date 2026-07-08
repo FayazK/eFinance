@@ -10,7 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->superAdmin()->create();
     $this->actingAs($this->user);
 });
 

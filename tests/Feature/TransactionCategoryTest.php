@@ -4,7 +4,7 @@ use App\Models\TransactionCategory;
 use App\Models\User;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $this->user = User::factory()->superAdmin()->create();
 });
 
 describe('Transaction Category Index', function () {
