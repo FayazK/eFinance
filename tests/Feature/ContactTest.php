@@ -2,11 +2,18 @@
 
 use App\Models\Client;
 use App\Models\Contact;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
-    $this->user = User::factory()->create();
+    $superAdminRole = Role::create([
+        'name' => 'Super Admin',
+        'slug' => 'super-admin',
+        'permissions' => [],
+    ]);
+
+    $this->user = User::factory()->create(['role_id' => $superAdminRole->id]);
 
     // Create minimal world data for testing
     DB::table('countries')->insertOrIgnore([
@@ -129,6 +136,31 @@ describe('Contact Create', function () {
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors(['primary_email']);
+    });
+
+    test('the same primary email is allowed for contacts of different clients', function () {
+        $this->actingAs($this->user);
+
+        $otherClient = Client::factory()->create();
+
+        Contact::factory()->create([
+            'primary_email' => 'shared@example.com',
+            'client_id' => $this->client->id,
+        ]);
+
+        $response = $this->postJson('/dashboard/contacts', [
+            'first_name' => 'Test',
+            'last_name' => 'Contact',
+            'client_id' => $otherClient->id,
+            'primary_email' => 'shared@example.com',
+        ]);
+
+        $response->assertCreated();
+
+        $this->assertDatabaseHas('contacts', [
+            'primary_email' => 'shared@example.com',
+            'client_id' => $otherClient->id,
+        ]);
     });
 
     test('additional emails must be valid emails', function () {
