@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Client;
-use App\Repositories\ClientRepository;
+use App\Repositories\Contracts\ClientRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ClientService
 {
     public function __construct(
-        private ClientRepository $clientRepository
+        private ClientRepositoryInterface $clientRepository
     ) {}
 
     public function createClient(array $data): Client

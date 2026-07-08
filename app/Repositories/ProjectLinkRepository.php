@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\ProjectLink;
+use App\Repositories\Contracts\ProjectLinkRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class ProjectLinkRepository
+class ProjectLinkRepository implements ProjectLinkRepositoryInterface
 {
     public function findByProject(int $projectId): Collection
     {
