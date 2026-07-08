@@ -20,8 +20,7 @@ beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
     $this->actingAs($this->user);
 
-    // Seed world package data
-    $this->artisan('db:seed', ['--class' => 'WorldSeeder']);
+    seedMinimalWorld();
 });
 
 describe('Invoice Creation', function () {

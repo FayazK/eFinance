@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\DB;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -44,4 +46,50 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/**
+ * Seed the minimal reference data (one country + currency, plus a state/city)
+ * that the Client/Invoice/Account factories require — instead of the full
+ * ~155k-row nnjeim/world dataset.
+ */
+function seedMinimalWorld(): void
+{
+    DB::table('countries')->insertOrIgnore([
+        'id' => 1,
+        'name' => 'Test Country',
+        'iso2' => 'TC',
+        'iso3' => 'TST',
+        'phone_code' => '+1',
+        'region' => 'Test',
+        'subregion' => 'Test',
+    ]);
+
+    DB::table('states')->insertOrIgnore([
+        'id' => 1,
+        'name' => 'Test State',
+        'country_id' => 1,
+        'country_code' => 'TC',
+    ]);
+
+    DB::table('cities')->insertOrIgnore([
+        'id' => 1,
+        'name' => 'Test City',
+        'country_id' => 1,
+        'state_id' => 1,
+        'country_code' => 'TC',
+    ]);
+
+    DB::table('currencies')->insertOrIgnore([
+        'id' => 1,
+        'name' => 'Test Dollar',
+        'code' => 'TSD',
+        'country_id' => 1,
+        'precision' => 2,
+        'symbol' => '$',
+        'symbol_native' => '$',
+        'symbol_first' => true,
+        'decimal_mark' => '.',
+        'thousands_separator' => ',',
+    ]);
 }
