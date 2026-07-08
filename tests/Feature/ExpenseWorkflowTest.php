@@ -7,6 +7,7 @@ use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
+use App\Services\ExpenseService;
 
 beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
@@ -377,6 +378,41 @@ describe('Expense Voiding', function () {
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors('void_reason');
+    });
+});
+
+describe('Recurring Expense End Date', function () {
+    it('stops generating charges once the next occurrence passes the end date', function () {
+        $template = Expense::factory()->recurring()->create([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 5000, // 50.00 PKR
+            'currency_code' => 'PKR',
+            'reporting_amount_pkr' => 5000,
+            'description' => 'Monthly rent',
+            'recurrence_frequency' => 'monthly',
+            'recurrence_interval' => 1,
+            'next_occurrence_date' => now()->format('Y-m-d'),  // due today
+            'recurrence_end_date' => now()->format('Y-m-d'),   // ends today → next month is past end
+            'is_active' => true,
+        ]);
+
+        $service = app(ExpenseService::class);
+
+        // First run fires today's charge, then the template must deactivate.
+        $service->processDueRecurringExpenses();
+
+        $template->refresh();
+        $this->account->refresh();
+
+        expect($template->is_active)->toBeFalse();
+        expect($this->account->current_balance)->toBe(95000); // exactly one charge debited
+
+        // Advance past the would-be next occurrence: no further charge may fire.
+        $this->travel(2)->months();
+        $service->processDueRecurringExpenses();
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe(95000);
     });
 });
 
