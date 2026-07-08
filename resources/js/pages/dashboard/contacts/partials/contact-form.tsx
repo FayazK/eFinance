@@ -86,7 +86,8 @@ export default function ContactForm({ contact, isEdit = false }: ContactFormProp
             if (err.response && err.response.status === 422) {
                 const validationErrors = err.response.data.errors;
                 const formErrors = Object.keys(validationErrors).map((key) => ({
-                    name: key.split('.'), // Converts 'additional_emails.0' to ['additional_emails', 0]
+                    // 'additional_emails.0' -> ['additional_emails', 0] (numeric index for Form.List)
+                    name: key.split('.').map((seg) => (/^\d+$/.test(seg) ? Number(seg) : seg)),
                     errors: validationErrors[key],
                 }));
                 form.setFields(formErrors);
