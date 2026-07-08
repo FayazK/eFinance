@@ -465,11 +465,18 @@ class ExpenseService
 
         $current = $expense->next_occurrence_date;
 
-        return $this->calculateNextOccurrenceFromDate(
+        $next = $this->calculateNextOccurrenceFromDate(
             $current,
             $expense->recurrence_frequency,
             $expense->recurrence_interval
         );
+
+        // Deactivate once the next occurrence would fall after the end date.
+        if ($expense->recurrence_end_date !== null && $next->greaterThan($expense->recurrence_end_date)) {
+            return null;
+        }
+
+        return $next;
     }
 
     private function calculateNextOccurrenceFromDate(
