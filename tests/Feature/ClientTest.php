@@ -192,6 +192,24 @@ describe('Client Update', function () {
 
         $response->assertOk();
     });
+
+    test('update ignores fields outside the validation rules', function () {
+        $this->actingAs($this->user);
+
+        $client = Client::factory()->create();
+
+        $response = $this->putJson("/dashboard/clients/{$client->id}", [
+            'name' => 'Updated Client',
+            'email' => 'updated@example.com',
+            'country_id' => $this->countryId,
+            'currency_id' => $this->currencyId,
+            'id' => 999999,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('clients', ['id' => $client->id, 'name' => 'Updated Client']);
+        $this->assertDatabaseMissing('clients', ['id' => 999999]);
+    });
 });
 
 describe('Client Delete', function () {

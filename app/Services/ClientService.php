@@ -23,29 +23,7 @@ class ClientService
 
     public function updateClient(int $clientId, array $data): Client
     {
-        $allowedFields = [
-            'name',
-            'email',
-            'country_id',
-            'state_id',
-            'city_id',
-            'currency_id',
-            'address',
-            'phone',
-            'company',
-            'tax_id',
-            'website',
-            'notes',
-        ];
-
-        $updateData = [];
-        foreach ($allowedFields as $field) {
-            if (array_key_exists($field, $data)) {
-                $updateData[$field] = $data[$field];
-            }
-        }
-
-        return $this->clientRepository->update($clientId, $updateData);
+        return $this->clientRepository->update($clientId, $data);
     }
 
     public function deleteClient(int $clientId): bool

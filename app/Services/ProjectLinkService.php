@@ -26,16 +26,7 @@ class ProjectLinkService
 
     public function updateLink(int $linkId, array $data): ProjectLink
     {
-        $allowedFields = ['title', 'url', 'description'];
-
-        $updateData = [];
-        foreach ($allowedFields as $field) {
-            if (array_key_exists($field, $data)) {
-                $updateData[$field] = $data[$field];
-            }
-        }
-
-        return $this->projectLinkRepository->update($linkId, $updateData);
+        return $this->projectLinkRepository->update($linkId, $data);
     }
 
     public function deleteLink(int $linkId): bool

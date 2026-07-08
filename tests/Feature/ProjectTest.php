@@ -207,6 +207,23 @@ describe('Project Update', function () {
         $response->assertOk();
         $response->assertJsonPath('data.documents_count', 1);
     });
+
+    test('update ignores fields outside the validation rules', function () {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create(['client_id' => $this->client->id]);
+
+        $response = $this->putJson("/dashboard/projects/{$project->id}", [
+            'name' => 'Updated Project',
+            'client_id' => $this->client->id,
+            'status' => 'Active',
+            'id' => 999999,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('projects', ['id' => $project->id, 'name' => 'Updated Project']);
+        $this->assertDatabaseMissing('projects', ['id' => 999999]);
+    });
 });
 
 describe('Project Delete', function () {
@@ -368,6 +385,29 @@ describe('Project Links', function () {
         $this->assertDatabaseHas('project_links', [
             'id' => $link->id,
             'title' => 'Updated Title',
+        ]);
+    });
+
+    test('update cannot reassign a link to another project', function () {
+        $this->actingAs($this->user);
+
+        $project = Project::factory()->create(['client_id' => $this->client->id]);
+        $otherProject = Project::factory()->create(['client_id' => $this->client->id]);
+        $link = $project->links()->create([
+            'title' => 'Original Title',
+            'url' => 'https://original.com',
+        ]);
+
+        $response = $this->putJson("/dashboard/projects/{$project->id}/links/{$link->id}", [
+            'title' => 'Updated Title',
+            'url' => 'https://updated.com',
+            'project_id' => $otherProject->id,
+        ]);
+
+        $response->assertOk();
+        $this->assertDatabaseHas('project_links', [
+            'id' => $link->id,
+            'project_id' => $project->id,
         ]);
     });
 
