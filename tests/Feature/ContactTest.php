@@ -3,49 +3,11 @@
 use App\Models\Client;
 use App\Models\Contact;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
 
-    // Create minimal world data for testing
-    DB::table('countries')->insertOrIgnore([
-        'id' => 1,
-        'name' => 'Test Country',
-        'iso2' => 'TC',
-        'iso3' => 'TST',
-        'phone_code' => '+1',
-        'region' => 'Test',
-        'subregion' => 'Test',
-    ]);
-
-    DB::table('states')->insertOrIgnore([
-        'id' => 1,
-        'name' => 'Test State',
-        'country_id' => 1,
-        'country_code' => 'TC',
-    ]);
-
-    DB::table('cities')->insertOrIgnore([
-        'id' => 1,
-        'name' => 'Test City',
-        'country_id' => 1,
-        'state_id' => 1,
-        'country_code' => 'TC',
-    ]);
-
-    DB::table('currencies')->insertOrIgnore([
-        'id' => 1,
-        'name' => 'Test Dollar',
-        'code' => 'TSD',
-        'country_id' => 1,
-        'precision' => 2,
-        'symbol' => '$',
-        'symbol_native' => '$',
-        'symbol_first' => true,
-        'decimal_mark' => '.',
-        'thousands_separator' => ',',
-    ]);
+    seedMinimalWorld();
 
     $this->countryId = 1;
     $this->client = Client::factory()->create();
