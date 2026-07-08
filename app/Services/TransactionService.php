@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Transaction;
-use App\Repositories\AccountRepository;
-use App\Repositories\TransactionRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\TransactionRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
 class TransactionService
 {
     public function __construct(
-        private TransactionRepository $transactionRepository,
-        private AccountRepository $accountRepository
+        private TransactionRepositoryInterface $transactionRepository,
+        private AccountRepositoryInterface $accountRepository
     ) {}
 
     /**

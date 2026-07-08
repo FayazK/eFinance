@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Company;
-use App\Repositories\CompanyRepository;
+use App\Repositories\Contracts\CompanyRepositoryInterface;
 use Exception;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
@@ -17,7 +17,7 @@ use Illuminate\Support\Str;
 class CompanyService
 {
     public function __construct(
-        private CompanyRepository $companyRepository
+        private CompanyRepositoryInterface $companyRepository
     ) {}
 
     public function createCompany(array $data, ?UploadedFile $logo = null): Company

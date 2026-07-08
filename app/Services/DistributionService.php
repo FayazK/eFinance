@@ -10,9 +10,9 @@ use App\Models\Distribution;
 use App\Models\DistributionLine;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
-use App\Repositories\AccountRepository;
-use App\Repositories\DistributionRepository;
-use App\Repositories\ShareholderRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\DistributionRepositoryInterface;
+use App\Repositories\Contracts\ShareholderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -20,10 +20,10 @@ use InvalidArgumentException;
 class DistributionService
 {
     public function __construct(
-        private readonly DistributionRepository $distributionRepository,
-        private readonly ShareholderRepository $shareholderRepository,
+        private readonly DistributionRepositoryInterface $distributionRepository,
+        private readonly ShareholderRepositoryInterface $shareholderRepository,
         private readonly TransactionService $transactionService,
-        private readonly AccountRepository $accountRepository
+        private readonly AccountRepositoryInterface $accountRepository
     ) {}
 
     /**

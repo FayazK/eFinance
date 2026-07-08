@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Company;
+use App\Repositories\Contracts\CompanyRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class CompanyRepository
+class CompanyRepository implements CompanyRepositoryInterface
 {
     public function find(int $id): ?Company
     {

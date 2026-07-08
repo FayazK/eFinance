@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Shareholder;
+use App\Repositories\Contracts\ShareholderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class ShareholderRepository
+class ShareholderRepository implements ShareholderRepositoryInterface
 {
     public function find(int $id): ?Shareholder
     {

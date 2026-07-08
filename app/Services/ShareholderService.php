@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Shareholder;
-use App\Repositories\ShareholderRepository;
+use App\Repositories\Contracts\ShareholderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use InvalidArgumentException;
@@ -13,7 +13,7 @@ use InvalidArgumentException;
 class ShareholderService
 {
     public function __construct(
-        private readonly ShareholderRepository $shareholderRepository
+        private readonly ShareholderRepositoryInterface $shareholderRepository
     ) {}
 
     public function createShareholder(array $data): Shareholder

@@ -9,9 +9,9 @@ use App\Events\PayrollGenerated;
 use App\Events\PayrollPaid;
 use App\Models\Payroll;
 use App\Models\TransactionCategory;
-use App\Repositories\AccountRepository;
-use App\Repositories\EmployeeRepository;
-use App\Repositories\PayrollRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
+use App\Repositories\Contracts\PayrollRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -19,9 +19,9 @@ use InvalidArgumentException;
 class PayrollService
 {
     public function __construct(
-        private PayrollRepository $payrollRepository,
-        private EmployeeRepository $employeeRepository,
-        private AccountRepository $accountRepository,
+        private PayrollRepositoryInterface $payrollRepository,
+        private EmployeeRepositoryInterface $employeeRepository,
+        private AccountRepositoryInterface $accountRepository,
         private TransactionService $transactionService
     ) {}
 

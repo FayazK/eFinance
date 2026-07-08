@@ -6,10 +6,11 @@ namespace App\Repositories;
 
 use App\Models\Distribution;
 use App\Models\Transaction;
+use App\Repositories\Contracts\DistributionRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class DistributionRepository
+class DistributionRepository implements DistributionRepositoryInterface
 {
     public function find(int $id): ?Distribution
     {

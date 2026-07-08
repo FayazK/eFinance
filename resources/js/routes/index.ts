@@ -156,7 +156,7 @@ dashboard.form = dashboardForm
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 export const dropdown = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -171,7 +171,7 @@ dropdown.definition = {
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 dropdown.url = (options?: RouteQueryOptions) => {
@@ -180,7 +180,7 @@ dropdown.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 dropdown.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -190,7 +190,7 @@ dropdown.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 dropdown.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -200,7 +200,7 @@ dropdown.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 const dropdownForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -210,7 +210,7 @@ const dropdownForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> =
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 dropdownForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -220,7 +220,7 @@ dropdownForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\DropdownController::__invoke
-* @see app/Http/Controllers/DropdownController.php:15
+* @see app/Http/Controllers/DropdownController.php:13
 * @route '/dropdown'
 */
 dropdownForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

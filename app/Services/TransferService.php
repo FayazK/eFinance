@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Transfer;
-use App\Repositories\AccountRepository;
-use App\Repositories\TransferRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\TransferRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -14,9 +14,9 @@ use InvalidArgumentException;
 class TransferService
 {
     public function __construct(
-        private TransferRepository $transferRepository,
+        private TransferRepositoryInterface $transferRepository,
         private TransactionService $transactionService,
-        private AccountRepository $accountRepository
+        private AccountRepositoryInterface $accountRepository
     ) {}
 
     /**

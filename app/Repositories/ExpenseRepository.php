@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Expense;
+use App\Repositories\Contracts\ExpenseRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class ExpenseRepository
+class ExpenseRepository implements ExpenseRepositoryInterface
 {
     public function find(int $id): ?Expense
     {

@@ -3,10 +3,11 @@
 namespace App\Repositories;
 
 use App\Models\User;
-use Illuminate\Database\Eloquent\Collection;
+use App\Repositories\Contracts\UserRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Collection;
 
-class UserRepository
+class UserRepository implements UserRepositoryInterface
 {
     public function find(int $id): ?User
     {
@@ -27,12 +28,14 @@ class UserRepository
     {
         $user = User::findOrFail($id);
         $user->update($data);
+
         return $user->fresh();
     }
 
     public function delete(int $id): bool
     {
         $user = User::findOrFail($id);
+
         return $user->delete();
     }
 
@@ -40,6 +43,7 @@ class UserRepository
     {
         $user = User::findOrFail($id);
         $user->update(['last_login_at' => now()]);
+
         return $user->fresh();
     }
 
@@ -61,7 +65,7 @@ class UserRepository
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
