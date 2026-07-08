@@ -156,7 +156,7 @@ class ExpenseService
             // Validate account balance
             $account = $expense->account;
             if ($account->current_balance < $expense->amount) {
-                if (! auth()->user()->hasPermission('accounts.read')) {
+                if (! auth()->user()?->hasPermission('accounts.read')) {
                     throw new InvalidArgumentException('Insufficient account balance to process this expense.');
                 }
                 throw new InvalidArgumentException(
