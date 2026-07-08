@@ -88,12 +88,12 @@ class ExpenseController extends Controller
                 // Create as draft (no transaction yet)
                 $expense = $this->expenseService->createDraftExpense($validated);
                 $message = 'Expense saved as draft. Process it to deduct from account.';
+            }
 
-                // Handle receipt uploads if provided
-                if ($request->hasFile('receipts')) {
-                    foreach ($request->file('receipts') as $receipt) {
-                        $this->mediaService->addMedia($expense, $receipt, 'receipts');
-                    }
+            // Handle receipt uploads for both recurring and one-time expenses
+            if ($request->hasFile('receipts')) {
+                foreach ($request->file('receipts') as $receipt) {
+                    $this->mediaService->addMedia($expense, $receipt, 'receipts');
                 }
             }
 
