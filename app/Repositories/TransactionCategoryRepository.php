@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\TransactionCategory;
+use App\Repositories\Contracts\TransactionCategoryRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
-class TransactionCategoryRepository
+class TransactionCategoryRepository implements TransactionCategoryRepositoryInterface
 {
     public function find(int $id): ?TransactionCategory
     {

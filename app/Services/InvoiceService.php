@@ -7,8 +7,8 @@ namespace App\Services;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
 use App\Models\TransactionCategory;
-use App\Repositories\AccountRepository;
-use App\Repositories\InvoiceRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -16,9 +16,9 @@ use InvalidArgumentException;
 class InvoiceService
 {
     public function __construct(
-        private InvoiceRepository $invoiceRepository,
+        private InvoiceRepositoryInterface $invoiceRepository,
         private TransactionService $transactionService,
-        private AccountRepository $accountRepository
+        private AccountRepositoryInterface $accountRepository
     ) {}
 
     /**

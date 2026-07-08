@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
-use App\Repositories\ExpenseRepository;
+use App\Repositories\Contracts\ExpenseRepositoryInterface;
 use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +17,7 @@ use InvalidArgumentException;
 class ExpenseService
 {
     public function __construct(
-        private ExpenseRepository $expenseRepository,
+        private ExpenseRepositoryInterface $expenseRepository,
         private TransactionService $transactionService
     ) {}
 

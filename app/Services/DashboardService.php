@@ -10,18 +10,18 @@ use App\Models\Employee;
 use App\Models\Invoice;
 use App\Models\Payroll;
 use App\Models\Transaction;
-use App\Repositories\AccountRepository;
-use App\Repositories\InvoiceRepository;
-use App\Repositories\TransactionRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
+use App\Repositories\Contracts\InvoiceRepositoryInterface;
+use App\Repositories\Contracts\TransactionRepositoryInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class DashboardService
 {
     public function __construct(
-        private readonly InvoiceRepository $invoiceRepository,
-        private readonly AccountRepository $accountRepository,
-        private readonly TransactionRepository $transactionRepository
+        private readonly InvoiceRepositoryInterface $invoiceRepository,
+        private readonly AccountRepositoryInterface $accountRepository,
+        private readonly TransactionRepositoryInterface $transactionRepository
     ) {}
 
     /**

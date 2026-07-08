@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Transfer;
+use App\Repositories\Contracts\TransferRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class TransferRepository
+class TransferRepository implements TransferRepositoryInterface
 {
     public function find(int $id): ?Transfer
     {

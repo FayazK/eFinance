@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\TransactionCategory;
-use App\Repositories\TransactionCategoryRepository;
+use App\Repositories\Contracts\TransactionCategoryRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 
 class TransactionCategoryService
 {
     public function __construct(
-        private TransactionCategoryRepository $categoryRepository
+        private TransactionCategoryRepositoryInterface $categoryRepository
     ) {}
 
     public function createCategory(array $data): TransactionCategory

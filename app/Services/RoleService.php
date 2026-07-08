@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\Role;
 use App\Models\User;
-use App\Repositories\RoleRepository;
+use App\Repositories\Contracts\RoleRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Cache;
@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
 class RoleService
 {
     public function __construct(
-        private RoleRepository $roleRepository
+        private RoleRepositoryInterface $roleRepository
     ) {}
 
     /**

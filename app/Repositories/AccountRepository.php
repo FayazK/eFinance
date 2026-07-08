@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Account;
+use App\Repositories\Contracts\AccountRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AccountRepository
+class AccountRepository implements AccountRepositoryInterface
 {
     public function find(int $id): ?Account
     {

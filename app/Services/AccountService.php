@@ -6,14 +6,14 @@ namespace App\Services;
 
 use App\Helpers\CurrencyHelper;
 use App\Models\Account;
-use App\Repositories\AccountRepository;
+use App\Repositories\Contracts\AccountRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class AccountService
 {
     public function __construct(
-        private AccountRepository $accountRepository
+        private AccountRepositoryInterface $accountRepository
     ) {}
 
     public function createAccount(array $data): Account

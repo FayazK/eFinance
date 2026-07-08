@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Invoice;
+use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class InvoiceRepository
+class InvoiceRepository implements InvoiceRepositoryInterface
 {
     public function find(int $id): ?Invoice
     {

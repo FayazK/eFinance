@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Repositories;
 
 use App\Models\Transaction;
+use App\Repositories\Contracts\TransactionRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class TransactionRepository
+class TransactionRepository implements TransactionRepositoryInterface
 {
     public function find(int $id): ?Transaction
     {

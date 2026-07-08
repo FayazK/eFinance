@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\Employee;
-use App\Repositories\EmployeeRepository;
+use App\Repositories\Contracts\EmployeeRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use InvalidArgumentException;
@@ -13,7 +13,7 @@ use InvalidArgumentException;
 class EmployeeService
 {
     public function __construct(
-        private EmployeeRepository $employeeRepository
+        private EmployeeRepositoryInterface $employeeRepository
     ) {}
 
     public function createEmployee(array $data): Employee

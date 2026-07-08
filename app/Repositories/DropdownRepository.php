@@ -2,9 +2,10 @@
 
 namespace App\Repositories;
 
+use App\Repositories\Contracts\DropdownRepositoryInterface;
 use Illuminate\Support\Facades\App;
 
-class DropdownRepository
+class DropdownRepository implements DropdownRepositoryInterface
 {
     public function get(string $type, array $params = []): array
     {
