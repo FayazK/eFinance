@@ -35,8 +35,8 @@ class ProjectResource extends JsonResource
             'start_date' => $this->start_date?->format('Y-m-d'),
             'completion_date' => $this->completion_date?->format('Y-m-d'),
             'status' => $this->status,
-            'budget' => $this->budget,
-            'actual_cost' => $this->actual_cost,
+            'budget' => $this->budget !== null ? (float) $this->budget : null,
+            'actual_cost' => $this->actual_cost !== null ? (float) $this->actual_cost : null,
             'documents_count' => $this->media_count ?? 0,
             'links' => $this->whenLoaded('links', fn () => $this->links->map(fn ($link) => [
                 'id' => $link->id,
