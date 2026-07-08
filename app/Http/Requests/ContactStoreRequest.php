@@ -7,6 +7,7 @@ namespace App\Http\Requests;
 use App\Models\Contact;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ContactStoreRequest extends FormRequest
 {
@@ -35,7 +36,8 @@ class ContactStoreRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                'unique:'.Contact::class.',primary_email',
+                Rule::unique(Contact::class, 'primary_email')
+                    ->where(fn ($query) => $query->where('client_id', $this->integer('client_id'))),
             ],
             'additional_phones' => ['nullable', 'array'],
             'additional_phones.*' => ['string', 'max:50'],

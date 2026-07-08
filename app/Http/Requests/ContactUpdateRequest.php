@@ -38,7 +38,9 @@ class ContactUpdateRequest extends FormRequest
                 'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(Contact::class, 'primary_email')->ignore($contactId),
+                Rule::unique(Contact::class, 'primary_email')
+                    ->ignore($contactId)
+                    ->where(fn ($query) => $query->where('client_id', $this->integer('client_id'))),
             ],
             'additional_phones' => ['nullable', 'array'],
             'additional_phones.*' => ['string', 'max:50'],
