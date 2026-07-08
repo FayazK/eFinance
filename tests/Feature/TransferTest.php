@@ -346,6 +346,64 @@ describe('Transfer Create', function () {
         expect((float) $transfer->exchange_rate)->toBe(278.0);
     });
 
+    test('transfer exceeding source balance is rejected', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 10000, // $100.00
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 1000.00, // $1000 > $100 available
+            'destination_amount' => 1000.00,
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors(['source_amount' => 'Insufficient balance in']);
+
+        // Source balance unchanged and nothing written
+        $sourceAccount->refresh();
+        expect($sourceAccount->current_balance)->toBe(10000);
+        expect(Transfer::count())->toBe(0);
+        expect(\App\Models\Transaction::count())->toBe(0);
+    });
+
+    test('transfer of the exact available balance succeeds', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 10000, // $100.00
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 100.00, // exactly the available balance
+            'destination_amount' => 100.00,
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertCreated();
+
+        $sourceAccount->refresh();
+        expect($sourceAccount->current_balance)->toBe(0);
+    });
+
 });
 
 describe('Transfer Data Fetching', function () {
