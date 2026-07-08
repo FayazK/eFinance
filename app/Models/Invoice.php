@@ -88,12 +88,12 @@ class Invoice extends Model
 
     public function items(): HasMany
     {
-        return $this->hasMany(InvoiceItem::class)->orderBy('sort_order');
+        return $this->hasMany(InvoiceItem::class)->orderBy('sort_order')->chaperone('invoice');
     }
 
     public function payments(): HasMany
     {
-        return $this->hasMany(InvoicePayment::class);
+        return $this->hasMany(InvoicePayment::class)->chaperone('invoice');
     }
 
     public function transactions(): MorphMany

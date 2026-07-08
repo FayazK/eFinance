@@ -27,7 +27,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
         $invoice = Invoice::findOrFail($id);
         $invoice->update($data);
 
-        return $invoice->fresh(['company', 'client', 'project', 'items', 'payments']);
+        return $invoice->fresh(['company', 'client', 'project', 'items', 'payments.account']);
     }
 
     public function delete(int $id): bool
