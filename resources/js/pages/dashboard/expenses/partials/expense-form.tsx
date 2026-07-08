@@ -68,16 +68,6 @@ export default function ExpenseForm({ accounts = [], categories: initialCategori
         }
     }, [form, expense, isEditing, accounts]);
 
-    // Fetch last used exchange rate when account changes and it's a foreign currency
-    useEffect(() => {
-        if (selectedAccount && selectedAccount.currency_code !== 'PKR') {
-            fetchLastExchangeRate(selectedAccount.currency_code);
-        } else {
-            // Clear exchange rate for PKR accounts
-            form.setFieldValue('exchange_rate', undefined);
-        }
-    }, [selectedAccount, form]);
-
     const fetchLastExchangeRate = async (currency: string) => {
         setFetchingExchangeRate(true);
         try {
@@ -100,6 +90,14 @@ export default function ExpenseForm({ accounts = [], categories: initialCategori
     const handleAccountChange = (value: number) => {
         const account = accounts.find((acc) => acc.id === value);
         setSelectedAccount(account || null);
+
+        // Auto-fill the last-used rate for foreign currencies, clear it for PKR.
+        // Runs only on user-driven account changes, so editing keeps the saved rate.
+        if (account && account.currency_code !== 'PKR') {
+            fetchLastExchangeRate(account.currency_code);
+        } else {
+            form.setFieldValue('exchange_rate', undefined);
+        }
     };
 
     const handleWorkflowChange = (value: 'one-time' | 'recurring') => {
