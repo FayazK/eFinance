@@ -2,6 +2,7 @@
 
 use App\Models\Account;
 use App\Models\User;
+use App\Services\AccountService;
 
 beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
@@ -40,6 +41,29 @@ describe('Account Index', function () {
             ->has('netWorth')
             ->has('accounts.data', 2)
         );
+    });
+});
+
+describe('Total Net Worth conversion (issue #51)', function () {
+    test('converts every configured currency to PKR, not just PKR and USD', function () {
+        // Balances all 1,000.00 in major units (minor units in the DB).
+        // config('currency.default_rates'): PKR 1, USD 278, EUR 305, GBP 355, AED 75.
+        Account::factory()->create(['currency_code' => 'PKR', 'current_balance' => 100000]);
+        Account::factory()->create(['currency_code' => 'USD', 'current_balance' => 100000]);
+        Account::factory()->create(['currency_code' => 'EUR', 'current_balance' => 100000]);
+        Account::factory()->create(['currency_code' => 'GBP', 'current_balance' => 100000]);
+        Account::factory()->create(['currency_code' => 'AED', 'current_balance' => 100000]);
+
+        $netWorth = app(AccountService::class)->calculateTotalNetWorth();
+
+        // 1,000 + 278,000 + 305,000 + 355,000 + 75,000 = 1,014,000 PKR
+        expect($netWorth['total_pkr'])->toBe(1014000.0);
+
+        // Each non-USD foreign currency must carry a correct, non-zero PKR value.
+        $byCode = collect($netWorth['currency_breakdown'])->keyBy('currency_code');
+        expect($byCode['EUR']['pkr_value'])->toBe(305000.0)
+            ->and($byCode['GBP']['pkr_value'])->toBe(355000.0)
+            ->and($byCode['AED']['pkr_value'])->toBe(75000.0);
     });
 });
 
