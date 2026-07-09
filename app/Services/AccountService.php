@@ -20,7 +20,7 @@ class AccountService
     {
         // Convert balance from major units (dollars) to minor units (cents)
         if (isset($data['current_balance'])) {
-            $data['current_balance'] = (int) ($data['current_balance'] * 100);
+            $data['current_balance'] = CurrencyHelper::toMinor($data['current_balance']);
         } else {
             $data['current_balance'] = 0;
         }
@@ -44,7 +44,7 @@ class AccountService
         foreach ($allowedFields as $field) {
             if (array_key_exists($field, $data)) {
                 if ($field === 'current_balance') {
-                    $updateData[$field] = (int) ($data[$field] * 100);
+                    $updateData[$field] = CurrencyHelper::toMinor($data[$field]);
                 } else {
                     $updateData[$field] = $data[$field];
                 }

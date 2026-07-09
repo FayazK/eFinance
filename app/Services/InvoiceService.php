@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Invoice;
 use App\Models\InvoicePayment;
 use App\Models\TransactionCategory;
@@ -30,11 +31,11 @@ class InvoiceService
             // Calculate totals from line items
             $subtotal = 0;
             foreach ($data['items'] as $item) {
-                $itemAmount = (int) (($item['quantity'] * $item['unit_price']) * 100);
+                $itemAmount = CurrencyHelper::toMinor($item['quantity'] * $item['unit_price']);
                 $subtotal += $itemAmount;
             }
 
-            $taxAmount = isset($data['tax_amount']) ? (int) ($data['tax_amount'] * 100) : 0;
+            $taxAmount = isset($data['tax_amount']) ? CurrencyHelper::toMinor($data['tax_amount']) : 0;
             $totalAmount = $subtotal + $taxAmount;
 
             // Generate invoice number
@@ -61,8 +62,8 @@ class InvoiceService
 
             // Create line items
             foreach ($data['items'] as $index => $item) {
-                $unitPrice = (int) ($item['unit_price'] * 100);
-                $amount = (int) (($item['quantity'] * $item['unit_price']) * 100);
+                $unitPrice = CurrencyHelper::toMinor($item['unit_price']);
+                $amount = CurrencyHelper::toMinor($item['quantity'] * $item['unit_price']);
 
                 $invoice->items()->create([
                     'description' => $item['description'],
@@ -98,11 +99,11 @@ class InvoiceService
             if (isset($data['items'])) {
                 $subtotal = 0;
                 foreach ($data['items'] as $item) {
-                    $itemAmount = (int) (($item['quantity'] * $item['unit_price']) * 100);
+                    $itemAmount = CurrencyHelper::toMinor($item['quantity'] * $item['unit_price']);
                     $subtotal += $itemAmount;
                 }
 
-                $taxAmount = isset($data['tax_amount']) ? (int) ($data['tax_amount'] * 100) : 0;
+                $taxAmount = isset($data['tax_amount']) ? CurrencyHelper::toMinor($data['tax_amount']) : 0;
                 $totalAmount = $subtotal + $taxAmount;
 
                 $data['subtotal'] = $subtotal;
@@ -113,8 +114,8 @@ class InvoiceService
                 // Delete old items and create new ones
                 $invoice->items()->delete();
                 foreach ($data['items'] as $index => $item) {
-                    $unitPrice = (int) ($item['unit_price'] * 100);
-                    $amount = (int) (($item['quantity'] * $item['unit_price']) * 100);
+                    $unitPrice = CurrencyHelper::toMinor($item['unit_price']);
+                    $amount = CurrencyHelper::toMinor($item['quantity'] * $item['unit_price']);
 
                     $invoice->items()->create([
                         'description' => $item['description'],
@@ -206,8 +207,8 @@ class InvoiceService
             }
 
             // Convert to minor units
-            $paymentAmount = (int) ($paymentData['payment_amount'] * 100);
-            $amountReceived = (int) ($paymentData['amount_received'] * 100);
+            $paymentAmount = CurrencyHelper::toMinor($paymentData['payment_amount']);
+            $amountReceived = CurrencyHelper::toMinor($paymentData['amount_received']);
 
             // Calculate fee
             $feeAmount = $paymentAmount - $amountReceived;

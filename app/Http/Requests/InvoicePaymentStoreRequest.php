@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Account;
 use App\Models\Invoice;
 use Illuminate\Contracts\Validation\ValidationRule;
@@ -53,7 +54,7 @@ class InvoicePaymentStoreRequest extends FormRequest
                 }
 
                 // Validate payment doesn't exceed balance
-                $paymentAmount = (int) ($this->payment_amount * 100);
+                $paymentAmount = CurrencyHelper::toMinor($this->payment_amount);
                 if ($paymentAmount > $invoice->balance_due) {
                     $validator->errors()->add(
                         'payment_amount',
