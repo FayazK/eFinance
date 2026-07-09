@@ -43,10 +43,12 @@ class TransferService
             // Check if same currency for implicit fee calculation
             $sameCurrency = $sourceAccount->currency_code === $destinationAccount->currency_code;
 
-            // Calculate exchange rate: destination_amount / source_amount
-            $exchangeRate = $data['source_amount'] > 0
-                ? $data['destination_amount'] / $data['source_amount']
-                : 1.0;
+            // Same-currency transfers always have a rate of 1.0; any difference
+            // between sent and received is a fee, not an exchange rate. Cross-currency
+            // uses the implied rate destination_amount / source_amount.
+            $exchangeRate = $sameCurrency
+                ? 1.0
+                : ($data['source_amount'] > 0 ? $data['destination_amount'] / $data['source_amount'] : 1.0);
 
             // For same-currency transfers, calculate implicit fee from difference
             $feeAmount = 0;

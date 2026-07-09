@@ -253,6 +253,45 @@ describe('Transfer Create', function () {
         expect($feeTransaction->category->name)->toBe('Bank Charges & Fees');
     });
 
+    test('same-currency transfer with fee reports the true source amount and rate', function () {
+        $this->actingAs($this->user);
+
+        $sourceAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 200000, // $2000.00
+        ]);
+
+        $destinationAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        // Send $1000, receive $900 → implicit fee of $100.
+        $response = $this->postJson('/dashboard/transfers', [
+            'source_account_id' => $sourceAccount->id,
+            'destination_account_id' => $destinationAccount->id,
+            'source_amount' => 1000.00,
+            'destination_amount' => 900.00,
+            'description' => 'Transfer with fee',
+            'date' => '2025-12-27',
+        ]);
+
+        $response->assertCreated();
+
+        // The API must report the true amount sent ($1000), the amount received
+        // ($900), the fee ($100), and a same-currency rate of 1.0 (not 0.9).
+        $data = $response->json('data');
+        expect($data['source_amount'])->toEqual(1000)
+            ->and($data['destination_amount'])->toEqual(900)
+            ->and($data['fee_amount'])->toEqual(100)
+            ->and($data['exchange_rate'])->toEqual(1.0)
+            ->and($data['has_fee'])->toBeTrue();
+
+        // Ledger is unchanged: source out $1000 ($900 transfer + $100 fee).
+        $sourceAccount->refresh();
+        expect($sourceAccount->current_balance)->toBe(100000);
+    });
+
     test('same-currency transfer without fee works as before', function () {
         $this->actingAs($this->user);
 

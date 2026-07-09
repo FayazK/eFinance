@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -71,5 +72,20 @@ class ExpenseStoreRequest extends FormRequest
             'receipts.*.max' => 'Each receipt file must not exceed 5MB.',
             'receipts.*.mimes' => 'Receipts must be JPG, PNG, PDF, or WEBP files.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $account = Account::find($this->account_id);
+
+            // Accounts are single-currency: the expense currency must match the account.
+            if ($account && $this->currency_code !== $account->currency_code) {
+                $validator->errors()->add(
+                    'account_id',
+                    "Account currency ({$account->currency_code}) must match expense currency ({$this->currency_code})"
+                );
+            }
+        });
     }
 }

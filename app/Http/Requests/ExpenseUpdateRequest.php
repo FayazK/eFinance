@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Models\Account;
 use App\Models\Expense;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -56,5 +57,20 @@ class ExpenseUpdateRequest extends FormRequest
             'exchange_rate.required' => 'Exchange rate is required for foreign currency expenses.',
             'expense_date.required' => 'Please select an expense date.',
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $account = Account::find($this->account_id);
+
+            // Accounts are single-currency: the expense currency must match the account.
+            if ($account && $this->currency_code !== $account->currency_code) {
+                $validator->errors()->add(
+                    'account_id',
+                    "Account currency ({$account->currency_code}) must match expense currency ({$this->currency_code})"
+                );
+            }
+        });
     }
 }

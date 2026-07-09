@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Helpers\CurrencyHelper;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,9 +27,13 @@ class TransferResource extends JsonResource
                 'name' => $this->depositTransaction->account->name,
                 'currency_code' => $this->depositTransaction->account->currency_code,
             ]),
-            'source_amount' => $this->withdrawalTransaction->amount / 100,
+            // The true amount that left the source is the transfer leg plus the fee leg.
+            'source_amount' => $this->withdrawalTransaction->amount / 100 + $this->fee_amount,
             'destination_amount' => $this->depositTransaction->amount / 100,
-            'formatted_source_amount' => $this->withdrawalTransaction->formatted_amount,
+            'formatted_source_amount' => CurrencyHelper::format(
+                $this->withdrawalTransaction->amount / 100 + $this->fee_amount,
+                $this->withdrawalTransaction->account->currency_code
+            ),
             'formatted_destination_amount' => $this->depositTransaction->formatted_amount,
             'exchange_rate' => (float) $this->exchange_rate,
             'formatted_exchange_rate' => $this->formatted_exchange_rate,
