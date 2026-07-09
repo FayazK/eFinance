@@ -480,11 +480,13 @@ class ExpenseService
         }
 
         $current = $expense->next_occurrence_date;
+        $anchorDay = ($expense->recurrence_start_date ?? $current)->day;
 
         $next = $this->calculateNextOccurrenceFromDate(
             $current,
             $expense->recurrence_frequency,
-            $expense->recurrence_interval
+            $expense->recurrence_interval,
+            $anchorDay
         );
 
         // Deactivate once the next occurrence would fall after the end date.
@@ -498,16 +500,19 @@ class ExpenseService
     private function calculateNextOccurrenceFromDate(
         Carbon $current,
         string $frequency,
-        int $interval
+        int $interval,
+        int $anchorDay
     ): Carbon {
         $next = match ($frequency) {
-            'monthly' => $current->copy()->addMonths($interval),
-            'quarterly' => $current->copy()->addMonths(3 * $interval),
-            'yearly' => $current->copy()->addYears($interval),
-            default => $current->copy()->addMonth(),
+            'monthly' => $current->copy()->addMonthsNoOverflow($interval),
+            'quarterly' => $current->copy()->addMonthsNoOverflow(3 * $interval),
+            'yearly' => $current->copy()->addYearsNoOverflow($interval),
+            default => $current->copy()->addMonthNoOverflow(),
         };
 
-        return $next;
+        // Re-anchor to the intended day-of-month, clamped to the month's length,
+        // so month-end recurrences (29th–31st) neither skip a month nor drift.
+        return $next->day(min($anchorDay, $next->daysInMonth));
     }
 
     private function buildTransactionDescription(Expense $expense): string
