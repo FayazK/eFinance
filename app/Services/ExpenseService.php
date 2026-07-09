@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
@@ -27,7 +28,7 @@ class ExpenseService
     public function createDraftExpense(array $data): Expense
     {
         // Convert amount to minor units and calculate PKR reporting amount
-        $amountInMinor = (int) ($data['amount'] * 100);
+        $amountInMinor = CurrencyHelper::toMinor($data['amount']);
         $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
         $reportingAmountPkr = $this->calculateReportingAmountPkr(
             $amountInMinor,
@@ -81,7 +82,7 @@ class ExpenseService
         }
 
         // Convert amount to minor units and recalculate PKR reporting amount
-        $amountInMinor = (int) ($data['amount'] * 100);
+        $amountInMinor = CurrencyHelper::toMinor($data['amount']);
         $exchangeRate = isset($data['exchange_rate']) ? (float) $data['exchange_rate'] : null;
         $reportingAmountPkr = $this->calculateReportingAmountPkr(
             $amountInMinor,
@@ -108,7 +109,7 @@ class ExpenseService
     public function createRecurringExpense(array $data): Expense
     {
         // Convert amount to minor units
-        $amountInMinor = (int) ($data['amount'] * 100);
+        $amountInMinor = CurrencyHelper::toMinor($data['amount']);
 
         // The first occurrence is the start date itself; the date only advances
         // after each occurrence is processed (see processDueRecurringExpenses).
@@ -470,7 +471,7 @@ class ExpenseService
             $rate = $this->getLastExchangeRate($currency) ?? 1.0;
         }
 
-        return (int) ($amount * $rate);
+        return (int) round($amount * $rate);
     }
 
     private function calculateNextOccurrence(Expense $expense): ?Carbon

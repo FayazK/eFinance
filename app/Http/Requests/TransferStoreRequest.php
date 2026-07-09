@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Helpers\CurrencyHelper;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -57,7 +58,7 @@ class TransferStoreRequest extends FormRequest
 
             // Reject transfers that exceed the source account's available balance
             if ($sourceAccount && $this->source_amount) {
-                $withdrawalMinor = (int) ((float) $this->source_amount * 100);
+                $withdrawalMinor = CurrencyHelper::toMinor((float) $this->source_amount);
 
                 if ($sourceAccount->current_balance < $withdrawalMinor) {
                     $message = auth()->user()->hasPermission('accounts.read')

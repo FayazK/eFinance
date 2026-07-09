@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Events\PayrollAdjusted;
 use App\Events\PayrollGenerated;
 use App\Events\PayrollPaid;
+use App\Helpers\CurrencyHelper;
 use App\Models\Payroll;
 use App\Models\TransactionCategory;
 use App\Repositories\Contracts\AccountRepositoryInterface;
@@ -90,11 +91,11 @@ class PayrollService
         $updateData = [];
 
         if (isset($data['bonus'])) {
-            $updateData['bonus'] = (int) ($data['bonus'] * 100);
+            $updateData['bonus'] = CurrencyHelper::toMinor($data['bonus']);
         }
 
         if (isset($data['deductions'])) {
-            $updateData['deductions'] = (int) ($data['deductions'] * 100);
+            $updateData['deductions'] = CurrencyHelper::toMinor($data['deductions']);
         }
 
         if (isset($data['notes'])) {

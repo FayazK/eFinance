@@ -103,6 +103,30 @@ describe('Account Create', function () {
         ]);
     });
 
+    test('account creation rounds a fractional balance to the correct minor units (issue #52)', function (float $major, int $expectedMinor) {
+        $this->actingAs($this->user);
+
+        $response = $this->postJson('/dashboard/accounts', [
+            'name' => 'Rounding Account',
+            'type' => 'bank',
+            'currency_code' => 'USD',
+            'current_balance' => $major, // Major units
+        ]);
+
+        $response->assertCreated();
+
+        // Old code did (int) ($major * 100), which truncated (e.g. 1.15 -> 114).
+        $this->assertDatabaseHas('accounts', [
+            'name' => 'Rounding Account',
+            'current_balance' => $expectedMinor,
+        ]);
+    })->with([
+        '1.15 -> 115' => [1.15, 115],
+        '19.99 -> 1999' => [19.99, 1999],
+        '4.35 -> 435' => [4.35, 435],
+        '0.29 -> 29' => [0.29, 29],
+    ]);
+
     test('account creation requires name, type, and currency', function () {
         $this->actingAs($this->user);
 

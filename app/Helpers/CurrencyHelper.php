@@ -73,6 +73,15 @@ class CurrencyHelper
     }
 
     /**
+     * Convert a major-unit amount (e.g. 1.15) to integer minor units (e.g. 115).
+     * Rounds to avoid IEEE-754 float truncation.
+     */
+    public static function toMinor(float|int $amount): int
+    {
+        return (int) round($amount * 100);
+    }
+
+    /**
      * Format an amount with currency symbol
      */
     public static function format(float|int $amount, string $currencyCode, bool $useSymbol = true): string

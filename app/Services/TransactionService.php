@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Transaction;
 use App\Repositories\Contracts\AccountRepositoryInterface;
 use App\Repositories\Contracts\TransactionRepositoryInterface;
@@ -24,7 +25,7 @@ class TransactionService
     {
         return DB::transaction(function () use ($data) {
             // Convert amount from major to minor units
-            $amountInMinor = (int) ($data['amount'] * 100);
+            $amountInMinor = CurrencyHelper::toMinor($data['amount']);
             $data['amount'] = $amountInMinor;
 
             // Create transaction

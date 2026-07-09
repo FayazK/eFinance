@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\CurrencyHelper;
 use App\Models\Employee;
 use App\Repositories\Contracts\EmployeeRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -20,7 +21,7 @@ class EmployeeService
     {
         // Convert salary from major units to minor units (paisa/cents)
         if (isset($data['base_salary'])) {
-            $data['base_salary'] = (int) ($data['base_salary'] * 100);
+            $data['base_salary'] = CurrencyHelper::toMinor($data['base_salary']);
         } else {
             throw new InvalidArgumentException('Base salary is required');
         }
@@ -32,7 +33,7 @@ class EmployeeService
     {
         // Convert salary from major units to minor units if present
         if (isset($data['base_salary'])) {
-            $data['base_salary'] = (int) ($data['base_salary'] * 100);
+            $data['base_salary'] = CurrencyHelper::toMinor($data['base_salary']);
         }
 
         return $this->employeeRepository->update($employeeId, $data);
