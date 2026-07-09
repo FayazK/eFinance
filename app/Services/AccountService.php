@@ -90,23 +90,19 @@ class AccountService
         );
     }
 
-    public function calculateTotalNetWorth(float $usdToPkrRate = 278.0): array
+    public function calculateTotalNetWorth(): array
     {
         $accounts = $this->getAllAccounts();
+        $rates = config('currency.default_rates');
         $totalPkr = 0;
         $currencyTotals = [];
 
         foreach ($accounts as $account) {
             $balanceInMajor = $account->current_balance / 100;
 
-            if ($account->currency_code === 'PKR') {
-                $pkrValue = $balanceInMajor;
-            } elseif ($account->currency_code === 'USD') {
-                $pkrValue = $balanceInMajor * $usdToPkrRate;
-            } else {
-                // For other currencies, could add conversion rates later
-                $pkrValue = 0;
-            }
+            // Convert to PKR using the configured rate; currencies without a
+            // configured rate contribute 0 rather than a fabricated amount.
+            $pkrValue = $balanceInMajor * (float) ($rates[$account->currency_code] ?? 0);
 
             $totalPkr += $pkrValue;
 
