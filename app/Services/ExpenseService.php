@@ -150,8 +150,17 @@ class ExpenseService
                 throw new InvalidArgumentException("Expense {$expenseId} is already processed");
             }
 
-            // Validate account balance
             $account = $expense->account;
+
+            // Accounts are single-currency: refuse to debit a mismatched currency,
+            // which would otherwise treat the expense minor units as the account's currency.
+            if ($expense->currency_code !== $account->currency_code) {
+                throw new InvalidArgumentException(
+                    "Expense currency ({$expense->currency_code}) must match account currency ({$account->currency_code})."
+                );
+            }
+
+            // Validate account balance
             if ($account->current_balance < $expense->amount) {
                 if (! auth()->user()?->hasPermission('accounts.read')) {
                     throw new InvalidArgumentException('Insufficient account balance to process this expense.');

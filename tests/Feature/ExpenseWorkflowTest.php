@@ -507,6 +507,54 @@ describe('Recurring Expense Reporting Amount', function () {
     });
 });
 
+describe('Expense Currency Match', function () {
+    it('rejects creating an expense whose currency differs from the account, with no DB write', function () {
+        // PKR account, but the expense claims USD (valid exchange rate so validation
+        // reaches the currency-match check rather than failing on exchange_rate).
+        $response = $this->post('/dashboard/expenses', [
+            'account_id' => $this->account->id, // PKR
+            'amount' => 50.00,
+            'currency_code' => 'USD',
+            'exchange_rate' => 280.50,
+            'expense_date' => now()->format('Y-m-d'),
+            'is_recurring' => '0',
+        ]);
+
+        $response->assertSessionHasErrors('account_id');
+
+        // No expense row, account balance untouched.
+        expect(Expense::count())->toBe(0);
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe(100000);
+    });
+
+    it('rejects processing an expense whose currency differs from the account, with no debit', function () {
+        // A mismatched draft that slipped past creation must still be blocked at process time.
+        $expense = Expense::factory()->create([
+            'account_id' => $this->account->id, // PKR
+            'category_id' => $this->category->id,
+            'amount' => 5000,
+            'currency_code' => 'USD',
+            'exchange_rate' => 280.50,
+            'reporting_amount_pkr' => 1402500,
+            'status' => 'draft',
+            'transaction_id' => null,
+        ]);
+
+        $response = $this->post("/dashboard/expenses/{$expense->id}/process");
+
+        $response->assertRedirect()
+            ->assertSessionHasErrors();
+
+        $expense->refresh();
+        expect($expense->status)->toBe('draft')
+            ->and($expense->transaction_id)->toBeNull();
+
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe(100000);
+    });
+});
+
 describe('Recurring Expense First Occurrence', function () {
     it('charges the start-date occurrence on the first run', function () {
         $service = app(ExpenseService::class);
