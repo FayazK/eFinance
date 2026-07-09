@@ -34,6 +34,7 @@ class DistributionController extends Controller
                 'id' => $account->id,
                 'name' => $account->name,
                 'currency_code' => $account->currency_code,
+                'current_balance' => $canViewAccounts ? $account->balance_in_major_units : null,
                 'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
             ]);
 
@@ -52,6 +53,7 @@ class DistributionController extends Controller
                 'id' => $account->id,
                 'name' => $account->name,
                 'currency_code' => $account->currency_code,
+                'current_balance' => $canViewAccounts ? $account->balance_in_major_units : null,
                 'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
             ]);
 
@@ -106,6 +108,7 @@ class DistributionController extends Controller
                 'id' => $account->id,
                 'name' => $account->name,
                 'currency_code' => $account->currency_code,
+                'current_balance' => $canViewAccounts ? $account->balance_in_major_units : null,
                 'formatted_balance' => $canViewAccounts ? $account->formatted_balance : null,
             ]);
 
