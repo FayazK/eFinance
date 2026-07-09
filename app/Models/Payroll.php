@@ -58,7 +58,7 @@ class Payroll extends Model
     {
         // Auto-calculate net_payable before saving
         static::saving(function (Payroll $payroll) {
-            $payroll->net_payable = $payroll->base_salary + $payroll->bonus - $payroll->deductions;
+            $payroll->net_payable = max(0, $payroll->base_salary + $payroll->bonus - $payroll->deductions);
         });
     }
 
