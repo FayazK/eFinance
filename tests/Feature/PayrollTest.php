@@ -120,6 +120,36 @@ describe('Payroll Adjustments', function () {
 
         expect($payroll->fresh()->net_payable)->toBe(10500000); // 105k
     });
+
+    test('rejects deductions exceeding base salary plus bonus', function () {
+        $payroll = Payroll::factory()->create([
+            'base_salary' => 5000000, // 50k PKR (paisa)
+            'status' => 'pending',
+        ]);
+
+        $response = $this->putJson(route('payroll.update-adjustments', $payroll->id), [
+            'deductions' => 100000, // 100k PKR — exceeds base salary
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['deductions']);
+
+        // Adjustment rejected — net_payable must never be stored negative
+        expect($payroll->fresh()->net_payable)->toBe(5000000);
+    });
+
+    test('floors net payable at zero when deductions exceed pay', function () {
+        $payroll = Payroll::factory()->create([
+            'base_salary' => 5000000, // 50k PKR (paisa)
+            'status' => 'pending',
+        ]);
+
+        // Write directly through the model, bypassing request validation
+        $payroll->deductions = 10000000; // 100k PKR (paisa) — exceeds pay
+        $payroll->save();
+
+        expect($payroll->fresh()->net_payable)->toBe(0);
+    });
 });
 
 describe('Payroll Payment', function () {
