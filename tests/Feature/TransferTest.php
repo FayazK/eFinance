@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Account;
+use App\Models\Transaction;
 use App\Models\Transfer;
 use App\Models\User;
 
@@ -468,12 +469,43 @@ describe('Transfer Data Fetching', function () {
         $account1 = Account::factory()->create();
         $account2 = Account::factory()->create();
 
-        // Create transfers involving account1
-        Transfer::factory()->count(3)->create();
+        // Transfers link to accounts through their withdrawal/deposit
+        // transactions (there are no account_id columns on transfers), so
+        // build the linked transactions on the target account explicitly.
+        $transferFromAccount = function (Account $source): Transfer {
+            $withdrawal = Transaction::factory()->create([
+                'account_id' => $source->id,
+                'type' => 'debit',
+                'amount' => 100000,
+            ]);
+            $deposit = Transaction::factory()->create([
+                'account_id' => Account::factory()->create()->id,
+                'type' => 'credit',
+                'amount' => 100000,
+            ]);
+
+            return Transfer::factory()->create([
+                'withdrawal_transaction_id' => $withdrawal->id,
+                'deposit_transaction_id' => $deposit->id,
+            ]);
+        };
+
+        $expected = collect([
+            $transferFromAccount($account1),
+            $transferFromAccount($account1),
+        ]);
+
+        // Unrelated transfers the filter must exclude.
+        $transferFromAccount($account2);
+        Transfer::factory()->create();
 
         $response = $this->getJson("/dashboard/transfers/data?account_id={$account1->id}");
 
         $response->assertOk();
+        $response->assertJsonCount(2, 'data');
+
+        $returnedIds = collect($response->json('data'))->pluck('id')->sort()->values()->all();
+        expect($returnedIds)->toBe($expected->pluck('id')->sort()->values()->all());
     });
 });
 
