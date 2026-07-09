@@ -110,13 +110,9 @@ class ExpenseService
         // Convert amount to minor units
         $amountInMinor = (int) ($data['amount'] * 100);
 
-        // Calculate next occurrence date
+        // The first occurrence is the start date itself; the date only advances
+        // after each occurrence is processed (see processDueRecurringExpenses).
         $startDate = Carbon::parse($data['recurrence_start_date'] ?? now());
-        $nextOccurrence = $this->calculateNextOccurrenceFromDate(
-            $startDate,
-            $data['recurrence_frequency'],
-            (int) ($data['recurrence_interval'] ?? 1)
-        );
 
         return $this->expenseRepository->create([
             'account_id' => $data['account_id'],
@@ -133,7 +129,7 @@ class ExpenseService
             'recurrence_interval' => (int) ($data['recurrence_interval'] ?? 1),
             'recurrence_start_date' => $startDate->format('Y-m-d'),
             'recurrence_end_date' => $data['recurrence_end_date'] ?? null,
-            'next_occurrence_date' => $nextOccurrence->format('Y-m-d'),
+            'next_occurrence_date' => $startDate->format('Y-m-d'),
             'status' => 'draft',
         ]);
     }

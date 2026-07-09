@@ -507,6 +507,65 @@ describe('Recurring Expense Reporting Amount', function () {
     });
 });
 
+describe('Recurring Expense First Occurrence', function () {
+    it('charges the start-date occurrence on the first run', function () {
+        $service = app(ExpenseService::class);
+
+        $template = $service->createRecurringExpense([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 500.00, // 500.00 PKR
+            'currency_code' => 'PKR',
+            'description' => 'Monthly rent',
+            'recurrence_frequency' => 'monthly',
+            'recurrence_interval' => 1,
+            'recurrence_start_date' => now()->format('Y-m-d'),
+        ]);
+
+        // The template must be due on its start date, not one interval later.
+        expect($template->next_occurrence_date->format('Y-m-d'))->toBe(now()->format('Y-m-d'));
+
+        $service->processDueRecurringExpenses();
+
+        // An occurrence dated on the start date was generated and processed.
+        $occurrence = Expense::where('is_recurring', false)->latest('id')->first();
+        expect($occurrence)->not->toBeNull()
+            ->and($occurrence->expense_date->format('Y-m-d'))->toBe(now()->format('Y-m-d'))
+            ->and($occurrence->status)->toBe('processed');
+
+        // The account was debited exactly once (100000 - 50000).
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe(50000);
+
+        // The template advanced by one interval and stays active.
+        $template->refresh();
+        expect($template->next_occurrence_date->format('Y-m-d'))->toBe(now()->addMonth()->format('Y-m-d'))
+            ->and($template->is_active)->toBeTrue();
+    });
+
+    it('does not charge a recurring expense before its start date', function () {
+        $service = app(ExpenseService::class);
+
+        $service->createRecurringExpense([
+            'account_id' => $this->account->id,
+            'category_id' => $this->category->id,
+            'amount' => 500.00,
+            'currency_code' => 'PKR',
+            'description' => 'Future rent',
+            'recurrence_frequency' => 'monthly',
+            'recurrence_interval' => 1,
+            'recurrence_start_date' => now()->addWeek()->format('Y-m-d'),
+        ]);
+
+        $service->processDueRecurringExpenses();
+
+        // Nothing generated, nothing debited before the start date.
+        expect(Expense::where('is_recurring', false)->count())->toBe(0);
+        $this->account->refresh();
+        expect($this->account->current_balance)->toBe(100000);
+    });
+});
+
 describe('Recurring Expense Receipts', function () {
     it('persists receipts attached when creating a recurring expense', function () {
         Storage::fake('public');
