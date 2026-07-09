@@ -125,12 +125,12 @@ export default function ProcessModal({ visible, distribution, accounts, onCancel
                 <div style={{ marginTop: 16 }}>
                     <Row gutter={16}>
                         <Col span={12}>
-                            <Statistic title="Account Balance" value={selectedAccount.current_balance / 100} prefix="Rs" precision={2} />
+                            <Statistic title="Account Balance" value={selectedAccount.current_balance} prefix="Rs" precision={2} />
                         </Col>
                         <Col span={12}>
                             <Statistic
                                 title="Balance After Processing"
-                                value={(selectedAccount.current_balance - totalDistributable) / 100}
+                                value={selectedAccount.current_balance - totalDistributable}
                                 prefix="Rs"
                                 precision={2}
                                 valueStyle={{

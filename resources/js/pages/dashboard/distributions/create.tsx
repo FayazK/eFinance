@@ -84,8 +84,8 @@ export default function CreateDistribution() {
     // Balance check
     const hasSufficientBalance = useMemo(() => {
         if (!selectedAccount) return false;
-        return selectedAccount.current_balance >= totals.humanPartnerPaisa;
-    }, [selectedAccount, totals.humanPartnerPaisa]);
+        return selectedAccount.current_balance >= totals.humanPartnerPkr;
+    }, [selectedAccount, totals.humanPartnerPkr]);
 
     // Handle submission
     const handleSubmit = async (action: 'draft' | 'process') => {
@@ -230,7 +230,7 @@ export default function CreateDistribution() {
                             <Card title="Account Balance Preview">
                                 <Row gutter={16}>
                                     <Col xs={24} sm={8}>
-                                        <Statistic title="Current Balance" value={selectedAccount.current_balance / 100} prefix="Rs" precision={2} />
+                                        <Statistic title="Current Balance" value={selectedAccount.current_balance} prefix="Rs" precision={2} />
                                     </Col>
                                     <Col xs={24} sm={8}>
                                         <Statistic
@@ -244,7 +244,7 @@ export default function CreateDistribution() {
                                     <Col xs={24} sm={8}>
                                         <Statistic
                                             title="Balance After Distribution"
-                                            value={(selectedAccount.current_balance - totals.humanPartnerPaisa) / 100}
+                                            value={selectedAccount.current_balance - totals.humanPartnerPkr}
                                             prefix="Rs"
                                             precision={2}
                                             valueStyle={{
