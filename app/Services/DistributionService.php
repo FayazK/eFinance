@@ -15,6 +15,7 @@ use App\Repositories\Contracts\DistributionRepositoryInterface;
 use App\Repositories\Contracts\ShareholderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class DistributionService
@@ -300,7 +301,7 @@ class DistributionService
             ->first();
 
         $sequence = $lastDistribution
-            ? ((int) substr($lastDistribution->distribution_number, -3) + 1)
+            ? ((int) Str::afterLast($lastDistribution->distribution_number, '-') + 1)
             : 1;
 
         return sprintf('%s-%d-%03d', $prefix, $year, $sequence);
