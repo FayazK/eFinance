@@ -81,9 +81,12 @@ class PayrollPaymentRequest extends FormRequest
                     if (empty($this->exchange_rate)) {
                         $validator->errors()->add('exchange_rate', 'Exchange rate is required for USD payrolls.');
                     } else {
-                        // Calculate USD amount needed: PKR net_payable ÷ rate = USD
-                        $usdTotalPkr = $usdPayrolls->sum('net_payable');
-                        $usdNeeded = (int) round($usdTotalPkr / $this->exchange_rate);
+                        // Sum the per-line rounded amounts (PKR net_payable ÷ rate = USD),
+                        // matching what each payroll actually debits, so the check can't be
+                        // passed by a batch that would overdraw after rounding.
+                        $usdNeeded = (int) $usdPayrolls->sum(
+                            fn ($payroll) => (int) round($payroll->net_payable / $this->exchange_rate)
+                        );
 
                         if ($usdAccount && $usdAccount->current_balance < $usdNeeded) {
                             $validator->errors()->add('usd_account_id', 'Insufficient USD balance.');

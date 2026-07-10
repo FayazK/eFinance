@@ -177,9 +177,14 @@ class PayrollService
                     throw new InvalidArgumentException('Exchange rate is required for USD payrolls');
                 }
 
-                // Calculate total USD needed: PKR ÷ rate = USD (in minor units)
-                $usdTotalPkr = $usdPayrolls->sum('net_payable');
-                $usdNeeded = (int) round($usdTotalPkr / $exchangeRate);
+                // Compute each payroll's USD amount once (PKR ÷ rate = USD, in minor units).
+                // The sum of these per-line amounts is exactly what gets debited, so guarding
+                // against their sum keeps the check in step with the money actually moved.
+                $usdAmounts = $usdPayrolls->mapWithKeys(fn ($payroll) => [
+                    $payroll->id => (int) round($payroll->net_payable / $exchangeRate),
+                ]);
+
+                $usdNeeded = (int) $usdAmounts->sum();
                 if ($usdAccount->current_balance < $usdNeeded) {
                     if (! auth()->user()->hasPermission('accounts.read')) {
                         throw new InvalidArgumentException('Insufficient account balance to process payroll.');
@@ -192,6 +197,7 @@ class PayrollService
                         'account_id' => $data['usd_account_id'],
                         'payment_date' => $data['payment_date'] ?? now()->format('Y-m-d'),
                         'exchange_rate' => $exchangeRate,
+                        'usd_amount_minor' => $usdAmounts[$payroll->id],
                     ]);
                 }
             }
@@ -248,8 +254,8 @@ class PayrollService
     private function paySinglePayrollUsd(Payroll $payroll, array $data): Payroll
     {
         $exchangeRate = (float) $data['exchange_rate'];
-        // Calculate USD amount: PKR ÷ rate = USD
-        $usdAmountMinor = (int) round($payroll->net_payable / $exchangeRate);
+        // Reuse the amount computed by the batch guard so the debit matches what was validated.
+        $usdAmountMinor = (int) $data['usd_amount_minor'];
 
         // Create expense transaction (in USD)
         $transaction = $this->transactionService->createTransaction([
