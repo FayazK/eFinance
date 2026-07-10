@@ -38,7 +38,7 @@ class DistributionResource extends JsonResource
             'adjustment_reason' => $this->adjustment_reason,
             'processed_at' => $this->processed_at?->format('Y-m-d H:i:s'),
             'notes' => $this->notes,
-            'lines' => DistributionLineResource::collection($this->whenLoaded('lines')),
+            'lines' => $this->whenLoaded('lines', fn () => DistributionLineResource::collection($this->lines)->resolve()),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
