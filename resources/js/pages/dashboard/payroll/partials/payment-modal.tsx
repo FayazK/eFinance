@@ -38,8 +38,9 @@ export default function PaymentModal({ visible, payrolls, pkrAccounts, usdAccoun
     const usdTotalPkr = useMemo(() => usdPayrolls.reduce((sum, p) => sum + p.net_payable, 0), [usdPayrolls]);
     const usdTotalUsd = useMemo(() => {
         if (!exchangeRate || exchangeRate <= 0) return 0;
-        return usdTotalPkr / exchangeRate;
-    }, [usdTotalPkr, exchangeRate]);
+        // Sum per-line rounded cents to match the backend debit (sum-of-rounds), not round-of-sum.
+        return usdPayrolls.reduce((sum, p) => sum + Math.round((p.net_payable * 100) / exchangeRate), 0) / 100;
+    }, [usdPayrolls, exchangeRate]);
 
     // Get selected accounts
     const selectedPkrAccount = useMemo(() => pkrAccounts.find((a) => a.id === selectedPkrAccountId), [pkrAccounts, selectedPkrAccountId]);

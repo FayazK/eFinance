@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Payroll;
 use App\Models\Transaction;
 use App\Models\User;
+use App\Services\PayrollService;
 use Illuminate\Support\Facades\Event;
 
 beforeEach(function () {
@@ -385,6 +386,83 @@ describe('Payroll Payment', function () {
 
         // First payroll should still be pending (rollback)
         expect($payroll1->fresh()->status)->toBe('pending');
+    });
+
+    test('rejects USD batch that overdraws after per-line rounding', function () {
+        // Each line debits round(350 / 100) = 4 cents, so three lines cost 12 cents.
+        // The old guard checked round(1050 / 100) = 11, so a balance of 11 passed but overdrew.
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 11, // 11 cents — one cent short of the real per-line total
+        ]);
+        $payrolls = Payroll::factory()->count(3)->usd()->create([
+            'status' => 'pending',
+            'base_salary' => 350, // net_payable = 350 paisa
+        ]);
+
+        $response = $this->postJson(route('payroll.pay'), [
+            'usd_account_id' => $usdAccount->id,
+            'exchange_rate' => 100,
+            'payroll_ids' => $payrolls->pluck('id')->toArray(),
+            'payment_date' => '2026-01-05',
+        ]);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['usd_account_id']);
+
+        // Nothing was debited and nothing was paid.
+        expect($usdAccount->fresh()->current_balance)->toBe(11);
+        expect(Payroll::where('status', 'paid')->count())->toBe(0);
+    });
+
+    test('service guard rejects USD batch that would overdraw after per-line rounding', function () {
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 11,
+        ]);
+        $payrolls = Payroll::factory()->count(3)->usd()->create([
+            'status' => 'pending',
+            'base_salary' => 350,
+        ]);
+
+        $pay = fn () => app(PayrollService::class)->payBatchPayrolls(
+            $payrolls->pluck('id')->toArray(),
+            [
+                'usd_account_id' => $usdAccount->id,
+                'exchange_rate' => 100,
+                'payment_date' => '2026-01-05',
+            ]
+        );
+
+        expect($pay)->toThrow(InvalidArgumentException::class);
+
+        // The transaction rolled back: balance untouched, nothing paid.
+        expect($usdAccount->fresh()->current_balance)->toBe(11);
+        expect(Payroll::where('status', 'paid')->count())->toBe(0);
+    });
+
+    test('pays USD batch at the exact per-line rounded total without overdrawing', function () {
+        $usdAccount = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 12, // exactly the sum of the per-line rounded amounts
+        ]);
+        $payrolls = Payroll::factory()->count(3)->usd()->create([
+            'status' => 'pending',
+            'base_salary' => 350,
+        ]);
+
+        $response = $this->postJson(route('payroll.pay'), [
+            'usd_account_id' => $usdAccount->id,
+            'exchange_rate' => 100,
+            'payroll_ids' => $payrolls->pluck('id')->toArray(),
+            'payment_date' => '2026-01-05',
+        ]);
+
+        $response->assertStatus(200);
+
+        // 12 cents guarded, 12 cents debited — balance lands exactly at zero.
+        expect($usdAccount->fresh()->current_balance)->toBe(0);
+        expect(Payroll::where('status', 'paid')->count())->toBe(3);
     });
 });
 
