@@ -127,6 +127,42 @@ describe('Distribution Calculation', function () {
             ->and(Distribution::find($distribution->id))->not->toBeNull();
     });
 
+    test('office reserve absorbs the rounding remainder so lines reconcile to net profit', function () {
+        // Issue #76: independent per-line rounding leaves the summed allocations a few
+        // paisa short of net profit. The office reserve must carry the remainder.
+        Shareholder::query()->delete();
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'name' => 'Partner A']);
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'name' => 'Partner B']);
+        Shareholder::factory()->create(['equity_percentage' => 23.34, 'name' => 'Partner C']);
+        $office = Shareholder::factory()->officeReserve()->create(['equity_percentage' => 10, 'name' => 'Office Reserve']);
+
+        // Odd net profit (paisa) that per-line rounding cannot split exactly.
+        $netProfit = 1000001;
+        $distribution = $this->service->createDistribution(['manual_amount_pkr' => $netProfit]);
+
+        $distribution->load('lines');
+
+        expect($distribution->lines->sum('allocated_amount_pkr'))->toBe($netProfit);
+
+        $officeLine = $distribution->lines->firstWhere('shareholder_id', $office->id);
+        expect($officeLine->allocated_amount_pkr)->toBe(100001);
+    });
+
+    test('last line absorbs the rounding remainder when there is no office reserve', function () {
+        // Issue #76 canonical case: three uneven partners, no office reserve.
+        Shareholder::query()->delete();
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'name' => 'Partner A']);
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'name' => 'Partner B']);
+        Shareholder::factory()->create(['equity_percentage' => 33.34, 'name' => 'Partner C']);
+
+        $netProfit = 1000001;
+        $distribution = $this->service->createDistribution(['manual_amount_pkr' => $netProfit]);
+
+        $distribution->load('lines');
+
+        expect($distribution->lines->sum('allocated_amount_pkr'))->toBe($netProfit);
+    });
+
     test('cannot create distribution if equity does not total 100%', function () {
         // Delete all shareholders and create invalid total
         Shareholder::query()->delete();
