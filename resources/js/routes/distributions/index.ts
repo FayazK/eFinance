@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, type RouteFormDefinition, applyUrlDefaults } from './../../wayfinder'
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -16,7 +16,7 @@ index.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 index.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ index.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -35,7 +35,7 @@ index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -45,7 +45,7 @@ index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -55,7 +55,7 @@ const indexForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => (
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -65,7 +65,7 @@ indexForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::index
-* @see app/Http/Controllers/DistributionController.php:27
+* @see app/Http/Controllers/DistributionController.php:28
 * @route '/dashboard/distributions'
 */
 indexForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -82,7 +82,7 @@ index.form = indexForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 export const create = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -97,7 +97,7 @@ create.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 create.url = (options?: RouteQueryOptions) => {
@@ -106,7 +106,7 @@ create.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -116,7 +116,7 @@ create.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -126,7 +126,7 @@ create.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -136,7 +136,7 @@ const createForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => 
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -146,7 +146,7 @@ createForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::create
-* @see app/Http/Controllers/DistributionController.php:46
+* @see app/Http/Controllers/DistributionController.php:47
 * @route '/dashboard/distributions/create'
 */
 createForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -163,7 +163,7 @@ create.form = createForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 export const data = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -178,7 +178,7 @@ data.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 data.url = (options?: RouteQueryOptions) => {
@@ -187,7 +187,7 @@ data.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -197,7 +197,7 @@ data.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -207,7 +207,7 @@ data.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -217,7 +217,7 @@ const dataForm = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -227,7 +227,7 @@ dataForm.get = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::data
-* @see app/Http/Controllers/DistributionController.php:68
+* @see app/Http/Controllers/DistributionController.php:69
 * @route '/dashboard/distributions/data'
 */
 dataForm.head = (options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -244,7 +244,7 @@ data.form = dataForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 export const show = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -259,7 +259,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 show.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -286,7 +286,7 @@ show.url = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 show.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -296,7 +296,7 @@ show.get = (args: { id: string | number } | [id: string | number ] | string | nu
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 show.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -306,7 +306,7 @@ show.head = (args: { id: string | number } | [id: string | number ] | string | n
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 const showForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -316,7 +316,7 @@ const showForm = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 showForm.get = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -326,7 +326,7 @@ showForm.get = (args: { id: string | number } | [id: string | number ] | string 
 
 /**
 * @see \App\Http\Controllers\DistributionController::show
-* @see app/Http/Controllers/DistributionController.php:95
+* @see app/Http/Controllers/DistributionController.php:96
 * @route '/dashboard/distributions/{id}'
 */
 showForm.head = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -343,7 +343,7 @@ show.form = showForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::store
-* @see app/Http/Controllers/DistributionController.php:81
+* @see app/Http/Controllers/DistributionController.php:82
 * @route '/dashboard/distributions'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -358,7 +358,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::store
-* @see app/Http/Controllers/DistributionController.php:81
+* @see app/Http/Controllers/DistributionController.php:82
 * @route '/dashboard/distributions'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -367,7 +367,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\DistributionController::store
-* @see app/Http/Controllers/DistributionController.php:81
+* @see app/Http/Controllers/DistributionController.php:82
 * @route '/dashboard/distributions'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -377,7 +377,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\DistributionController::store
-* @see app/Http/Controllers/DistributionController.php:81
+* @see app/Http/Controllers/DistributionController.php:82
 * @route '/dashboard/distributions'
 */
 const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -387,7 +387,7 @@ const storeForm = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => 
 
 /**
 * @see \App\Http\Controllers\DistributionController::store
-* @see app/Http/Controllers/DistributionController.php:81
+* @see app/Http/Controllers/DistributionController.php:82
 * @route '/dashboard/distributions'
 */
 storeForm.post = (options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -399,7 +399,7 @@ store.form = storeForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
-* @see app/Http/Controllers/DistributionController.php:121
+* @see app/Http/Controllers/DistributionController.php:122
 * @route '/dashboard/distributions/{id}'
 */
 export const update = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -414,7 +414,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
-* @see app/Http/Controllers/DistributionController.php:121
+* @see app/Http/Controllers/DistributionController.php:122
 * @route '/dashboard/distributions/{id}'
 */
 update.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -441,7 +441,7 @@ update.url = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
-* @see app/Http/Controllers/DistributionController.php:121
+* @see app/Http/Controllers/DistributionController.php:122
 * @route '/dashboard/distributions/{id}'
 */
 update.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -451,7 +451,7 @@ update.put = (args: { id: string | number } | [id: string | number ] | string | 
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
-* @see app/Http/Controllers/DistributionController.php:121
+* @see app/Http/Controllers/DistributionController.php:122
 * @route '/dashboard/distributions/{id}'
 */
 const updateForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -466,7 +466,7 @@ const updateForm = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\DistributionController::update
-* @see app/Http/Controllers/DistributionController.php:121
+* @see app/Http/Controllers/DistributionController.php:122
 * @route '/dashboard/distributions/{id}'
 */
 updateForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -483,7 +483,7 @@ update.form = updateForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::destroy
-* @see app/Http/Controllers/DistributionController.php:131
+* @see app/Http/Controllers/DistributionController.php:136
 * @route '/dashboard/distributions/{id}'
 */
 export const destroy = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -498,7 +498,7 @@ destroy.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::destroy
-* @see app/Http/Controllers/DistributionController.php:131
+* @see app/Http/Controllers/DistributionController.php:136
 * @route '/dashboard/distributions/{id}'
 */
 destroy.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -525,7 +525,7 @@ destroy.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\DistributionController::destroy
-* @see app/Http/Controllers/DistributionController.php:131
+* @see app/Http/Controllers/DistributionController.php:136
 * @route '/dashboard/distributions/{id}'
 */
 destroy.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -535,7 +535,7 @@ destroy.delete = (args: { id: string | number } | [id: string | number ] | strin
 
 /**
 * @see \App\Http\Controllers\DistributionController::destroy
-* @see app/Http/Controllers/DistributionController.php:131
+* @see app/Http/Controllers/DistributionController.php:136
 * @route '/dashboard/distributions/{id}'
 */
 const destroyForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -550,7 +550,7 @@ const destroyForm = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\DistributionController::destroy
-* @see app/Http/Controllers/DistributionController.php:131
+* @see app/Http/Controllers/DistributionController.php:136
 * @route '/dashboard/distributions/{id}'
 */
 destroyForm.delete = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -567,7 +567,7 @@ destroy.form = destroyForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
-* @see app/Http/Controllers/DistributionController.php:140
+* @see app/Http/Controllers/DistributionController.php:145
 * @route '/dashboard/distributions/{id}/adjust-profit'
 */
 export const adjustProfit = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -582,7 +582,7 @@ adjustProfit.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
-* @see app/Http/Controllers/DistributionController.php:140
+* @see app/Http/Controllers/DistributionController.php:145
 * @route '/dashboard/distributions/{id}/adjust-profit'
 */
 adjustProfit.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -609,7 +609,7 @@ adjustProfit.url = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
-* @see app/Http/Controllers/DistributionController.php:140
+* @see app/Http/Controllers/DistributionController.php:145
 * @route '/dashboard/distributions/{id}/adjust-profit'
 */
 adjustProfit.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -619,7 +619,7 @@ adjustProfit.put = (args: { id: string | number } | [id: string | number ] | str
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
-* @see app/Http/Controllers/DistributionController.php:140
+* @see app/Http/Controllers/DistributionController.php:145
 * @route '/dashboard/distributions/{id}/adjust-profit'
 */
 const adjustProfitForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -634,7 +634,7 @@ const adjustProfitForm = (args: { id: string | number } | [id: string | number ]
 
 /**
 * @see \App\Http\Controllers\DistributionController::adjustProfit
-* @see app/Http/Controllers/DistributionController.php:140
+* @see app/Http/Controllers/DistributionController.php:145
 * @route '/dashboard/distributions/{id}/adjust-profit'
 */
 adjustProfitForm.put = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -651,7 +651,7 @@ adjustProfit.form = adjustProfitForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::process
-* @see app/Http/Controllers/DistributionController.php:154
+* @see app/Http/Controllers/DistributionController.php:159
 * @route '/dashboard/distributions/{id}/process'
 */
 export const process = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -666,7 +666,7 @@ process.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::process
-* @see app/Http/Controllers/DistributionController.php:154
+* @see app/Http/Controllers/DistributionController.php:159
 * @route '/dashboard/distributions/{id}/process'
 */
 process.url = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions) => {
@@ -693,7 +693,7 @@ process.url = (args: { id: string | number } | [id: string | number ] | string |
 
 /**
 * @see \App\Http\Controllers\DistributionController::process
-* @see app/Http/Controllers/DistributionController.php:154
+* @see app/Http/Controllers/DistributionController.php:159
 * @route '/dashboard/distributions/{id}/process'
 */
 process.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -703,7 +703,7 @@ process.post = (args: { id: string | number } | [id: string | number ] | string 
 
 /**
 * @see \App\Http\Controllers\DistributionController::process
-* @see app/Http/Controllers/DistributionController.php:154
+* @see app/Http/Controllers/DistributionController.php:159
 * @route '/dashboard/distributions/{id}/process'
 */
 const processForm = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -713,7 +713,7 @@ const processForm = (args: { id: string | number } | [id: string | number ] | st
 
 /**
 * @see \App\Http\Controllers\DistributionController::process
-* @see app/Http/Controllers/DistributionController.php:154
+* @see app/Http/Controllers/DistributionController.php:159
 * @route '/dashboard/distributions/{id}/process'
 */
 processForm.post = (args: { id: string | number } | [id: string | number ] | string | number, options?: RouteQueryOptions): RouteFormDefinition<'post'> => ({
@@ -725,7 +725,7 @@ process.form = processForm
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 export const downloadStatement = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -740,7 +740,7 @@ downloadStatement.definition = {
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 downloadStatement.url = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions) => {
@@ -766,7 +766,7 @@ downloadStatement.url = (args: { id: string | number, shareholderId: string | nu
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 downloadStatement.get = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -776,7 +776,7 @@ downloadStatement.get = (args: { id: string | number, shareholderId: string | nu
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 downloadStatement.head = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteDefinition<'head'> => ({
@@ -786,7 +786,7 @@ downloadStatement.head = (args: { id: string | number, shareholderId: string | n
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 const downloadStatementForm = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -796,7 +796,7 @@ const downloadStatementForm = (args: { id: string | number, shareholderId: strin
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 downloadStatementForm.get = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({
@@ -806,7 +806,7 @@ downloadStatementForm.get = (args: { id: string | number, shareholderId: string 
 
 /**
 * @see \App\Http\Controllers\DistributionController::downloadStatement
-* @see app/Http/Controllers/DistributionController.php:167
+* @see app/Http/Controllers/DistributionController.php:172
 * @route '/dashboard/distributions/{id}/statements/{shareholderId}'
 */
 downloadStatementForm.head = (args: { id: string | number, shareholderId: string | number } | [id: string | number, shareholderId: string | number ], options?: RouteQueryOptions): RouteFormDefinition<'get'> => ({

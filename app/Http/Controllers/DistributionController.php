@@ -17,6 +17,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
+use InvalidArgumentException;
 
 class DistributionController extends Controller
 {
@@ -120,7 +121,11 @@ class DistributionController extends Controller
 
     public function update(DistributionUpdateRequest $request, int $id): JsonResponse
     {
-        $distribution = $this->distributionService->updateDistribution($id, $request->validated());
+        try {
+            $distribution = $this->distributionService->updateDistribution($id, $request->validated());
+        } catch (InvalidArgumentException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json([
             'message' => 'Distribution updated successfully',
