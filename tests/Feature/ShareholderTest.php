@@ -67,6 +67,37 @@ describe('Shareholder Management', function () {
         ]))->toThrow(InvalidArgumentException::class, 'cannot exceed 100%');
     });
 
+    test('reactivating a shareholder that would exceed 100% is rejected', function () {
+        Shareholder::factory()->create(['equity_percentage' => 80, 'is_active' => true]);
+        $inactive = Shareholder::factory()->inactive()->create(['equity_percentage' => 30, 'is_active' => false]);
+
+        expect(fn () => $this->service->updateShareholder($inactive->id, [
+            'is_active' => true,
+        ]))->toThrow(InvalidArgumentException::class, 'cannot exceed 100%');
+    });
+
+    test('reactivating a shareholder within the cap succeeds', function () {
+        Shareholder::factory()->create(['equity_percentage' => 60, 'is_active' => true]);
+        $inactive = Shareholder::factory()->inactive()->create(['equity_percentage' => 30, 'is_active' => false]);
+
+        $updated = $this->service->updateShareholder($inactive->id, [
+            'is_active' => true,
+        ]);
+
+        expect($updated->is_active)->toBeTrue();
+    });
+
+    test('editing an inactive shareholder does not falsely trip the equity cap', function () {
+        Shareholder::factory()->create(['equity_percentage' => 100, 'is_active' => true]);
+        $inactive = Shareholder::factory()->inactive()->create(['equity_percentage' => 30, 'is_active' => false]);
+
+        $updated = $this->service->updateShareholder($inactive->id, [
+            'equity_percentage' => 40,
+        ]);
+
+        expect($updated->equity_percentage)->toBe('40.00');
+    });
+
     test('cannot delete shareholder with distribution history', function () {
         $shareholder = Shareholder::factory()->create();
 

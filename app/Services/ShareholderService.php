@@ -47,10 +47,21 @@ class ShareholderService
             throw new InvalidArgumentException('Shareholder not found');
         }
 
-        // Validate total equity if percentage is being changed
-        if (isset($data['equity_percentage']) && $data['equity_percentage'] !== (float) $shareholder->equity_percentage) {
+        // Validate the projected active-equity total whenever this edit could raise it:
+        // either the percentage changes or the shareholder is being reactivated.
+        $oldEquity = (float) $shareholder->equity_percentage;
+        $newEquity = isset($data['equity_percentage']) ? (float) $data['equity_percentage'] : $oldEquity;
+
+        $wasActive = $shareholder->is_active;
+        $willBeActive = array_key_exists('is_active', $data) ? (bool) $data['is_active'] : $wasActive;
+
+        $equityChanged = $newEquity !== $oldEquity;
+        $reactivating = $willBeActive && ! $wasActive;
+
+        if ($willBeActive && ($equityChanged || $reactivating)) {
             $currentTotal = $this->shareholderRepository->getTotalEquityPercentage();
-            $newTotal = $currentTotal - (float) $shareholder->equity_percentage + $data['equity_percentage'];
+            // Only subtract the old percentage if it currently counts toward the active total.
+            $newTotal = $currentTotal - ($wasActive ? $oldEquity : 0.0) + $newEquity;
 
             if ($newTotal > 100) {
                 throw new InvalidArgumentException(
