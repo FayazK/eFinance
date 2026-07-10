@@ -114,10 +114,10 @@ export default function ProcessModal({ visible, distribution, accounts, onCancel
             <Descriptions title="Distribution Summary" column={1} bordered style={{ marginTop: 16 }}>
                 <Descriptions.Item label="Total Net Profit">Rs {(distribution.final_net_profit || 0).toFixed(2)}</Descriptions.Item>
                 <Descriptions.Item label="Human Partner Payouts">
-                    <span style={{ color: antToken.colorError }}>Rs {(totalDistributable / 100).toFixed(2)}</span>
+                    <span style={{ color: antToken.colorError }}>Rs {totalDistributable.toFixed(2)}</span>
                 </Descriptions.Item>
                 <Descriptions.Item label="Office Reserve (Retained)">
-                    <span style={{ color: antToken.colorSuccess }}>Rs {(officeRetained / 100).toFixed(2)}</span>
+                    <span style={{ color: antToken.colorSuccess }}>Rs {officeRetained.toFixed(2)}</span>
                 </Descriptions.Item>
             </Descriptions>
 
@@ -143,7 +143,7 @@ export default function ProcessModal({ visible, distribution, accounts, onCancel
                     {!hasSufficientBalance && (
                         <Alert
                             message="Insufficient Balance"
-                            description={`The selected account does not have sufficient balance. Need Rs ${(totalDistributable / 100).toFixed(
+                            description={`The selected account does not have sufficient balance. Need Rs ${totalDistributable.toFixed(
                                 2,
                             )}, have ${selectedAccount.formatted_balance}`}
                             type="error"

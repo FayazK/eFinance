@@ -223,6 +223,36 @@ test.describe('Distribution Management', () => {
             }
         });
 
+        test('should show consistent, correctly-scaled amounts in the process modal', async ({
+            authenticatedPage,
+        }) => {
+            await indexPage.navigate();
+
+            // Create a fresh draft distribution for the current month
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const startDate = `${year}-${month}-01`;
+            const endDate = `${year}-${month}-28`;
+
+            await indexPage.createDistribution(startDate, endDate);
+
+            await showPage.clickProcessDistribution();
+
+            const summary = await showPage.getProcessModalSummary();
+            console.log('Process modal summary:', summary);
+
+            // Regression for #68: "Human Partner Payouts" and "Office Reserve" were divided
+            // by 100 a second time, so they rendered 100x too small and no longer reconciled
+            // to "Total Net Profit". After the fix the three rows must be mutually consistent.
+            expect(summary.humanPayouts + summary.officeReserve).toBeCloseTo(
+                summary.totalNetProfit,
+                0,
+            );
+
+            await authenticatedPage.click('.ant-modal-close');
+        });
+
         test('should prevent processing without selecting account', async ({
             authenticatedPage,
         }) => {

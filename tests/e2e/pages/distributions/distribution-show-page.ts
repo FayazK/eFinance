@@ -93,6 +93,32 @@ export class DistributionShowPage {
             .catch(() => false);
     }
 
+    /**
+     * Read the "Distribution Summary" rows inside the open Process modal.
+     * Values are parsed from their "Rs X.XX" display into numbers (major units).
+     */
+    async getProcessModalSummary(): Promise<{
+        totalNetProfit: number;
+        humanPayouts: number;
+        officeReserve: number;
+    }> {
+        const readRow = async (label: string): Promise<number> => {
+            const content = await this.page
+                .locator(
+                    `.ant-modal .ant-descriptions-row:has(.ant-descriptions-item-label:has-text("${label}")) .ant-descriptions-item-content`,
+                )
+                .textContent();
+
+            return parseFloat(content?.replace(/Rs\s*/, '').replace(/,/g, '') || '0');
+        };
+
+        return {
+            totalNetProfit: await readRow('Total Net Profit'),
+            humanPayouts: await readRow('Human Partner Payouts'),
+            officeReserve: await readRow('Office Reserve'),
+        };
+    }
+
     async getDistributionLines(): Promise<
         Array<{
             shareholder: string;
