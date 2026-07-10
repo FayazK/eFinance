@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Helpers\EquityHelper;
 use App\Models\Shareholder;
 use App\Repositories\Contracts\ShareholderRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -102,11 +103,12 @@ class ShareholderService
     public function validateEquityTotal(): array
     {
         $total = $this->shareholderRepository->getTotalEquityPercentage();
+        $isValid = EquityHelper::isComplete($total);
 
         return [
             'total' => $total,
-            'is_valid' => $total === 100.0,
-            'message' => $total === 100.0
+            'is_valid' => $isValid,
+            'message' => $isValid
                 ? 'Equity distribution is valid'
                 : "Equity total is {$total}%. Must equal 100%.",
         ];

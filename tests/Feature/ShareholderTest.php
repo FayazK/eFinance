@@ -163,6 +163,18 @@ describe('Shareholder Management', function () {
             ->and($validation['message'])->toContain('valid');
     });
 
+    test('validateEquityTotal accepts a fractional cap table summing to 100%', function () {
+        // Issue #74's cap table. On engines that sum in floating point the total can
+        // arrive just off 100.0; the epsilon check must still report it valid.
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'is_active' => true]);
+        Shareholder::factory()->create(['equity_percentage' => 33.33, 'is_active' => true]);
+        Shareholder::factory()->create(['equity_percentage' => 33.34, 'is_active' => true]);
+
+        $validation = $this->service->validateEquityTotal();
+
+        expect($validation['is_valid'])->toBeTrue();
+    });
+
     test('equity validation detects invalid total', function () {
         Shareholder::factory()->create(['equity_percentage' => 60, 'is_active' => true]);
 
