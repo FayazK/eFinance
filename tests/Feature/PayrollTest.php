@@ -33,6 +33,32 @@ describe('Payroll Generation', function () {
         Event::assertDispatched(PayrollGenerated::class);
     });
 
+    test('generate response returns fully populated payroll rows', function () {
+        Employee::factory()->count(2)->create([
+            'status' => 'active',
+            'base_salary' => 10000000, // 100k PKR (paisa)
+        ]);
+
+        $response = $this->postJson(route('payroll.generate'), [
+            'month' => 1,
+            'year' => 2026,
+        ]);
+
+        $response->assertStatus(201);
+
+        $rows = $response->json('data');
+        expect($rows)->toHaveCount(2);
+
+        foreach ($rows as $row) {
+            expect($row['id'])->not->toBeNull();
+            expect($row['employee_id'])->not->toBeNull();
+            expect($row['net_payable'])->not->toBeNull();
+            expect($row['net_payable'])->toBeGreaterThan(0); // 100k major units
+            expect($row['employee'])->not->toBeNull();
+            expect($row['employee']['id'])->toBe($row['employee_id']);
+        }
+    });
+
     test('prevents duplicate payroll generation', function () {
         $employee = Employee::factory()->create();
         Payroll::factory()->create([
