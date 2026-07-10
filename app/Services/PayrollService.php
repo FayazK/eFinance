@@ -61,8 +61,8 @@ class PayrollService
                 $payrolls[] = $payroll;
             }
 
-            // Convert array to Eloquent Collection
-            $payrollCollection = Payroll::hydrate($payrolls)->load(['employee']);
+            // Wrap the already-created models in an Eloquent Collection and eager-load employees
+            $payrollCollection = (new Collection($payrolls))->load('employee');
 
             // Fire event
             event(new PayrollGenerated($month, $year, $payrollCollection));
