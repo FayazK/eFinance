@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Helpers\CurrencyHelper;
+use App\Helpers\EquityHelper;
 use App\Models\Account;
 use App\Models\Distribution;
 use App\Models\DistributionLine;
@@ -34,7 +35,7 @@ class DistributionService
     {
         // Validate equity totals 100%
         $equityTotal = $this->shareholderRepository->getTotalEquityPercentage();
-        if ($equityTotal !== 100.0) {
+        if (! EquityHelper::isComplete($equityTotal)) {
             throw new InvalidArgumentException(
                 "Cannot create distribution. Shareholder equity totals {$equityTotal}%, must be 100%."
             );

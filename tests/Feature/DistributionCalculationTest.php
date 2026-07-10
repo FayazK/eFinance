@@ -113,6 +113,20 @@ describe('Distribution Calculation', function () {
         expect($partnerALine->allocated_amount_pkr)->toBe(3200000);
     });
 
+    test('creates distribution when fractional equity sums to 100% within tolerance', function () {
+        // Issue #74's cap table. On engines that sum in floating point the total can
+        // arrive just off 100.0; the epsilon check must still accept it.
+        Shareholder::query()->delete();
+        Shareholder::factory()->create(['equity_percentage' => 33.33]);
+        Shareholder::factory()->create(['equity_percentage' => 33.33]);
+        Shareholder::factory()->create(['equity_percentage' => 33.34]);
+
+        $distribution = $this->service->createDistribution(['manual_amount_pkr' => 1000000]);
+
+        expect($distribution)->toBeInstanceOf(Distribution::class)
+            ->and(Distribution::find($distribution->id))->not->toBeNull();
+    });
+
     test('cannot create distribution if equity does not total 100%', function () {
         // Delete all shareholders and create invalid total
         Shareholder::query()->delete();
