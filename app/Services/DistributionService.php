@@ -126,16 +126,38 @@ class DistributionService
     private function createDistributionLines(Distribution $distribution): void
     {
         $shareholders = $this->shareholderRepository->getAllActive();
+
+        if ($shareholders->isEmpty()) {
+            return;
+        }
+
         $netProfit = $distribution->final_net_profit;
 
-        foreach ($shareholders as $shareholder) {
-            $allocatedAmount = (int) round($netProfit * ((float) $shareholder->equity_percentage / 100));
+        // One line absorbs the rounding remainder so the lines always reconcile to net
+        // profit: the office reserve (its cash is retained anyway), else the last line.
+        $remainderShareholder = $shareholders->firstWhere('is_office_reserve', true)
+            ?? $shareholders->last();
 
+        $allocations = [];
+        $allocatedSum = 0;
+        foreach ($shareholders as $shareholder) {
+            if ($shareholder->is($remainderShareholder)) {
+                continue;
+            }
+
+            $amount = (int) round($netProfit * ((float) $shareholder->equity_percentage / 100));
+            $allocations[$shareholder->id] = $amount;
+            $allocatedSum += $amount;
+        }
+
+        $allocations[$remainderShareholder->id] = $netProfit - $allocatedSum;
+
+        foreach ($shareholders as $shareholder) {
             DistributionLine::create([
                 'distribution_id' => $distribution->id,
                 'shareholder_id' => $shareholder->id,
                 'equity_percentage_snapshot' => $shareholder->equity_percentage,
-                'allocated_amount_pkr' => $allocatedAmount,
+                'allocated_amount_pkr' => $allocations[$shareholder->id],
                 'transaction_id' => null, // Set when processed
             ]);
         }
