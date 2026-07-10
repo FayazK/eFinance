@@ -85,7 +85,11 @@ class PayrollRepository implements PayrollRepositoryInterface
             }
         }
 
-        return $query->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);
+        $allowedSortColumns = ['created_at', 'month', 'year', 'net_payable', 'status', 'paid_at'];
+        if (in_array($sortBy, $allowedSortColumns)) {
+            $query->orderBy($sortBy, $sortDirection);
+        }
+
+        return $query->paginate($perPage);
     }
 }

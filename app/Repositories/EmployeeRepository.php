@@ -76,7 +76,11 @@ class EmployeeRepository implements EmployeeRepositoryInterface
             }
         }
 
-        return $query->orderBy($sortBy, $sortDirection)
-            ->paginate($perPage);
+        $allowedSortColumns = ['name', 'base_salary', 'joining_date', 'status', 'created_at'];
+        if (in_array($sortBy, $allowedSortColumns)) {
+            $query->orderBy($sortBy, $sortDirection);
+        }
+
+        return $query->paginate($perPage);
     }
 }

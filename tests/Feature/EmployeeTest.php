@@ -2,6 +2,7 @@
 
 use App\Models\Employee;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 beforeEach(function () {
     $this->user = User::factory()->superAdmin()->create();
@@ -116,5 +117,43 @@ describe('Employee Deletion', function () {
         $response->assertStatus(200);
 
         $this->assertSoftDeleted('employees', ['id' => $employee->id]);
+    });
+});
+
+describe('Employee Sorting', function () {
+    test('sorts by salary using the real base_salary column', function () {
+        $low = Employee::factory()->create(['base_salary' => 10000000]);  // 100k PKR
+        $mid = Employee::factory()->create(['base_salary' => 20000000]);  // 200k PKR
+        $high = Employee::factory()->create(['base_salary' => 30000000]); // 300k PKR
+
+        $response = $this->getJson(route('employees.data', [
+            'sort_by' => 'base_salary',
+            'sort_direction' => 'asc',
+        ]));
+
+        $response->assertStatus(200);
+
+        $ids = array_column($response->json('data'), 'id');
+        expect($ids)->toBe([$low->id, $mid->id, $high->id]);
+    });
+
+    // The Ant Design table sends the column's dataIndex ('formatted_salary', a computed
+    // accessor) as sort_by. On MySQL an unwhitelisted orderBy on that non-existent column
+    // 500s. SQLite silently ignores unknown ORDER BY identifiers, so we assert the real
+    // guarantee driver-independently: a non-allowlisted sort_by never reaches the SQL.
+    test('ignores a non-allowlisted sort column instead of ordering by it', function () {
+        Employee::factory()->count(3)->create();
+
+        DB::enableQueryLog();
+
+        $response = $this->getJson(route('employees.data', [
+            'sort_by' => 'formatted_salary',
+            'sort_direction' => 'asc',
+        ]));
+
+        $response->assertStatus(200);
+
+        $sql = collect(DB::getQueryLog())->pluck('query')->implode(' ');
+        expect($sql)->not->toContain('formatted_salary');
     });
 });

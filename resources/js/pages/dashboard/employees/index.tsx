@@ -94,10 +94,11 @@ export default function EmployeesIndex() {
         },
         {
             title: 'Salary',
-            dataIndex: 'formatted_salary',
-            key: 'base_salary_pkr',
+            dataIndex: 'base_salary',
+            key: 'base_salary',
             sorter: true,
             align: 'right' as const,
+            render: (_: unknown, record: Employee) => record.formatted_salary,
         },
         {
             title: 'Status',
