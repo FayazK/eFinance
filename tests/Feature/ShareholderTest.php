@@ -48,6 +48,37 @@ describe('Shareholder Management', function () {
         ]))->toThrow(InvalidArgumentException::class, 'Office Reserve entity already exists');
     });
 
+    test('editing a shareholder into a second office reserve is rejected', function () {
+        Shareholder::factory()->officeReserve()->create(['equity_percentage' => 20]);
+        $partner = Shareholder::factory()->create(['equity_percentage' => 10]);
+
+        expect(fn () => $this->service->updateShareholder($partner->id, [
+            'is_office_reserve' => true,
+        ]))->toThrow(InvalidArgumentException::class, 'Office Reserve entity already exists');
+    });
+
+    test('re-saving the existing office reserve still works', function () {
+        $reserve = Shareholder::factory()->officeReserve()->create(['equity_percentage' => 20]);
+
+        $updated = $this->service->updateShareholder($reserve->id, [
+            'name' => 'Reserve',
+            'is_office_reserve' => true,
+        ]);
+
+        expect($updated->name)->toBe('Reserve')
+            ->and($updated->is_office_reserve)->toBeTrue();
+    });
+
+    test('promoting a shareholder to office reserve when none exists works', function () {
+        $partner = Shareholder::factory()->create(['equity_percentage' => 10]);
+
+        $updated = $this->service->updateShareholder($partner->id, [
+            'is_office_reserve' => true,
+        ]);
+
+        expect($updated->is_office_reserve)->toBeTrue();
+    });
+
     test('can update shareholder equity percentage', function () {
         $shareholder = Shareholder::factory()->create(['equity_percentage' => 25]);
 

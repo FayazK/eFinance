@@ -70,6 +70,14 @@ class ShareholderService
             }
         }
 
+        // Only one Office Reserve allowed
+        if (($data['is_office_reserve'] ?? false)) {
+            $existing = $this->shareholderRepository->getOfficeReserve();
+            if ($existing && $existing->id !== $shareholder->id) {
+                throw new InvalidArgumentException('Office Reserve entity already exists');
+            }
+        }
+
         return $this->shareholderRepository->update($id, $data);
     }
 
