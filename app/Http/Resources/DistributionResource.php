@@ -34,6 +34,7 @@ class DistributionResource extends JsonResource
             'formatted_revenue' => $this->formatted_revenue,
             'formatted_expenses' => $this->formatted_expenses,
             'formatted_net_profit' => $this->formatted_net_profit,
+            'formatted_calculated_net_profit' => $this->formatted_calculated_net_profit,
             'is_manually_adjusted' => $this->is_manually_adjusted,
             'adjustment_reason' => $this->adjustment_reason,
             'processed_at' => $this->processed_at?->format('Y-m-d H:i:s'),

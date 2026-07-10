@@ -86,6 +86,11 @@ class Distribution extends Model
         return CurrencyHelper::format($netProfit / 100, 'PKR');
     }
 
+    public function getFormattedCalculatedNetProfitAttribute(): string
+    {
+        return CurrencyHelper::format($this->calculated_net_profit_pkr / 100, 'PKR');
+    }
+
     public function getFinalNetProfitAttribute(): int
     {
         return $this->adjusted_net_profit_pkr ?? $this->calculated_net_profit_pkr;

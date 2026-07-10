@@ -453,6 +453,7 @@ export interface Distribution {
     formatted_revenue: string;
     formatted_expenses: string;
     formatted_net_profit: string;
+    formatted_calculated_net_profit: string;
     is_manually_adjusted: boolean;
     adjustment_reason?: string;
     processed_at?: string;

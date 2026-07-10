@@ -170,7 +170,7 @@ export default function DistributionShow() {
                         </Descriptions.Item>
                         {distribution.is_manually_adjusted && (
                             <>
-                                <Descriptions.Item label="Original Profit">{distribution.formatted_revenue}</Descriptions.Item>
+                                <Descriptions.Item label="Original Profit">{distribution.formatted_calculated_net_profit}</Descriptions.Item>
                                 <Descriptions.Item label="Adjustment Reason" span={2}>
                                     {distribution.adjustment_reason}
                                 </Descriptions.Item>
