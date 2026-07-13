@@ -70,6 +70,25 @@ describe('Expense Draft Creation', function () {
         $expense = Expense::latest()->first();
         expect($expense->amount)->toBe(12345); // Minor units
     });
+
+    it('records an expense when amount arrives as a string (issue #111)', function () {
+        // A real browser form-encodes amount as a string; the numeric validation
+        // rule lets it through unchanged, so the service must handle a string amount.
+        $response = $this->post('/dashboard/expenses', [
+            'account_id' => $this->account->id,
+            'amount' => '75000',
+            'currency_code' => 'PKR',
+            'expense_date' => now()->format('Y-m-d'),
+            'is_recurring' => '0',
+        ]);
+
+        // Before the fix this 500s (TypeError) instead of redirecting.
+        $response->assertRedirect('/dashboard/expenses');
+
+        $expense = Expense::latest()->first();
+        expect($expense)->not->toBeNull()
+            ->and($expense->amount)->toBe(7500000); // 75000 major -> minor units
+    });
 });
 
 describe('Expense Draft Editing', function () {
