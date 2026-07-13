@@ -20,32 +20,49 @@ export class DistributionsIndexPage {
     }
 
     async clickNewDistribution(): Promise<void> {
-        await this.page.click('button:has-text("New Distribution")');
-        await this.page.waitForSelector('.ant-modal', { state: 'visible' });
+        await this.page.getByRole('button', { name: 'New Distribution' }).click();
+        await this.page.waitForURL(/\/dashboard\/distributions\/create$/, { timeout: 10000 });
     }
 
-    async createDistribution(periodStart: string, periodEnd: string, notes?: string): Promise<void> {
+    /**
+     * Create a draft distribution via the full-page create form and land on its show page.
+     *
+     * Creation is a full page now (not a modal): select the first PKR account, enter a manual
+     * amount, optionally add notes, then "Save as Draft". The app redirects to the index, so we
+     * read the new distribution's id from the store response and navigate to its show page.
+     */
+    async createDistribution(amount: number, notes?: string): Promise<void> {
         await this.clickNewDistribution();
 
-        // Click date range picker
-        await this.page.click('.ant-picker-range');
+        // Select the first available PKR bank account
+        const accountItem = this.page
+            .locator('.ant-form-item')
+            .filter({ has: this.page.locator('label', { hasText: 'Bank Account' }) });
+        await accountItem.locator('.ant-select-selector').click();
+        await this.page
+            .locator('.ant-select-dropdown:not(.ant-select-dropdown-hidden) .ant-select-item-option')
+            .first()
+            .click();
 
-        // Select start date
-        await this.page.click(`td[title="${periodStart}"]`);
-
-        // Select end date
-        await this.page.click(`td[title="${periodEnd}"]`);
+        // Enter the manual distribution amount (PKR, major units)
+        await this.page.getByPlaceholder('Enter amount in PKR').fill(amount.toString());
 
         // Fill notes if provided
         if (notes) {
-            await this.page.fill('textarea', notes);
+            await this.page.getByPlaceholder('Optional notes...').fill(notes);
         }
 
-        // Submit
-        await this.page.click('.ant-modal-footer button.ant-btn-primary');
+        // Save as draft, capturing the created distribution's id from the store response
+        const [response] = await Promise.all([
+            this.page.waitForResponse(
+                (r) => new URL(r.url()).pathname === '/dashboard/distributions' && r.request().method() === 'POST',
+            ),
+            this.page.getByRole('button', { name: 'Save as Draft' }).click(),
+        ]);
+        const id = (await response.json())?.data?.id;
 
-        // Wait for redirect to show page
-        await this.page.waitForURL(/\/dashboard\/distributions\/\d+/, { timeout: 10000 });
+        // The create flow redirects to the index; navigate to the new distribution's show page
+        await this.page.goto(`/dashboard/distributions/${id}`);
     }
 
     async viewDistribution(distributionNumber: string): Promise<void> {
