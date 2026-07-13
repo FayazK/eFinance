@@ -54,14 +54,14 @@ class AccountController extends Controller
     public function show(Account $account): Response
     {
         return Inertia::render('dashboard/accounts/show', [
-            'account' => new AccountResource($account),
+            'account' => (new AccountResource($account))->resolve(),
         ]);
     }
 
     public function edit(Account $account): Response
     {
         return Inertia::render('dashboard/accounts/edit', [
-            'account' => new AccountResource($account),
+            'account' => (new AccountResource($account))->resolve(),
         ]);
     }
 

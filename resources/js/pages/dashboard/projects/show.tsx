@@ -9,7 +9,7 @@ import ProjectDocuments from './partials/project-documents';
 import ProjectLinks from './partials/project-links';
 
 interface ProjectShowProps {
-    project: Project | { data: Project };
+    project: Project;
 }
 
 const statusColors = {
@@ -19,9 +19,7 @@ const statusColors = {
     Cancelled: 'red',
 };
 
-export default function ProjectShow({ project: projectProp }: ProjectShowProps) {
-    // Unwrap the project data if it's wrapped in a data property
-    const project = 'data' in projectProp ? projectProp.data : projectProp;
+export default function ProjectShow({ project }: ProjectShowProps) {
     const [activeTab, setActiveTab] = useState('details');
 
     const tabItems = [

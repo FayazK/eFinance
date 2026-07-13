@@ -19,7 +19,7 @@ class PayrollResource extends JsonResource
         return [
             'id' => $this->id,
             'employee_id' => $this->employee_id,
-            'employee' => new EmployeeResource($this->whenLoaded('employee')),
+            'employee' => $this->whenLoaded('employee', fn () => (new EmployeeResource($this->employee))->resolve()),
             'month' => $this->month,
             'year' => $this->year,
             'period_label' => $this->period_label,
@@ -37,7 +37,7 @@ class PayrollResource extends JsonResource
             'is_paid' => $this->is_paid,
             'paid_at' => $this->paid_at?->format('Y-m-d'),
             'transaction_id' => $this->transaction_id,
-            'transaction' => new TransactionResource($this->whenLoaded('transaction')),
+            'transaction' => $this->whenLoaded('transaction', fn () => (new TransactionResource($this->transaction))->resolve()),
             'exchange_rate' => $this->exchange_rate ? (float) $this->exchange_rate : null,
             'formatted_exchange_rate' => $this->formatted_exchange_rate,
             'notes' => $this->notes,

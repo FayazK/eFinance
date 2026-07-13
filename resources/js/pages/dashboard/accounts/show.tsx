@@ -21,7 +21,7 @@ import { useState } from 'react';
 const { useToken } = theme;
 
 interface AccountShowProps {
-    account: Account | { data: Account };
+    account: Account;
 }
 
 const accountTypeIcons = {
@@ -53,10 +53,7 @@ const filters: FilterConfig[] = [
     },
 ];
 
-export default function AccountShow({ account: accountProp }: AccountShowProps) {
-    // Unwrap the account data if it's wrapped in a data property
-    const account = 'data' in accountProp ? accountProp.data : accountProp;
-
+export default function AccountShow({ account }: AccountShowProps) {
     const [activeTab, setActiveTab] = useState('details');
     const { token } = useToken();
 

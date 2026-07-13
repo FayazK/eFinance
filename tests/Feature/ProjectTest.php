@@ -230,7 +230,7 @@ describe('Project Show', function () {
         $response = $this->get("/dashboard/projects/{$project->id}");
 
         $response->assertOk();
-        $response->assertInertia(fn ($page) => $page->where('project.data.documents_count', 1));
+        $response->assertInertia(fn ($page) => $page->where('project.documents_count', 1));
     });
 });
 

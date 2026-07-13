@@ -4,13 +4,10 @@ import { Card } from 'antd';
 import AccountForm from './partials/account-form';
 
 interface EditAccountProps {
-    account: Account | { data: Account };
+    account: Account;
 }
 
-export default function EditAccount({ account: accountProp }: EditAccountProps) {
-    // Unwrap the account data if it's wrapped in a data property
-    const account = 'data' in accountProp ? accountProp.data : accountProp;
-
+export default function EditAccount({ account }: EditAccountProps) {
     return (
         <AppLayout pageTitle={`Edit ${account.name}`}>
             <Card>

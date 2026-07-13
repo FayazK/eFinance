@@ -32,7 +32,7 @@ class EmployeeResource extends JsonResource
             'termination_date' => $this->termination_date?->format('Y-m-d'),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
-            'payrolls' => PayrollResource::collection($this->whenLoaded('payrolls')),
+            'payrolls' => $this->whenLoaded('payrolls', fn () => PayrollResource::collection($this->payrolls)->resolve()),
         ];
     }
 }
