@@ -12,6 +12,7 @@ use App\Repositories\Contracts\AccountRepositoryInterface;
 use App\Repositories\Contracts\InvoiceRepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class InvoiceService
@@ -459,7 +460,9 @@ class InvoiceService
             ->orderBy('id', 'desc')
             ->first();
 
-        $sequence = $lastInvoice ? ((int) substr($lastInvoice->invoice_number, -3) + 1) : 1;
+        $sequence = $lastInvoice
+            ? ((int) Str::afterLast($lastInvoice->invoice_number, '-') + 1)
+            : 1;
 
         return sprintf('%s-%d-%03d', $prefix, $year, $sequence);
     }
