@@ -60,9 +60,51 @@ class DropdownRepository implements DropdownRepositoryInterface
         return $this->buildQuery('Nnjeim\World\Models\Country', $params, 'name');
     }
 
+    /**
+     * The world `currencies` table holds one row per country, so shared currencies (USD,
+     * EUR, …) repeat dozens of times. Collapse to one representative row per ISO code,
+     * label each as "CODE - Name", and search the code as well as the name — while still
+     * returning the world row `id` so the stored `currency_id` FK keeps resolving.
+     */
     private function getCurrenciesData(array $params): array
     {
-        return $this->buildQuery('Nnjeim\World\Models\Currency', $params, 'name');
+        $model = 'Nnjeim\World\Models\Currency';
+        $search = isset($params['search']) ? trim((string) $params['search']) : '';
+        $id = $params['id'] ?? null;
+
+        $rows = App::make($model)->query()
+            ->select(['id', 'code', 'name'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('code', 'like', "%{$search}%")
+                        ->orWhere('name', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('code')
+            ->orderBy('id')
+            ->get()
+            ->unique('code')
+            ->take(25);
+
+        // Empty search + preselected id: guarantee the exact stored row is present (even if it
+        // is not the canonical lowest-id row for its code) so an existing client's currency
+        // resolves, without producing a second entry for that code.
+        if ($search === '' && $id !== null && ! $rows->contains('id', (int) $id)) {
+            $selected = App::make($model)->query()->select(['id', 'code', 'name'])->find($id);
+
+            if ($selected) {
+                $rows = $rows->reject(fn ($row) => $row->code === $selected->code)->push($selected);
+            }
+        }
+
+        return $rows
+            ->sortBy('code')
+            ->map(fn ($currency) => [
+                'id' => $currency->id,
+                'name' => "{$currency->code} - {$currency->name}",
+            ])
+            ->values()
+            ->all();
     }
 
     private function getClientsData(array $params): array
