@@ -60,14 +60,14 @@ class EmployeeController extends Controller
     public function show(Employee $employee): Response
     {
         return Inertia::render('dashboard/employees/show', [
-            'employee' => new EmployeeResource($employee->load('payrolls')),
+            'employee' => (new EmployeeResource($employee->load('payrolls')))->resolve(),
         ]);
     }
 
     public function edit(Employee $employee): Response
     {
         return Inertia::render('dashboard/employees/edit', [
-            'employee' => new EmployeeResource($employee),
+            'employee' => (new EmployeeResource($employee))->resolve(),
         ]);
     }
 

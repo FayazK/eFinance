@@ -49,7 +49,7 @@ class ProjectController extends Controller
             ->loadCount('media');
 
         return Inertia::render('dashboard/projects/show', [
-            'project' => new ProjectResource($project),
+            'project' => (new ProjectResource($project))->resolve(),
         ]);
     }
 

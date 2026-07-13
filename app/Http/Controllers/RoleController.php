@@ -78,7 +78,7 @@ class RoleController extends Controller
         }
 
         return Inertia::render('dashboard/roles/edit', [
-            'role' => new RoleResource($role),
+            'role' => (new RoleResource($role))->resolve(),
             'permissionModules' => $this->roleService->getAllPermissions(),
         ]);
     }

@@ -102,7 +102,7 @@ class PayrollController extends Controller
     public function show(Payroll $payroll): Response
     {
         return Inertia::render('dashboard/payroll/show', [
-            'payroll' => new PayrollResource($payroll->load(['employee', 'transaction'])),
+            'payroll' => (new PayrollResource($payroll->load(['employee', 'transaction'])))->resolve(),
         ]);
     }
 }
