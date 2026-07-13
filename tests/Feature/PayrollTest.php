@@ -467,6 +467,39 @@ describe('Payroll Payment', function () {
         expect(Payroll::where('status', 'paid')->count())->toBe(0);
     });
 
+    test('pay path loads employee and transaction before dispatching PayrollPaid for both currencies', function () {
+        $pkrAccount = Account::factory()->create(['currency_code' => 'PKR', 'current_balance' => 50000000]);
+        $usdAccount = Account::factory()->create(['currency_code' => 'USD', 'current_balance' => 200000]);
+        $pkrPayroll = Payroll::factory()->pkr()->create(['status' => 'pending', 'base_salary' => 10000000]);
+        $usdPayroll = Payroll::factory()->usd()->create(['status' => 'pending', 'base_salary' => 28000000]);
+
+        // Snapshot the relation-loaded state at the exact moment PayrollPaid fires. Booleans
+        // are copied by value, so the model mutation on the return path can't retroactively
+        // flip them — this captures whether a lazy query would have been needed at dispatch.
+        $loadedAtDispatch = [];
+        Event::listen(PayrollPaid::class, function (PayrollPaid $event) use (&$loadedAtDispatch) {
+            $loadedAtDispatch[$event->payroll->id] = [
+                'employee' => $event->payroll->relationLoaded('employee'),
+                'transaction' => $event->payroll->relationLoaded('transaction'),
+            ];
+        });
+
+        $this->postJson(route('payroll.pay'), [
+            'pkr_account_id' => $pkrAccount->id,
+            'usd_account_id' => $usdAccount->id,
+            'exchange_rate' => 280,
+            'payroll_ids' => [$pkrPayroll->id, $usdPayroll->id],
+            'payment_date' => '2026-01-05',
+        ])->assertStatus(200);
+
+        // Both currencies: employee and transaction are already loaded when the event fires,
+        // so reading them fires no per-payroll lazy query.
+        foreach ([$pkrPayroll->id, $usdPayroll->id] as $id) {
+            expect($loadedAtDispatch[$id]['employee'])->toBeTrue();
+            expect($loadedAtDispatch[$id]['transaction'])->toBeTrue();
+        }
+    });
+
     test('pays USD batch at the exact per-line rounded total without overdrawing', function () {
         $usdAccount = Account::factory()->create([
             'currency_code' => 'USD',

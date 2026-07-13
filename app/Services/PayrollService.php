@@ -223,12 +223,13 @@ class PayrollService
             'date' => $data['payment_date'] ?? now()->format('Y-m-d'),
         ]);
 
-        // Update payroll
+        // Update payroll (load relations up front so the activity log and event read them
+        // without firing a per-payroll lazy query)
         $payroll = $this->payrollRepository->update($payroll->id, [
             'status' => 'paid',
             'paid_at' => now(),
             'transaction_id' => $transaction->id,
-        ]);
+        ])->load(['employee', 'transaction']);
 
         // Log the payroll payment
         activity()
@@ -245,7 +246,7 @@ class PayrollService
         // Fire event
         event(new PayrollPaid($payroll));
 
-        return $payroll->load(['employee', 'transaction']);
+        return $payroll;
     }
 
     /**
@@ -269,13 +270,14 @@ class PayrollService
             'date' => $data['payment_date'] ?? now()->format('Y-m-d'),
         ]);
 
-        // Update payroll with exchange rate
+        // Update payroll with exchange rate (load relations up front so the activity log and
+        // event read them without firing a per-payroll lazy query)
         $payroll = $this->payrollRepository->update($payroll->id, [
             'status' => 'paid',
             'paid_at' => now(),
             'transaction_id' => $transaction->id,
             'exchange_rate' => $exchangeRate,
-        ]);
+        ])->load(['employee', 'transaction']);
 
         // Log the payroll payment (USD)
         activity()
@@ -293,7 +295,7 @@ class PayrollService
         // Fire event
         event(new PayrollPaid($payroll));
 
-        return $payroll->load(['employee', 'transaction']);
+        return $payroll;
     }
 
     /**
