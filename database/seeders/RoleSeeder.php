@@ -40,7 +40,6 @@ class RoleSeeder extends Seeder
             ]
         );
 
-
         // HR - expenses module only
         $hrPermissions = array_filter($allPermissions, function ($permission) {
             return str_starts_with($permission, 'expenses.');
@@ -60,8 +59,6 @@ class RoleSeeder extends Seeder
         $viewerPermissions = array_filter($allPermissions, function ($permission) {
             return str_ends_with($permission, '.read');
         });
-
-
 
         // Assign admin role to info@fayazk.com
         $adminRole = Role::where('slug', 'admin')->first();

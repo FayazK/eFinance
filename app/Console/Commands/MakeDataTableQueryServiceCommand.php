@@ -38,11 +38,12 @@ class MakeDataTableQueryServiceCommand extends Command
     public function handle()
     {
         $name = $this->argument('name');
-        $className = mb_ucfirst($name) . 'DataTableQueryService';
-        $path = app_path('Queries/' . $className . '.php');
+        $className = mb_ucfirst($name).'DataTableQueryService';
+        $path = app_path('Queries/'.$className.'.php');
 
         if ($this->files->exists($path)) {
             $this->error('File already exists!');
+
             return 1;
         }
 
@@ -52,7 +53,8 @@ class MakeDataTableQueryServiceCommand extends Command
         $this->files->ensureDirectoryExists(app_path('Queries'));
         $this->files->put($path, $stub);
 
-        $this->info($className . ' created successfully.');
+        $this->info($className.' created successfully.');
+
         return 0;
     }
 
