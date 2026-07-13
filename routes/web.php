@@ -196,14 +196,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/pay', [PayrollController::class, 'pay'])->middleware('permission:payroll.update')->name('pay');
     });
 
-    // Shareholders
+    // Shareholders — create/edit are modal-only; no GET /create or GET /{id} page by design.
+    // {id} is numeric-constrained so "create" falls through to a clean 404 (not a 405).
     Route::prefix('dashboard/shareholders')->name('shareholders.')->group(function () {
         Route::get('/', [ShareholderController::class, 'index'])->middleware('permission:shareholders.read')->name('index');
         Route::get('/data', [ShareholderController::class, 'data'])->middleware('permission:shareholders.read')->name('data');
         Route::get('/validate-equity', [ShareholderController::class, 'validateEquity'])->middleware('permission:shareholders.read')->name('validate-equity');
         Route::post('/', [ShareholderController::class, 'store'])->middleware('permission:shareholders.create')->name('store');
-        Route::put('/{id}', [ShareholderController::class, 'update'])->middleware('permission:shareholders.update')->name('update');
-        Route::delete('/{id}', [ShareholderController::class, 'destroy'])->middleware('permission:shareholders.delete')->name('destroy');
+        Route::put('/{id}', [ShareholderController::class, 'update'])->middleware('permission:shareholders.update')->name('update')->whereNumber('id');
+        Route::delete('/{id}', [ShareholderController::class, 'destroy'])->middleware('permission:shareholders.delete')->name('destroy')->whereNumber('id');
     });
 
     // Distributions

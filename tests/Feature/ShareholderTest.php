@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Models\DistributionLine;
 use App\Models\Shareholder;
+use App\Models\User;
 use App\Services\ShareholderService;
 
 describe('Shareholder Management', function () {
@@ -192,5 +193,25 @@ describe('Shareholder Management', function () {
         $validation = $this->service->validateEquityTotal();
 
         expect($validation['total'])->toBe(50.0);
+    });
+});
+
+describe('Shareholder routing', function () {
+    beforeEach(function () {
+        $this->actingAs(User::factory()->superAdmin()->create());
+    });
+
+    // Shareholders are modal-only: there is no GET /create page. The literal "create"
+    // must not be captured by the /{id} routes, so the URL returns a clean 404 (not 405).
+    test('GET /dashboard/shareholders/create returns 404, not a misleading 405', function () {
+        $this->get('/dashboard/shareholders/create')->assertNotFound();
+    });
+
+    test('DELETE /dashboard/shareholders/{id} still routes for numeric ids', function () {
+        $shareholder = Shareholder::factory()->create();
+
+        $this->deleteJson("/dashboard/shareholders/{$shareholder->id}")->assertOk();
+
+        expect(Shareholder::find($shareholder->id))->toBeNull();
     });
 });
