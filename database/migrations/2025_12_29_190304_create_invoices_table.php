@@ -17,7 +17,7 @@ return new class extends Migration
             // Core invoice identity
             $table->string('invoice_number')->unique();
             $table->enum('status', ['draft', 'sent', 'partial', 'paid', 'void', 'overdue'])
-                  ->default('draft');
+                ->default('draft');
 
             // Client and project relationships
             $table->foreignId('client_id')->constrained()->onDelete('restrict');
