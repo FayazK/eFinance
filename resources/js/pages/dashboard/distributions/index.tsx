@@ -71,7 +71,7 @@ export default function DistributionsIndex() {
             sorter: true,
         },
         {
-            title: 'Net Profit',
+            title: 'Distribution Amount',
             dataIndex: 'formatted_net_profit',
             key: 'calculated_net_profit_pkr',
             align: 'right',
