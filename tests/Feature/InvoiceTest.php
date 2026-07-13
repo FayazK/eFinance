@@ -7,6 +7,7 @@ use App\Models\Client;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\InvoicePayment;
 use App\Models\Project;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
@@ -492,5 +493,28 @@ describe('Invoice Relationships', function () {
         InvoiceItem::factory()->count(5)->create(['invoice_id' => $invoice->id]);
 
         expect($invoice->items)->toHaveCount(5);
+    });
+});
+
+describe('InvoicePayment factory', function () {
+    // Regression for #109: income_transaction_id defaulted to null, but the column is a
+    // required non-nullable FK, so InvoicePayment::factory()->create() threw a NOT NULL
+    // integrity-constraint violation. Everyone worked around it with InvoicePayment::create([...]).
+    test('creates a valid payment standalone with a real income transaction', function () {
+        $payment = InvoicePayment::factory()->create();
+
+        expect($payment->income_transaction_id)->not->toBeNull();
+        $this->assertDatabaseHas('transactions', ['id' => $payment->income_transaction_id]);
+
+        // fee_transaction_id stays null by default (matches the nullable column / "70% no fee").
+        expect($payment->fee_transaction_id)->toBeNull();
+    });
+
+    test('withFeeTransaction state attaches a real fee transaction', function () {
+        $payment = InvoicePayment::factory()->withFeeTransaction()->create();
+
+        expect($payment->fee_transaction_id)->not->toBeNull();
+        $this->assertDatabaseHas('transactions', ['id' => $payment->fee_transaction_id]);
+        expect($payment->has_fee)->toBeTrue();
     });
 });

@@ -6,6 +6,7 @@ namespace Database\Factories;
 
 use App\Models\Account;
 use App\Models\Invoice;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -28,7 +29,7 @@ class InvoicePaymentFactory extends Factory
         return [
             'invoice_id' => Invoice::factory(),
             'account_id' => Account::factory(),
-            'income_transaction_id' => null,
+            'income_transaction_id' => Transaction::factory(),
             'fee_transaction_id' => null,
             'payment_amount' => $paymentAmount,
             'amount_received' => $amountReceived,
@@ -63,6 +64,16 @@ class InvoicePaymentFactory extends Factory
                 'amount_received' => $attributes['payment_amount'] - $feeAmount,
             ];
         });
+    }
+
+    /**
+     * Payment with a fee and a linked fee transaction
+     */
+    public function withFeeTransaction(int $feePercentage = 5): static
+    {
+        return $this->withFee($feePercentage)->state(fn (array $attributes) => [
+            'fee_transaction_id' => Transaction::factory(),
+        ]);
     }
 
     /**
