@@ -1,4 +1,4 @@
-import { test as base, Page } from '@playwright/test';
+import { Page } from '@playwright/test';
 import path from 'path';
 import { fileURLToPath } from 'url';
 

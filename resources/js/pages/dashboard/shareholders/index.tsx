@@ -149,7 +149,7 @@ export default function ShareholdersIndex() {
 
     return (
         <AppLayout
-            title="Shareholders"
+            pageTitle="Shareholders"
             actions={
                 <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
                     Create Shareholder

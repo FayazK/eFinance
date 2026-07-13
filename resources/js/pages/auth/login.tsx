@@ -4,6 +4,7 @@ import { request } from '@/routes/password';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Head, router } from '@inertiajs/react';
 import { Alert, Button, Checkbox, Flex, Form, Input, Typography, message, theme } from 'antd';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 const { Link, Text } = Typography;
@@ -32,8 +33,8 @@ export default function Login({ status, canResetPassword }: LoginProps) {
             message.success('Sign in successful');
             // Redirect to intended page or dashboard
             router.visit('/dashboard');
-        } catch (error: any) {
-            if (error.response?.status === 422) {
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;
                 form.setFields(

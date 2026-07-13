@@ -16,14 +16,7 @@ interface CreateTransferProps {
 
 export default function CreateTransfer({ accounts }: CreateTransferProps) {
     return (
-        <AppLayout
-            pageTitle="New Transfer"
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Transfers', href: '/dashboard/transfers' },
-                { title: 'New Transfer', href: '/dashboard/transfers/create' },
-            ]}
-        >
+        <AppLayout pageTitle="New Transfer">
             <Card>
                 <TransferForm accounts={accounts} />
             </Card>

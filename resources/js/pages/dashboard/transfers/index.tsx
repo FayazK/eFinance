@@ -57,13 +57,7 @@ export default function TransfersIndex() {
     ];
 
     return (
-        <AppLayout
-            pageTitle="Transfers"
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Transfers', href: '/dashboard/transfers' },
-            ]}
-        >
+        <AppLayout pageTitle="Transfers">
             <Card
                 extra={
                     <Button type="primary" icon={<PlusOutlined />} href={create.url()}>

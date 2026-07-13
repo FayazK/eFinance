@@ -4,6 +4,7 @@ import { login } from '@/routes';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Head } from '@inertiajs/react';
 import { Alert, Button, Form, Input, Space, Typography, message, theme } from 'antd';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 const { Link, Text } = Typography;
@@ -26,8 +27,8 @@ export default function ForgotPassword({ status }: { status?: string }) {
             setEmailSent(true);
             message.success('Password reset link sent to your email!');
             form.resetFields();
-        } catch (error: any) {
-            if (error.response?.status === 422) {
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;
                 form.setFields(

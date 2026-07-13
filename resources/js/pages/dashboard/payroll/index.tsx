@@ -45,6 +45,7 @@ const filters: FilterConfig[] = [
 interface PageProps {
     pkrAccounts: Account[];
     usdAccounts: Account[];
+    [key: string]: unknown;
 }
 
 export default function PayrollIndex() {
@@ -183,11 +184,7 @@ export default function PayrollIndex() {
 
     return (
         <AppLayout
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Payroll', href: '/dashboard/payroll' },
-            ]}
-            title="Payroll Management"
+            pageTitle="Payroll Management"
             actions={
                 <Space>
                     <Select

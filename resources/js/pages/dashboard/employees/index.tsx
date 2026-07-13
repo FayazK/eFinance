@@ -146,11 +146,7 @@ export default function EmployeesIndex() {
 
     return (
         <AppLayout
-            breadcrumbs={[
-                { title: 'Dashboard', href: '/dashboard' },
-                { title: 'Employees', href: '/dashboard/employees' },
-            ]}
-            title="Employees"
+            pageTitle="Employees"
             actions={
                 <Link href="/dashboard/employees/create">
                     <Button type="primary" icon={<PlusOutlined />}>

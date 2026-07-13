@@ -1,20 +1,20 @@
 import ActivityTimeline from '@/components/activity-timeline';
 import AppLayout from '@/layouts/app-layout';
-import { index as distributionsIndex, downloadStatement } from '@/routes/distributions';
+import { downloadStatement } from '@/routes/distributions';
 import type { Account, Distribution, DistributionLine } from '@/types';
 import { BankOutlined, CheckCircleOutlined, DownloadOutlined, EditOutlined, LinkOutlined, TeamOutlined } from '@ant-design/icons';
 import { router, usePage } from '@inertiajs/react';
-import { Alert, Button, Card, Col, Descriptions, Row, Space, Statistic, Table, Tag, theme, Typography } from 'antd';
+import { Alert, Button, Card, Col, Descriptions, Row, Space, Statistic, Table, Tag, theme } from 'antd';
 import { useState } from 'react';
 import AdjustProfitModal from './partials/adjust-profit-modal';
 import ProcessModal from './partials/process-modal';
 
-const { Title } = Typography;
 const { useToken } = theme;
 
 interface PageProps {
     distribution: Distribution;
     pkrAccounts: Account[];
+    [key: string]: unknown;
 }
 
 export default function DistributionShow() {
@@ -88,13 +88,7 @@ export default function DistributionShow() {
     ];
 
     return (
-        <AppLayout
-            title={`Distribution ${distribution.distribution_number}`}
-            breadcrumbs={[
-                { title: 'Distributions', href: distributionsIndex.url() },
-                { title: distribution.distribution_number, href: '' },
-            ]}
-        >
+        <AppLayout pageTitle={`Distribution ${distribution.distribution_number}`}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
                 {distribution.is_draft && (
                     <Alert

@@ -10,7 +10,6 @@ import { FilterRenderer } from './data-table/filters';
 import type {
     DataTableProps,
     DataTableFilters,
-    FilterConfig,
     DataTableError,
 } from '@/types/datatable';
 import type { LaravelPaginatedResponse } from '@/types';
@@ -171,6 +170,7 @@ function DataTable<T extends Record<string, unknown>>({
             page: 1,
             per_page: defaultPageSize,
         });
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load; refetch only when the default page size changes
     }, [defaultPageSize]);
 
     // Refetch on filter/search/sort changes
@@ -196,6 +196,7 @@ function DataTable<T extends Record<string, unknown>>({
         } else {
             fetchData(params);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- refetch only when the listed query inputs change
     }, [search, filters, sorter, currentPage, pageSize]);
 
     const handleRetry = (): void => {

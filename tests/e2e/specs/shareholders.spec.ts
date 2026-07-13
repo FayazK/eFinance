@@ -10,7 +10,7 @@ test.describe('Shareholder Management', () => {
     });
 
     test.describe('Shareholder CRUD Operations', () => {
-        test('should create a new shareholder successfully', async ({ authenticatedPage }) => {
+        test('should create a new shareholder successfully', async () => {
             const initialCount = await shareholdersPage.getTableRowCount();
 
             await shareholdersPage.clickCreateButton();
@@ -35,7 +35,7 @@ test.describe('Shareholder Management', () => {
             expect(shareholder?.equity).toContain('10');
         });
 
-        test('should edit an existing shareholder', async ({ authenticatedPage }) => {
+        test('should edit an existing shareholder', async () => {
             // First create a shareholder
             await shareholdersPage.clickCreateButton();
             await shareholdersPage.fillForm({
@@ -61,7 +61,7 @@ test.describe('Shareholder Management', () => {
             expect(shareholder?.equity).toContain('20');
         });
 
-        test('should delete a shareholder', async ({ authenticatedPage }) => {
+        test('should delete a shareholder', async () => {
             // First create a shareholder
             await shareholdersPage.clickCreateButton();
             await shareholdersPage.fillForm({
@@ -84,9 +84,7 @@ test.describe('Shareholder Management', () => {
     });
 
     test.describe('Equity Validation', () => {
-        test('should show remaining equity when creating shareholder', async ({
-            authenticatedPage,
-        }) => {
+        test('should show remaining equity when creating shareholder', async () => {
             await shareholdersPage.clickCreateButton();
 
             // Get current equity validation
@@ -118,7 +116,7 @@ test.describe('Shareholder Management', () => {
             }
         });
 
-        test('should show equity validation status', async ({ authenticatedPage }) => {
+        test('should show equity validation status', async () => {
             const validation = await shareholdersPage.getEquityValidation();
 
             // Should have a validation message

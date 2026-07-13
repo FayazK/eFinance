@@ -4,6 +4,7 @@ import { login } from '@/routes';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Head, router } from '@inertiajs/react';
 import { Button, Flex, Form, Input, Typography, message, theme } from 'antd';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 const { Link, Text } = Typography;
@@ -29,8 +30,8 @@ export default function Register() {
             message.success('Account created successfully');
             // Redirect to dashboard or email verification
             router.visit('/dashboard');
-        } catch (error: any) {
-            if (error.response?.status === 422) {
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;
                 form.setFields(

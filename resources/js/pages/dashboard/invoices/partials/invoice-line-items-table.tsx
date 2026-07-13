@@ -17,7 +17,7 @@ const UNIT_OPTIONS = [
 ];
 
 export default function InvoiceLineItemsTable({ items, onChange, currency }: InvoiceLineItemsTableProps) {
-    const [editingKey, setEditingKey] = useState<number | null>(null);
+    const [, setEditingKey] = useState<number | null>(null);
 
     const addNewItem = () => {
         const newItem: InvoiceItem = {

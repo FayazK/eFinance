@@ -1,5 +1,5 @@
 import { Card, Empty, theme } from 'antd';
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip, TooltipProps } from 'recharts';
+import { Cell, DefaultTooltipContentProps, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 
 const { useToken } = theme;
 
@@ -22,13 +22,14 @@ interface ChartDataPoint {
     name: string;
     value: number;
     amount: string;
+    [key: string]: string | number;
 }
 
 function CustomTooltip({
     active,
     payload,
     token,
-}: TooltipProps<number, string> & { token: { colorBgContainer: string; colorBorder: string; colorText: string } }) {
+}: Partial<DefaultTooltipContentProps<number, string>> & { active?: boolean; token: { colorBgContainer: string; colorBorder: string; colorText: string } }) {
     if (!active || !payload || payload.length === 0) {
         return null;
     }

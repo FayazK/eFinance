@@ -3,6 +3,8 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface InvoiceDraft {
+    company_id?: number;
+    template?: string;
     client_id?: number;
     project_id?: number;
     currency_code: string;
@@ -43,7 +45,8 @@ export const useInvoiceBuilderStore = create<InvoiceBuilderState>()(
 
             clearDraft: (draftId: string) => {
                 set((state) => {
-                    const { [draftId]: _, ...remainingDrafts } = state.drafts;
+                    const remainingDrafts = { ...state.drafts };
+                    delete remainingDrafts[draftId];
                     return { drafts: remainingDrafts };
                 });
             },

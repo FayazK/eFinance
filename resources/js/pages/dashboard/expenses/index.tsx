@@ -13,6 +13,7 @@ const { useToken } = theme;
 interface ExpensesIndexProps {
     accounts: Account[];
     categories: TransactionCategory[];
+    [key: string]: unknown;
 }
 
 export default function ExpensesIndex() {

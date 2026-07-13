@@ -119,7 +119,7 @@ export default function DistributionsIndex() {
 
     return (
         <AppLayout
-            title="Distributions"
+            pageTitle="Distributions"
             actions={
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => router.visit(distributionsCreate.url())}>
                     New Distribution

@@ -41,6 +41,7 @@ export default function EditClient({ client }: EditClientProps) {
     useEffect(() => {
         setCurrentPage(1);
         fetchContacts(1, pageSize);
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- reload contacts only when the client changes; fetchContacts is re-created each render
     }, [client.id]);
 
     const handleDeleteContact = (contact: Contact) => {

@@ -1,3 +1,4 @@
+import type { TableColumnType } from 'antd';
 import type { Dayjs } from 'dayjs';
 import type { ReactNode } from 'react';
 
@@ -81,23 +82,17 @@ export interface DataTableError {
 // Column Definition
 // ============================================
 
-export interface DataTableColumn<T = unknown> {
-    /** Display title */
-    title: string;
-    /** Data index for accessing record property */
-    dataIndex?: string;
-    /** Unique key for the column */
-    key: string;
-    /** Column width */
-    width?: number;
-    /** Enable sorting for this column */
-    sorter?: boolean;
+/**
+ * Column definition. Extends antd's `TableColumnType` (columns are spread straight
+ * into antd's `<Table>` in `DataTable.tsx`), adding the two custom flags this table
+ * understands. Inheriting antd's shape keeps `align`/`ellipsis`/`fixed`, a `string | string[]`
+ * `dataIndex`, and antd's `render` signature in sync with what actually renders.
+ */
+export interface DataTableColumn<T = unknown> extends TableColumnType<T> {
     /** Mark this column as globally searchable */
     searchable?: boolean;
     /** Mark this column as filterable (uses filter config) */
     filterable?: boolean;
-    /** Render function for custom cell content */
-    render?: (value: unknown, record: T, index: number) => ReactNode;
 }
 
 // ============================================

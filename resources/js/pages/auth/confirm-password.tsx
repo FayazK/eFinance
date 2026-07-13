@@ -3,6 +3,7 @@ import api from '@/lib/axios';
 import { LoadingOutlined, SafetyOutlined } from '@ant-design/icons';
 import { Head } from '@inertiajs/react';
 import { Alert, Button, Form, Input, Space, Typography, message, theme } from 'antd';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 const { Text } = Typography;
@@ -24,8 +25,8 @@ export default function ConfirmPassword() {
             message.success('Password confirmed successfully!');
             // Redirect back to the intended page
             window.history.back();
-        } catch (error: any) {
-            if (error.response?.status === 422) {
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;
                 form.setFields(

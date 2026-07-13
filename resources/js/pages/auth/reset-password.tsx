@@ -3,6 +3,7 @@ import api from '@/lib/axios';
 import { LoadingOutlined } from '@ant-design/icons';
 import { Head, router } from '@inertiajs/react';
 import { Button, Form, Input, Space, Typography, message, theme } from 'antd';
+import { isAxiosError } from 'axios';
 import { useState } from 'react';
 
 const { Text } = Typography;
@@ -35,8 +36,8 @@ export default function ResetPassword({ token, email }: ResetPasswordProps) {
             message.success('Password reset successfully!');
             // Redirect to login page
             router.visit('/login');
-        } catch (error: any) {
-            if (error.response?.status === 422) {
+        } catch (error: unknown) {
+            if (isAxiosError(error) && error.response?.status === 422) {
                 // Validation errors
                 const errors = error.response.data.errors;
                 form.setFields(

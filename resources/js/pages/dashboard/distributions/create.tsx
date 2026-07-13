@@ -29,6 +29,7 @@ const { useToken } = theme;
 interface PageProps {
     pkrAccounts: Account[];
     shareholders: Shareholder[];
+    [key: string]: unknown;
 }
 
 export default function CreateDistribution() {
@@ -167,13 +168,7 @@ export default function CreateDistribution() {
     ];
 
     return (
-        <AppLayout
-            title="New Distribution"
-            breadcrumbs={[
-                { title: 'Distributions', href: distributionsIndex.url() },
-                { title: 'New Distribution', href: '' },
-            ]}
-        >
+        <AppLayout pageTitle="New Distribution">
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
                 {/* Form Section */}
                 <Card title="Distribution Details">
