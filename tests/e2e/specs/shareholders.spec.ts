@@ -128,6 +128,34 @@ test.describe('Shareholder Management', () => {
         });
     });
 
+    test.describe('Modal lifecycle (issue #112)', () => {
+        test('does not log a "useForm not connected" warning on the shareholders page', async ({ authenticatedPage }) => {
+            // NOTE: this antd dev warning is only emitted against the Vite dev build
+            // (gated on NODE_ENV !== 'production'), so run this with `npm run dev` active.
+            const formWarnings: string[] = [];
+            authenticatedPage.on('console', (msg) => {
+                if (/not connected to any Form element/i.test(msg.text())) {
+                    formWarnings.push(msg.text());
+                }
+            });
+
+            // Re-navigate with the listener attached so the fresh page-load render is captured.
+            await shareholdersPage.navigate();
+            // Guard against an auth redirect silently passing this test: the always-mounted
+            // ShareholderForm (and thus the warning) only exists on the real page.
+            await expect(authenticatedPage.getByRole('button', { name: /Create Shareholder/ })).toBeVisible();
+            // The warning is emitted via a deferred setTimeout; give it a tick to fire.
+            await authenticatedPage.waitForTimeout(1000);
+
+            expect(formWarnings).toEqual([]);
+        });
+
+        test('renders exactly one create-modal instance', async ({ authenticatedPage }) => {
+            await shareholdersPage.clickCreateButton();
+            await expect(authenticatedPage.locator('.ant-modal-content')).toHaveCount(1);
+        });
+    });
+
     test.describe('Form Validation', () => {
         test('should require name field', async ({ authenticatedPage }) => {
             await shareholdersPage.clickCreateButton();

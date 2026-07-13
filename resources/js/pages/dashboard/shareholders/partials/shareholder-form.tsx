@@ -40,7 +40,6 @@ export default function ShareholderForm({ visible, shareholder, onCancel, onSucc
                     message: 'Shareholder created successfully',
                 });
             }
-            form.resetFields();
             onSuccess();
         } catch (error: unknown) {
             const errorMessage =
@@ -70,6 +69,7 @@ export default function ShareholderForm({ visible, shareholder, onCancel, onSucc
             onOk={() => form.submit()}
             confirmLoading={loading}
             width={600}
+            forceRender
         >
             <Form
                 form={form}
