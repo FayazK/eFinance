@@ -6,7 +6,7 @@ type AdvancedSelectProps = {
     type: string;
     params?: Record<string, unknown>;
     id?: number | null;
-} & React.ComponentProps<typeof Select>;
+} & Omit<React.ComponentProps<typeof Select>, 'id'>;
 
 const AdvancedSelect: React.FC<AdvancedSelectProps> = ({ type, params, id, ...props }) => {
     const { options, loading, fetchOptions } = useDropdown(type, params ?? {}, id ?? null);

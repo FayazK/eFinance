@@ -2,14 +2,14 @@ import '@ant-design/v5-patch-for-react-19';
 import { createInertiaApp } from '@inertiajs/react';
 import { App as AntApp, ConfigProvider, theme } from 'antd';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import '../css/app.css';
 import { initializeTheme } from './hooks/use-appearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
-function ThemedApp({ App, props }: { App: React.ComponentType<unknown>; props: unknown }) {
+function ThemedApp({ children }: { children: ReactNode }) {
     const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'));
 
     useEffect(() => {
@@ -62,9 +62,7 @@ function ThemedApp({ App, props }: { App: React.ComponentType<unknown>; props: u
                 },
             }}
         >
-            <AntApp>
-                <App {...props} />
-            </AntApp>
+            <AntApp>{children}</AntApp>
         </ConfigProvider>
     );
 }
@@ -75,7 +73,11 @@ createInertiaApp({
     setup({ el, App, props }) {
         const root = createRoot(el);
 
-        root.render(<ThemedApp App={App} props={props} />);
+        root.render(
+            <ThemedApp>
+                <App {...props} />
+            </ThemedApp>,
+        );
     },
     progress: {
         color: '#4B5563',

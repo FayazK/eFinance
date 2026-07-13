@@ -14,7 +14,6 @@ test.describe('Distribution Management', () => {
     test.describe('Distribution Creation', () => {
         test('should create a new distribution', async ({ authenticatedPage }) => {
             await indexPage.navigate();
-            const initialCount = await indexPage.getTableRowCount();
 
             await indexPage.createDistribution(100000, 'Test distribution');
 
@@ -26,7 +25,7 @@ test.describe('Distribution Management', () => {
             expect(isDraft).toBe(true);
         });
 
-        test('should display statistics correctly', async ({ authenticatedPage }) => {
+        test('should display statistics correctly', async () => {
             await indexPage.navigate();
 
             await indexPage.createDistribution(100000);
@@ -48,7 +47,7 @@ test.describe('Distribution Management', () => {
             expect(netProfit).toBe(100000);
         });
 
-        test('should create distribution lines for shareholders', async ({ authenticatedPage }) => {
+        test('should create distribution lines for shareholders', async () => {
             await indexPage.navigate();
 
             await indexPage.createDistribution(100000);

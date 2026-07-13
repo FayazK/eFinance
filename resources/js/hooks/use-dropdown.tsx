@@ -35,6 +35,7 @@ const useDropdown = (type: string, params: object = {}, id: number | null = null
             }
             setLoading(false);
         },
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- params is re-created each render; paramsKey is its stable serialization
         [type, id, paramsKey],
     );
 

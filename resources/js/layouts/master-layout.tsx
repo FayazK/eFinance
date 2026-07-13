@@ -153,7 +153,7 @@ export default function MasterLayout({ children, pageTitle, actions, mainNavItem
                             justifyContent: collapsed && !isMobile ? 'center' : 'flex-start',
                         }}
                     >
-                        <Avatar src={auth.user.avatar} icon={<UserOutlined />} />
+                        <Avatar src={auth.user.avatar_url} icon={<UserOutlined />} />
                         {(!collapsed || isMobile) && (
                             <div style={{ lineHeight: '1.2' }}>
                                 <Text strong>{auth.user.full_name}</Text>

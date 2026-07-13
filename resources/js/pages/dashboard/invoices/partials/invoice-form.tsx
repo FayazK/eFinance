@@ -70,6 +70,7 @@ export default function InvoiceForm({ companies, clients, projects, templates, i
                 setTaxRate(draft.tax_rate || 0);
             }
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate the form from the saved draft once on mount
     }, []);
 
     // Set default dates

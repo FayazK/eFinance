@@ -71,6 +71,7 @@ export interface User {
     updated_at: string;
     full_name: string; // Computed attribute from Laravel
     initials: string; // Computed attribute from Laravel
+    [key: string]: string | number | boolean | Role | null | undefined;
 }
 
 export interface Country {

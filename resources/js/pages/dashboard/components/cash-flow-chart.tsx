@@ -1,6 +1,6 @@
 import { Card, Segmented, theme } from 'antd';
 import { useState } from 'react';
-import { CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, DefaultTooltipContentProps, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
 const { useToken } = theme;
 
@@ -81,7 +81,7 @@ function CustomTooltip({
     label,
     token,
     currency,
-}: TooltipProps<number, string> & { token: { colorBgContainer: string; colorBorder: string; colorText: string }; currency: string }) {
+}: Partial<DefaultTooltipContentProps<number, string>> & { active?: boolean; token: { colorBgContainer: string; colorBorder: string; colorText: string }; currency: string }) {
     if (!active || !payload || payload.length === 0) {
         return null;
     }
@@ -96,8 +96,8 @@ function CustomTooltip({
             }}
         >
             <p style={{ margin: 0, marginBottom: 4, fontWeight: 600, color: token.colorText }}>{label}</p>
-            {payload.map((entry) => (
-                <p key={entry.dataKey} style={{ margin: 0, color: entry.color }}>
+            {payload.map((entry, index) => (
+                <p key={index} style={{ margin: 0, color: entry.color }}>
                     {entry.name}: {formatAmountFull(entry.value as number, currency)}
                 </p>
             ))}

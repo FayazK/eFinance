@@ -435,10 +435,6 @@ export default function InvoiceShow({ invoice, accounts }: InvoiceShowProps) {
     return (
         <AppLayout
             pageTitle={`Invoice ${invoice.invoice_number}`}
-            breadcrumb={[
-                { title: 'Invoices', href: index.url() },
-                { title: invoice.invoice_number, href: '#' },
-            ]}
             actions={
                 <Space>
                     <Link href={index.url()}>

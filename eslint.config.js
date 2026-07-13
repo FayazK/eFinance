@@ -38,6 +38,15 @@ export default [
         },
     },
     {
+        // Playwright e2e specs are not React code; the react-hooks plugin misfires on
+        // Playwright's fixture `use()` callback (rules-of-hooks) and its dependencies.
+        files: ['tests/e2e/**'],
+        rules: {
+            'react-hooks/rules-of-hooks': 'off',
+            'react-hooks/exhaustive-deps': 'off',
+        },
+    },
+    {
         ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js'],
     },
     prettier, // Turn off all rules that might conflict with Prettier

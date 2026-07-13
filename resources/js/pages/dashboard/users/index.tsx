@@ -37,7 +37,7 @@ export default function UsersIndex() {
             sorter: true,
             render: (_: unknown, record: User) => (
                 <Space>
-                    <Avatar src={record.avatar} icon={<UserOutlined />} size={32}>
+                    <Avatar src={record.avatar_url} icon={<UserOutlined />} size={32}>
                         {record.initials}
                     </Avatar>
                     <div>
