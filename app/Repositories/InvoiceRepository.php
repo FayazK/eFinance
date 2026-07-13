@@ -85,7 +85,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
 
     public function getClientInvoices(int $clientId, int $perPage = 20): LengthAwarePaginator
     {
-        return Invoice::with(['items', 'payments'])
+        return Invoice::with(['items', 'payments.account'])
             ->where('client_id', $clientId)
             ->orderBy('issue_date', 'desc')
             ->paginate($perPage);

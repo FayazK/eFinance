@@ -2,15 +2,19 @@
 
 declare(strict_types=1);
 
+use App\Http\Resources\InvoiceResource;
 use App\Models\Account;
 use App\Models\Client;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\InvoicePayment;
 use App\Models\Project;
 use App\Models\Transaction;
 use App\Models\TransactionCategory;
 use App\Models\User;
+use App\Repositories\Contracts\InvoiceRepositoryInterface;
+use Illuminate\Database\Eloquent\LazyLoadingViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Nnjeim\World\Models\Currency;
 
@@ -492,5 +496,47 @@ describe('Invoice Relationships', function () {
         InvoiceItem::factory()->count(5)->create(['invoice_id' => $invoice->id]);
 
         expect($invoice->items)->toHaveCount(5);
+    });
+});
+
+describe('Client Invoices', function () {
+    // Regression for #99: getClientInvoices() eager-loaded payments but not payments.account,
+    // so serializing its result through InvoiceResource -> InvoicePaymentResource read an
+    // unloaded account relation and threw LazyLoadingViolationException. This is the latent
+    // twin of #34 (which fixed find()/update()).
+    test('getClientInvoices eager-loads payments.account for safe serialization', function () {
+        $client = Client::factory()->create();
+        $account = Account::factory()->create(['currency_code' => 'USD']);
+
+        // Two payments across the page force multi-row hydration, which is what arms
+        // preventLazyLoading (a single payment would not reproduce the violation).
+        Invoice::factory()->count(2)->create(['client_id' => $client->id])
+            ->each(function (Invoice $invoice) use ($account) {
+                $incomeTransaction = Transaction::factory()->create([
+                    'account_id' => $account->id,
+                    'type' => 'credit',
+                    'amount' => 100000,
+                ]);
+
+                InvoicePayment::create([
+                    'invoice_id' => $invoice->id,
+                    'account_id' => $account->id,
+                    'income_transaction_id' => $incomeTransaction->id,
+                    'payment_amount' => 100000,
+                    'amount_received' => 100000,
+                    'fee_amount' => 0,
+                    'payment_date' => now(),
+                ]);
+            });
+
+        $paginator = app(InvoiceRepositoryInterface::class)->getClientInvoices($client->id);
+
+        // Deterministic: the nested account relation is eager-loaded (fails before the fix).
+        expect($paginator->first()->payments->first()->relationLoaded('account'))->toBeTrue();
+
+        // Acceptance criterion: serializing the multi-row page fires no lazy query and
+        // throws no LazyLoadingViolationException under the armed guard.
+        expect(fn () => InvoiceResource::collection($paginator)->resolve())
+            ->not->toThrow(LazyLoadingViolationException::class);
     });
 });
