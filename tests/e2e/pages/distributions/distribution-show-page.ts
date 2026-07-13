@@ -55,11 +55,11 @@ export class DistributionShowPage {
     async adjustProfit(amount: number, reason: string): Promise<void> {
         await this.clickAdjustNetProfit();
 
-        // Fill amount
-        await this.page.fill('input[type="number"]', amount.toString());
+        // Fill amount (antd InputNumber renders a text input, not input[type=number])
+        await this.page.getByPlaceholder('Enter adjusted amount in PKR').fill(amount.toString());
 
         // Fill reason
-        await this.page.fill('textarea', reason);
+        await this.page.fill('.ant-modal textarea', reason);
 
         // Submit
         await this.page.click('.ant-modal-footer button.ant-btn-primary');

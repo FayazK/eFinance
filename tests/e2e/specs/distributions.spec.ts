@@ -16,14 +16,7 @@ test.describe('Distribution Management', () => {
             await indexPage.navigate();
             const initialCount = await indexPage.getTableRowCount();
 
-            // Create distribution for current month
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate, 'Test distribution');
+            await indexPage.createDistribution(100000, 'Test distribution');
 
             // Should be on show page
             expect(authenticatedPage.url()).toContain('/dashboard/distributions/');
@@ -36,14 +29,7 @@ test.describe('Distribution Management', () => {
         test('should display statistics correctly', async ({ authenticatedPage }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            await indexPage.createDistribution(100000);
 
             // Get statistics
             const revenue = await showPage.getStatistic('Revenue');
@@ -55,21 +41,17 @@ test.describe('Distribution Management', () => {
             console.log('Expenses:', expenses);
             console.log('Net Profit:', netProfit);
 
-            // Net profit should equal revenue minus expenses
-            expect(netProfit).toBe(revenue - expenses);
+            // A manual-amount distribution has no computed period revenue/expenses; the entered
+            // amount becomes the net profit to distribute.
+            expect(revenue).toBe(0);
+            expect(expenses).toBe(0);
+            expect(netProfit).toBe(100000);
         });
 
         test('should create distribution lines for shareholders', async ({ authenticatedPage }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            await indexPage.createDistribution(100000);
 
             // Get distribution lines
             const lines = await showPage.getDistributionLines();
@@ -92,14 +74,8 @@ test.describe('Distribution Management', () => {
         test('should adjust net profit', async ({ authenticatedPage }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            // Create with an amount different from the adjustment target so the change is real
+            await indexPage.createDistribution(50000);
 
             const originalProfit = await showPage.getStatistic('Net Profit');
 
@@ -124,14 +100,7 @@ test.describe('Distribution Management', () => {
         }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            await indexPage.createDistribution(100000);
 
             // Get lines before adjustment
             const linesBefore = await showPage.getDistributionLines();
@@ -160,14 +129,7 @@ test.describe('Distribution Management', () => {
         }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            await indexPage.createDistribution(100000);
 
             // Verify it's in draft
             const isDraft = await showPage.isDraft();
@@ -228,14 +190,8 @@ test.describe('Distribution Management', () => {
         }) => {
             await indexPage.navigate();
 
-            // Create a fresh draft distribution for the current month
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            // Create a fresh draft distribution
+            await indexPage.createDistribution(100000);
 
             await showPage.clickProcessDistribution();
 
@@ -258,33 +214,14 @@ test.describe('Distribution Management', () => {
         }) => {
             await indexPage.navigate();
 
-            // Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(startDate, endDate);
+            await indexPage.createDistribution(100000);
 
             await showPage.clickProcessDistribution();
 
-            // Try to submit without selecting account
-            await authenticatedPage.click('.ant-modal-footer button.ant-btn-primary');
-
-            // Should show validation error
-            const hasError = await authenticatedPage
-                .locator('.ant-form-item-explain-error')
-                .isVisible()
-                .catch(() => false);
-
-            if (hasError) {
-                const errorText = await authenticatedPage
-                    .locator('.ant-form-item-explain-error')
-                    .textContent();
-                console.log('Validation error shown:', errorText);
-                expect(errorText?.toLowerCase()).toContain('account');
-            }
+            // The modal prevents processing without an account by keeping the confirm button
+            // disabled until a valid account is selected.
+            const confirmButton = authenticatedPage.locator('.ant-modal-footer button.ant-btn-primary');
+            await expect(confirmButton).toBeDisabled();
 
             // Close modal
             await authenticatedPage.click('.ant-modal-close');
@@ -298,18 +235,8 @@ test.describe('Distribution Management', () => {
             // Navigate to distributions
             await indexPage.navigate();
 
-            // STEP 1: Create distribution
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const startDate = `${year}-${month}-01`;
-            const endDate = `${year}-${month}-28`;
-
-            await indexPage.createDistribution(
-                startDate,
-                endDate,
-                'Full workflow test distribution',
-            );
+            // STEP 1: Create distribution (amount differs from the STEP 2 adjustment target)
+            await indexPage.createDistribution(50000, 'Full workflow test distribution');
 
             // Verify draft status
             const isDraft = await showPage.isDraft();
