@@ -114,7 +114,7 @@ class DistributionController extends Controller
             ]);
 
         return Inertia::render('dashboard/distributions/show', [
-            'distribution' => (new DistributionResource($distribution->load(['lines.shareholder', 'lines.transaction'])))->resolve(),
+            'distribution' => (new DistributionResource($distribution->load(['lines.shareholder', 'lines.transaction.account'])))->resolve(),
             'pkrAccounts' => $pkrAccounts,
         ]);
     }

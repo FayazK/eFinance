@@ -14,7 +14,7 @@ class DistributionRepository implements DistributionRepositoryInterface
 {
     public function find(int $id): ?Distribution
     {
-        return Distribution::with(['lines.shareholder', 'lines.transaction'])
+        return Distribution::with(['lines.shareholder', 'lines.transaction.account'])
             ->find($id);
     }
 
