@@ -100,6 +100,8 @@ describe('Employee Retrieval', function () {
     });
 
     test('shows employee with payroll history', function () {
+        $this->withoutVite();
+
         $employee = Employee::factory()->create();
 
         $response = $this->get(route('employees.show', $employee));
