@@ -220,6 +220,39 @@ describe('Payment Recording', function () {
         expect($account->fresh()->current_balance)->toBe(500000);
     });
 
+    test('record payment response wraps payment in a resource with major-unit amounts', function () {
+        $invoice = Invoice::factory()->sent()->create([
+            'currency_code' => 'USD',
+            'total_amount' => 500000, // $5000
+            'balance_due' => 500000,
+        ]);
+
+        $account = Account::factory()->create([
+            'currency_code' => 'USD',
+            'current_balance' => 0,
+        ]);
+
+        $response = $this->postJson("/dashboard/invoices/{$invoice->id}/record-payment", [
+            'account_id' => $account->id,
+            'payment_amount' => 5000.00,
+            'amount_received' => 5000.00,
+            'payment_date' => '2025-01-10',
+        ]);
+
+        $response->assertCreated()
+            ->assertJsonPath('message', 'Payment recorded successfully')
+            ->assertJsonStructure([
+                'message',
+                'data' => [
+                    'payment' => ['id', 'payment_amount', 'formatted_payment_amount', 'payment_date'],
+                    'invoice' => ['id', 'invoice_number', 'status', 'balance_due'],
+                ],
+            ])
+            ->assertJsonPath('data.invoice.status', 'paid')
+            // payment is serialized via InvoicePaymentResource -> major units ($5000), not raw 500000 cents
+            ->assertJsonPath('data.payment.payment_amount', fn ($amount) => (float) $amount === 5000.0);
+    });
+
     test('recording payment with fee creates two transactions', function () {
         $invoice = Invoice::factory()->sent()->create([
             'currency_code' => 'USD',

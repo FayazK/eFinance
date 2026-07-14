@@ -11,6 +11,7 @@ use App\Http\Requests\InvoicePaymentStoreRequest;
 use App\Http\Requests\InvoiceStoreRequest;
 use App\Http\Requests\InvoiceUpdateRequest;
 use App\Http\Requests\InvoiceVoidRequest;
+use App\Http\Resources\InvoicePaymentResource;
 use App\Http\Resources\InvoiceResource;
 use App\Services\AccountService;
 use App\Services\ClientService;
@@ -242,7 +243,7 @@ class InvoiceController extends Controller
         return response()->json([
             'message' => 'Payment recorded successfully',
             'data' => [
-                'payment' => $payment,
+                'payment' => new InvoicePaymentResource($payment),
                 'invoice' => new InvoiceResource($payment->invoice),
             ],
         ], 201);
