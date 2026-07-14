@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use App\Helpers\CurrencyHelper;
+use App\Models\Account;
 use App\Models\Distribution;
 use App\Models\Shareholder;
+use App\Models\Transaction;
 use App\Models\User;
 
 describe('Distribution show page props', function () {
@@ -70,6 +72,37 @@ describe('Distribution show page props', function () {
                 ->where('distribution.formatted_calculated_net_profit', CurrencyHelper::format(200_000, 'PKR'))
                 // ...and it must NOT be the revenue string (the old bug).
                 ->where('distribution.formatted_calculated_net_profit', fn ($value) => $value !== CurrencyHelper::format(1_000_000, 'PKR'))
+            );
+    });
+
+    // Regression for #120: a PROCESSED distribution's lines carry real transaction_ids, and
+    // TransactionResource outputs `formatted_amount` unconditionally — its accessor reads
+    // $transaction->account->currency_code. If `account` isn't eager-loaded, preventLazyLoading
+    // throws a 500 (LazyLoadingViolationException). Needs >=2 lines so the multi-row lazy-load
+    // guard arms (draft lines with transaction_id=null never exercise this path).
+    test('processed distribution with transaction lines renders without lazy-load 500', function () {
+        $this->actingAs(User::factory()->superAdmin()->create());
+
+        $account = Account::factory()->create(['currency_code' => 'PKR']);
+        $distribution = Distribution::factory()->processed()->create();
+
+        foreach (Shareholder::factory()->count(2)->create() as $shareholder) {
+            $transaction = Transaction::factory()->debit()->create(['account_id' => $account->id]);
+            $distribution->lines()->create([
+                'shareholder_id' => $shareholder->id,
+                'equity_percentage_snapshot' => $shareholder->equity_percentage,
+                'allocated_amount_pkr' => 1_000_000,
+                'transaction_id' => $transaction->id,
+            ]);
+        }
+
+        $this->get(route('distributions.show', $distribution->id))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page
+                ->component('dashboard/distributions/show')
+                ->where('distribution.is_processed', true)
+                ->has('distribution.lines', 2)
+                ->has('distribution.lines.0.transaction')
             );
     });
 });
