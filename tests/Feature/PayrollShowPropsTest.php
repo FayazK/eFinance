@@ -25,8 +25,8 @@ describe('Payroll show page props', function () {
         $this->get(route('payroll.show', $payroll))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                // The show.tsx component is not built yet; assert the name without the file check.
-                ->component('dashboard/payroll/show', false)
+                // Assert the built show.tsx component resolves on disk.
+                ->component('dashboard/payroll/show')
                 // Top-level prop is flat (would be under `payroll.data` if wrapped).
                 ->where('payroll.status', 'pending')
                 // Nested single `employee` resolves flat.

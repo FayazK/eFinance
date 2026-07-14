@@ -536,6 +536,8 @@ describe('Payroll Retrieval', function () {
     });
 
     test('shows payroll with employee and transaction', function () {
+        $this->withoutVite();
+
         $payroll = Payroll::factory()->paid()->create();
 
         $response = $this->get(route('payroll.show', $payroll));

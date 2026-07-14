@@ -22,8 +22,8 @@ describe('Employee show & edit page props', function () {
         $this->get(route('employees.show', $employee))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                // The show.tsx component is not built yet; assert the name without the file check.
-                ->component('dashboard/employees/show', false)
+                // Assert the built show.tsx component resolves on disk.
+                ->component('dashboard/employees/show')
                 // Top-level prop is flat (would be under `employee.data` if wrapped).
                 ->where('employee.name', 'Jane Doe')
                 // Nested `payrolls` resolves to a plain, countable array.
@@ -39,8 +39,8 @@ describe('Employee show & edit page props', function () {
         $this->get(route('employees.edit', $employee))
             ->assertOk()
             ->assertInertia(fn ($page) => $page
-                // The edit.tsx component is not built yet; assert the name without the file check.
-                ->component('dashboard/employees/edit', false)
+                // Assert the built edit.tsx component resolves on disk.
+                ->component('dashboard/employees/edit')
                 ->where('employee.name', 'Jane Doe')
             );
     });
