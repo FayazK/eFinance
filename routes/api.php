@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\InvoiceController;
+use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -69,5 +70,21 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:invoices.update');
         Route::delete('invoices/{id}', [InvoiceController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:invoices.delete');
+
+        // Shareholders — CRUD + equity validation, mirroring the web module.
+        // validate-equity is static and MUST precede shareholders/{id} (both GET) to avoid
+        // the #113 static-vs-{id} collision; the {id} routes are numeric-constrained as a backstop.
+        Route::get('shareholders', [ShareholderController::class, 'index'])
+            ->middleware('permission:shareholders.read');
+        Route::get('shareholders/validate-equity', [ShareholderController::class, 'validateEquity'])
+            ->middleware('permission:shareholders.read');
+        Route::post('shareholders', [ShareholderController::class, 'store'])
+            ->middleware('permission:shareholders.create');
+        Route::get('shareholders/{id}', [ShareholderController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:shareholders.read');
+        Route::put('shareholders/{id}', [ShareholderController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:shareholders.update');
+        Route::delete('shareholders/{id}', [ShareholderController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:shareholders.delete');
     });
 });
