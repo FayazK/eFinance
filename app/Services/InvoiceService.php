@@ -14,6 +14,10 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
+use LaravelDaily\Invoices\Classes\Buyer;
+use LaravelDaily\Invoices\Classes\InvoiceItem as PdfInvoiceItem;
+use LaravelDaily\Invoices\Classes\Party;
+use LaravelDaily\Invoices\Invoice as PdfInvoice;
 
 class InvoiceService
 {
@@ -448,6 +452,89 @@ class InvoiceService
     public function getTotalReceivables(): int
     {
         return $this->invoiceRepository->getTotalReceivables();
+    }
+
+    /**
+     * Build the printable PDF document for an invoice. The caller decides how to
+     * deliver it (e.g. ->stream() inline for the web, ->download() for the API).
+     */
+    public function buildPdf(Invoice $invoice): PdfInvoice
+    {
+        // Create seller (company) if exists
+        $seller = null;
+        if ($invoice->company) {
+            $sellerData = [
+                'name' => $invoice->company->name,
+            ];
+            if ($invoice->company->address) {
+                $sellerData['address'] = $invoice->company->address;
+            }
+            if ($invoice->company->phone) {
+                $sellerData['phone'] = $invoice->company->phone;
+            }
+            if ($invoice->company->vat_number) {
+                $sellerData['vat'] = $invoice->company->vat_number;
+            }
+            $customFields = [];
+            if ($invoice->company->email) {
+                $customFields['email'] = $invoice->company->email;
+            }
+            if ($invoice->company->tax_id) {
+                $customFields['Tax ID'] = $invoice->company->tax_id;
+            }
+            if (! empty($customFields)) {
+                $sellerData['custom_fields'] = $customFields;
+            }
+            $seller = new Party($sellerData);
+        }
+
+        // Create buyer
+        $buyer = new Buyer([
+            'name' => $invoice->client->name,
+            'custom_fields' => [
+                'email' => $invoice->client->email,
+                'company' => $invoice->client->company ?? '',
+            ],
+        ]);
+
+        // Create invoice items
+        $items = [];
+        foreach ($invoice->items as $item) {
+            $items[] = (new PdfInvoiceItem)
+                ->title($item->description)
+                ->quantity($item->quantity)
+                ->pricePerUnit($item->unit_price / 100)
+                ->units($item->unit);
+        }
+
+        // Determine template - default to 'modern' if not set
+        $template = $invoice->template?->value ?? 'modern';
+
+        // Generate PDF
+        $pdf = PdfInvoice::make()
+            ->template($template)
+            ->buyer($buyer)
+            ->addItems($items)
+            ->name($invoice->invoice_number)
+            ->date($invoice->issue_date)
+            ->dateFormat('M d, Y')
+            ->payUntilDays((int) $invoice->due_date->diffInDays($invoice->issue_date))
+            ->currencySymbol(CurrencyHelper::getSymbol($invoice->currency_code))
+            ->currencyCode($invoice->currency_code)
+            ->notes($invoice->client_notes ?? '')
+            ->filename($invoice->invoice_number);
+
+        // Add seller if exists
+        if ($seller) {
+            $pdf->seller($seller);
+
+            // Add logo if company has one (use file path for PDF generation)
+            if ($invoice->company->logo_path) {
+                $pdf->logo($invoice->company->logo_path);
+            }
+        }
+
+        return $pdf;
     }
 
     // === PRIVATE HELPERS ===
