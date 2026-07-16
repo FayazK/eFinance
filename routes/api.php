@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Support\Facades\Route;
 
@@ -44,5 +45,29 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:transactions.read');
         Route::post('transactions', [TransactionController::class, 'store'])
             ->middleware('permission:transactions.create');
+
+        // Invoices — full CRUD + custom actions, mirroring the web module.
+        Route::get('invoices', [InvoiceController::class, 'index'])
+            ->middleware('permission:invoices.read');
+        Route::post('invoices', [InvoiceController::class, 'store'])
+            ->middleware('permission:invoices.create');
+        Route::get('invoices/{id}', [InvoiceController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:invoices.read');
+        Route::get('invoices/{id}/pdf', [InvoiceController::class, 'pdf'])
+            ->whereNumber('id')->middleware('permission:invoices.read');
+        Route::put('invoices/{id}', [InvoiceController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::put('invoices/{id}/due-date', [InvoiceController::class, 'updateDueDate'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::post('invoices/{id}/record-payment', [InvoiceController::class, 'recordPayment'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::post('invoices/{id}/change-status', [InvoiceController::class, 'changeStatus'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::post('invoices/{id}/send-email', [InvoiceController::class, 'sendEmail'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::post('invoices/{id}/void', [InvoiceController::class, 'void'])
+            ->whereNumber('id')->middleware('permission:invoices.update');
+        Route::delete('invoices/{id}', [InvoiceController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:invoices.delete');
     });
 });
