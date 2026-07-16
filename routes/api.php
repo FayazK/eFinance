@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -37,5 +38,11 @@ Route::prefix('v1')->group(function () {
         // permission) / 200 in one place; doubles as an authenticated health probe.
         Route::get('ping', fn () => response()->json(['message' => 'pong']))
             ->middleware('permission:accounts.read');
+
+        // Transactions — append-only ledger (list + create only, no update/delete).
+        Route::get('transactions', [TransactionController::class, 'index'])
+            ->middleware('permission:transactions.read');
+        Route::post('transactions', [TransactionController::class, 'store'])
+            ->middleware('permission:transactions.create');
     });
 });
