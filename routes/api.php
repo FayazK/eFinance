@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -86,5 +87,25 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:shareholders.update');
         Route::delete('shareholders/{id}', [ShareholderController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:shareholders.delete');
+
+        // Distributions — CRUD + process/adjust/statement, mirroring the web module.
+        // All custom actions nest under {id}, so there is no static-vs-{id} collision;
+        // {id}/{shareholderId} are numeric-constrained as a backstop.
+        Route::get('distributions', [DistributionController::class, 'index'])
+            ->middleware('permission:distributions.read');
+        Route::post('distributions', [DistributionController::class, 'store'])
+            ->middleware('permission:distributions.create');
+        Route::get('distributions/{id}', [DistributionController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:distributions.read');
+        Route::put('distributions/{id}', [DistributionController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:distributions.update');
+        Route::put('distributions/{id}/adjust-profit', [DistributionController::class, 'adjustProfit'])
+            ->whereNumber('id')->middleware('permission:distributions.update');
+        Route::post('distributions/{id}/process', [DistributionController::class, 'process'])
+            ->whereNumber('id')->middleware('permission:distributions.update');
+        Route::get('distributions/{id}/statements/{shareholderId}', [DistributionController::class, 'downloadStatement'])
+            ->whereNumber('id')->whereNumber('shareholderId')->middleware('permission:distributions.read');
+        Route::delete('distributions/{id}', [DistributionController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:distributions.delete');
     });
 });
