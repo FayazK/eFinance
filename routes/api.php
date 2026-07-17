@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DistributionController;
+use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -124,5 +125,26 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->whereNumber('shareholderId')->middleware('permission:distributions.read');
         Route::delete('distributions/{id}', [DistributionController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:distributions.delete');
+
+        // Expenses — CRUD + process/void, mirroring the web module.
+        // last-exchange-rate is a static-prefixed path and MUST precede expenses/{id}
+        // to avoid a static-vs-{id} collision; the {id} routes are numeric-constrained
+        // as a backstop. process/void nest under {id} (extra segment) — no collision.
+        Route::get('expenses', [ExpenseController::class, 'index'])
+            ->middleware('permission:expenses.read');
+        Route::get('expenses/last-exchange-rate/{currency}', [ExpenseController::class, 'lastExchangeRate'])
+            ->middleware('permission:expenses.read');
+        Route::post('expenses', [ExpenseController::class, 'store'])
+            ->middleware('permission:expenses.create');
+        Route::get('expenses/{id}', [ExpenseController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:expenses.read');
+        Route::put('expenses/{id}', [ExpenseController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:expenses.update');
+        Route::post('expenses/{id}/process', [ExpenseController::class, 'process'])
+            ->whereNumber('id')->middleware('permission:expenses.update');
+        Route::post('expenses/{id}/void', [ExpenseController::class, 'void'])
+            ->whereNumber('id')->middleware('permission:expenses.update');
+        Route::delete('expenses/{id}', [ExpenseController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:expenses.delete');
     });
 });
