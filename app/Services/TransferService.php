@@ -106,7 +106,7 @@ class TransferService
             return $transfer->load([
                 'withdrawalTransaction.account',
                 'depositTransaction.account',
-                'feeTransaction',
+                'feeTransaction.account',
             ]);
         });
     }

@@ -15,7 +15,7 @@ class TransferRepository implements TransferRepositoryInterface
         return Transfer::with([
             'withdrawalTransaction.account',
             'depositTransaction.account',
-            'feeTransaction',
+            'feeTransaction.account',
         ])->find($id);
     }
 
@@ -35,7 +35,7 @@ class TransferRepository implements TransferRepositoryInterface
             ->with([
                 'withdrawalTransaction.account',
                 'depositTransaction.account',
-                'feeTransaction',
+                'feeTransaction.account',
             ]);
 
         // Search in transaction descriptions or account names

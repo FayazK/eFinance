@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionController;
+use App\Http\Controllers\Api\V1\TransferController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -146,5 +147,15 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:expenses.update');
         Route::delete('expenses/{id}', [ExpenseController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:expenses.delete');
+
+        // Transfers — list + show + create only. Transfers are create-only in the web
+        // module (TransferRepository has no update/delete), so the API adds none either.
+        // {id} is numeric-constrained; there is no static-prefixed sub-path to collide with it.
+        Route::get('transfers', [TransferController::class, 'index'])
+            ->middleware('permission:transfers.read');
+        Route::post('transfers', [TransferController::class, 'store'])
+            ->middleware('permission:transfers.create');
+        Route::get('transfers/{id}', [TransferController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:transfers.read');
     });
 });
