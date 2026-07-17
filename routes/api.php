@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\InvoiceController;
@@ -41,6 +42,22 @@ Route::prefix('v1')->group(function () {
         // permission) / 200 in one place; doubles as an authenticated health probe.
         Route::get('ping', fn () => response()->json(['message' => 'pong']))
             ->middleware('permission:accounts.read');
+
+        // Accounts — CRUD + per-account transaction ledger, mirroring the web module.
+        // {id}/transactions nests under {id} (extra segment) so there is no static-vs-{id}
+        // collision; {id} is numeric-constrained as a backstop.
+        Route::get('accounts', [AccountController::class, 'index'])
+            ->middleware('permission:accounts.read');
+        Route::post('accounts', [AccountController::class, 'store'])
+            ->middleware('permission:accounts.create');
+        Route::get('accounts/{id}', [AccountController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:accounts.read');
+        Route::get('accounts/{id}/transactions', [AccountController::class, 'transactions'])
+            ->whereNumber('id')->middleware('permission:accounts.read');
+        Route::put('accounts/{id}', [AccountController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:accounts.update');
+        Route::delete('accounts/{id}', [AccountController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:accounts.delete');
 
         // Transactions — append-only ledger (list + create only, no update/delete).
         Route::get('transactions', [TransactionController::class, 'index'])
