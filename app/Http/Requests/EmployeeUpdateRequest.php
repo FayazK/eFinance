@@ -16,7 +16,7 @@ class EmployeeUpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        $employeeId = $this->route('employee')->id ?? $this->route('id');
+        $employeeId = $this->route('employee')?->id ?? $this->route('id');
 
         return [
             'name' => ['sometimes', 'string', 'max:255'],
