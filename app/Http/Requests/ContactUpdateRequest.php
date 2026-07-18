@@ -21,7 +21,10 @@ class ContactUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $contactId = $this->route('contact');
+        // Web route model-binds {contact}; the API route uses {id}. Support both so the
+        // unique-email rule ignores the current contact on either surface (else a PUT that
+        // keeps the same email 422s against itself on the {id} route).
+        $contactId = $this->route('contact')?->id ?? $this->route('id');
 
         return [
             'first_name' => ['required', 'string', 'max:255'],
