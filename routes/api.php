@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\ExpenseController;
@@ -214,5 +215,19 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:clients.update');
         Route::delete('clients/{id}', [ClientController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:clients.delete');
+
+        // Contacts — full CRUD, mirroring the web module. Read paths eager-load
+        // client/country/state/city. {id} is numeric-constrained; there is no
+        // static-prefixed sub-path to collide with it.
+        Route::get('contacts', [ContactController::class, 'index'])
+            ->middleware('permission:contacts.read');
+        Route::post('contacts', [ContactController::class, 'store'])
+            ->middleware('permission:contacts.create');
+        Route::get('contacts/{id}', [ContactController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:contacts.read');
+        Route::put('contacts/{id}', [ContactController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:contacts.update');
+        Route::delete('contacts/{id}', [ContactController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:contacts.delete');
     });
 });
