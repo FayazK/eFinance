@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ShareholderController;
+use App\Http\Controllers\Api\V1\TransactionCategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\TransferController;
 use Illuminate\Support\Facades\Route;
@@ -66,6 +67,18 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:transactions.read');
         Route::post('transactions', [TransactionController::class, 'store'])
             ->middleware('permission:transactions.create');
+
+        // Transaction Categories — list + create + update + delete (no show), mirroring the web module.
+        // URL uses a hyphen; the permission key uses an underscore (transaction_categories.*), matching
+        // config/permissions.php. {id} is numeric-constrained; no static sub-path to collide with it.
+        Route::get('transaction-categories', [TransactionCategoryController::class, 'index'])
+            ->middleware('permission:transaction_categories.read');
+        Route::post('transaction-categories', [TransactionCategoryController::class, 'store'])
+            ->middleware('permission:transaction_categories.create');
+        Route::put('transaction-categories/{id}', [TransactionCategoryController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:transaction_categories.update');
+        Route::delete('transaction-categories/{id}', [TransactionCategoryController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:transaction_categories.delete');
 
         // Invoices — full CRUD + custom actions, mirroring the web module.
         Route::get('invoices', [InvoiceController::class, 'index'])
