@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\ClientController;
 use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\ExpenseController;
@@ -199,5 +200,19 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:payroll.read');
         Route::put('payroll/{id}/adjustments', [PayrollController::class, 'updateAdjustments'])
             ->whereNumber('id')->middleware('permission:payroll.update');
+
+        // Clients — full CRUD, mirroring the web module. Read paths eager-load
+        // country/state/city/currency (#6). {id} is numeric-constrained; there is no
+        // static-prefixed sub-path to collide with it.
+        Route::get('clients', [ClientController::class, 'index'])
+            ->middleware('permission:clients.read');
+        Route::post('clients', [ClientController::class, 'store'])
+            ->middleware('permission:clients.create');
+        Route::get('clients/{id}', [ClientController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:clients.read');
+        Route::put('clients/{id}', [ClientController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:clients.update');
+        Route::delete('clients/{id}', [ClientController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:clients.delete');
     });
 });

@@ -21,7 +21,9 @@ class ClientUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $clientId = $this->route('client');
+        // Web route binds {client} to a model; the API route uses {id}. Support both so the
+        // unique-email rule ignores THIS client on either surface (else a same-email PUT 422s).
+        $clientId = $this->route('client')?->id ?? $this->route('id');
 
         return [
             'name' => ['required', 'string', 'max:255'],
