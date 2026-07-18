@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DistributionController;
+use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\ShareholderController;
@@ -170,5 +171,18 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:transfers.create');
         Route::get('transfers/{id}', [TransferController::class, 'show'])
             ->whereNumber('id')->middleware('permission:transfers.read');
+
+        // Employees — full CRUD. {id} is numeric-constrained; there is no
+        // static-prefixed sub-path to collide with it.
+        Route::get('employees', [EmployeeController::class, 'index'])
+            ->middleware('permission:employees.read');
+        Route::post('employees', [EmployeeController::class, 'store'])
+            ->middleware('permission:employees.create');
+        Route::get('employees/{id}', [EmployeeController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:employees.read');
+        Route::put('employees/{id}', [EmployeeController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:employees.update');
+        Route::delete('employees/{id}', [EmployeeController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:employees.delete');
     });
 });
