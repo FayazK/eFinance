@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
+use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionCategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -184,5 +185,19 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:employees.update');
         Route::delete('employees/{id}', [EmployeeController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:employees.delete');
+
+        // Payroll — action-oriented (generate/pay/adjustments), no create/delete. The
+        // static POST paths (generate, pay) precede the numeric-constrained {id} routes;
+        // generate/pay/adjustments mirror the web module's `payroll.update` gating.
+        Route::get('payroll', [PayrollController::class, 'index'])
+            ->middleware('permission:payroll.read');
+        Route::post('payroll/generate', [PayrollController::class, 'generate'])
+            ->middleware('permission:payroll.update');
+        Route::post('payroll/pay', [PayrollController::class, 'pay'])
+            ->middleware('permission:payroll.update');
+        Route::get('payroll/{id}', [PayrollController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:payroll.read');
+        Route::put('payroll/{id}/adjustments', [PayrollController::class, 'updateAdjustments'])
+            ->whereNumber('id')->middleware('permission:payroll.update');
     });
 });
