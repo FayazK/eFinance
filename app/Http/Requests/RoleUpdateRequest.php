@@ -20,7 +20,10 @@ class RoleUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $roleId = $this->route('role')?->id ?? $this->route('role');
+        // Web route binds `{role}` (a Role model); the /api/v1/roles/{id} route binds a raw
+        // `{id}`. Fall back so the unique-slug rule ignores THIS role on both surfaces (else a
+        // same-slug PUT on the API route 422s against itself).
+        $roleId = $this->route('role')?->id ?? $this->route('id') ?? $this->route('role');
 
         return [
             'name' => ['required', 'string', 'max:255'],

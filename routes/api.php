@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\V1\PayrollController;
 use App\Http\Controllers\Api\V1\ProjectController;
 use App\Http\Controllers\Api\V1\ProjectDocumentController;
 use App\Http\Controllers\Api\V1\ProjectLinkController;
+use App\Http\Controllers\Api\V1\RoleController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionCategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -295,5 +296,20 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:users.update');
         Route::delete('users/{id}', [UserController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:users.delete');
+
+        // Roles — admin-scoped RBAC management: list + assignable + create + update + delete
+        // (no public show, mirroring the web module). `assignable` is static and MUST precede
+        // the {id} routes (collision safety); {id} routes are numeric-constrained as a backstop.
+        // DELETE returns JSON — contrast the web destroy's Inertia redirect.
+        Route::get('roles', [RoleController::class, 'index'])
+            ->middleware('permission:roles.read');
+        Route::get('roles/assignable', [RoleController::class, 'assignable'])
+            ->middleware('permission:roles.read');
+        Route::post('roles', [RoleController::class, 'store'])
+            ->middleware('permission:roles.create');
+        Route::put('roles/{id}', [RoleController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:roles.update');
+        Route::delete('roles/{id}', [RoleController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:roles.delete');
     });
 });
