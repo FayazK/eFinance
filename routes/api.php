@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionCategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
 use App\Http\Controllers\Api\V1\TransferController;
+use App\Http\Controllers\Api\V1\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -279,5 +280,20 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:projects.update');
         Route::delete('projects/{id}/documents/{media}', [ProjectDocumentController::class, 'destroy'])
             ->whereNumber('id')->whereNumber('media')->middleware('permission:projects.update');
+
+        // Users — admin-scoped full CRUD, mirroring the web module. Read paths eager-load
+        // `role` (the API UserResource surfaces read-only is_super_admin/permissions off it);
+        // passwords are never returned. {id} is numeric-constrained; there is no
+        // static-prefixed sub-path to collide with it.
+        Route::get('users', [UserController::class, 'index'])
+            ->middleware('permission:users.read');
+        Route::post('users', [UserController::class, 'store'])
+            ->middleware('permission:users.create');
+        Route::get('users/{id}', [UserController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:users.read');
+        Route::put('users/{id}', [UserController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:users.update');
+        Route::delete('users/{id}', [UserController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:users.delete');
     });
 });
