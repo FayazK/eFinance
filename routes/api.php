@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\V1\AccountController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\ClientController;
+use App\Http\Controllers\Api\V1\CompanyController;
 use App\Http\Controllers\Api\V1\ContactController;
 use App\Http\Controllers\Api\V1\DistributionController;
 use App\Http\Controllers\Api\V1\EmployeeController;
@@ -229,5 +230,19 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:contacts.update');
         Route::delete('contacts/{id}', [ContactController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:contacts.delete');
+
+        // Companies — full CRUD, mirroring the web module. CompanyResource touches no
+        // relations, so read paths need no eager-loading. {id} is numeric-constrained;
+        // there is no static-prefixed sub-path to collide with it.
+        Route::get('companies', [CompanyController::class, 'index'])
+            ->middleware('permission:companies.read');
+        Route::post('companies', [CompanyController::class, 'store'])
+            ->middleware('permission:companies.create');
+        Route::get('companies/{id}', [CompanyController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:companies.read');
+        Route::put('companies/{id}', [CompanyController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:companies.update');
+        Route::delete('companies/{id}', [CompanyController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:companies.delete');
     });
 });
