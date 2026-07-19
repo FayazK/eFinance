@@ -22,7 +22,10 @@ class UserUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        $userId = $this->route('user');
+        // Web route binds `{user}`; the /api/v1/users/{id} route binds `{id}`. Fall back
+        // so the unique-email rule ignores THIS user on both surfaces (else a same-email
+        // PUT on the API route 422s against itself).
+        $userId = $this->route('user') ?? $this->route('id');
 
         return [
             'first_name' => ['required', 'string', 'max:255'],
