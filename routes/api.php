@@ -12,6 +12,9 @@ use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\ExpenseController;
 use App\Http\Controllers\Api\V1\InvoiceController;
 use App\Http\Controllers\Api\V1\PayrollController;
+use App\Http\Controllers\Api\V1\ProjectController;
+use App\Http\Controllers\Api\V1\ProjectDocumentController;
+use App\Http\Controllers\Api\V1\ProjectLinkController;
 use App\Http\Controllers\Api\V1\ShareholderController;
 use App\Http\Controllers\Api\V1\TransactionCategoryController;
 use App\Http\Controllers\Api\V1\TransactionController;
@@ -244,5 +247,37 @@ Route::prefix('v1')->group(function () {
             ->whereNumber('id')->middleware('permission:companies.update');
         Route::delete('companies/{id}', [CompanyController::class, 'destroy'])
             ->whereNumber('id')->middleware('permission:companies.delete');
+
+        // Projects — CRUD + nested links + documents, mirroring the web module. Read paths
+        // eager-load client.country/currency + media count (#6). Nested links/documents nest
+        // under {id} (extra segment) so there is no static-vs-{id} collision; all {id}/{link}/
+        // {media} params are numeric-constrained. Links/documents mutations gate on
+        // projects.update (mirroring the web); links.index is a read (projects.read).
+        Route::get('projects', [ProjectController::class, 'index'])
+            ->middleware('permission:projects.read');
+        Route::post('projects', [ProjectController::class, 'store'])
+            ->middleware('permission:projects.create');
+        Route::get('projects/{id}', [ProjectController::class, 'show'])
+            ->whereNumber('id')->middleware('permission:projects.read');
+        Route::put('projects/{id}', [ProjectController::class, 'update'])
+            ->whereNumber('id')->middleware('permission:projects.update');
+        Route::delete('projects/{id}', [ProjectController::class, 'destroy'])
+            ->whereNumber('id')->middleware('permission:projects.delete');
+
+        // Project links (nested sub-resource).
+        Route::get('projects/{id}/links', [ProjectLinkController::class, 'index'])
+            ->whereNumber('id')->middleware('permission:projects.read');
+        Route::post('projects/{id}/links', [ProjectLinkController::class, 'store'])
+            ->whereNumber('id')->middleware('permission:projects.update');
+        Route::put('projects/{id}/links/{link}', [ProjectLinkController::class, 'update'])
+            ->whereNumber('id')->whereNumber('link')->middleware('permission:projects.update');
+        Route::delete('projects/{id}/links/{link}', [ProjectLinkController::class, 'destroy'])
+            ->whereNumber('id')->whereNumber('link')->middleware('permission:projects.update');
+
+        // Project documents (nested, Spatie media).
+        Route::post('projects/{id}/documents', [ProjectDocumentController::class, 'store'])
+            ->whereNumber('id')->middleware('permission:projects.update');
+        Route::delete('projects/{id}/documents/{media}', [ProjectDocumentController::class, 'destroy'])
+            ->whereNumber('id')->whereNumber('media')->middleware('permission:projects.update');
     });
 });
